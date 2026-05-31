@@ -1,0 +1,359 @@
+.lobby-screen {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.lobby-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.lobby-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f0f0f0;
+}
+
+.lobby-subtitle {
+  margin-top: 0.4rem;
+  color: #888;
+  font-size: 1rem;
+}
+
+.lobby-subtitle strong {
+  color: #7dd3fc;
+}
+
+/* ── Team selection ───────────────────────────── */
+.team-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.team-select-btn {
+  background: #1a1d2a;
+  border: 1px solid #2e3348;
+  border-radius: 8px;
+  color: #f0f0f0;
+  padding: 1rem;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+
+.team-select-btn:hover:not(:disabled) {
+  border-color: #4f7ef8;
+  background: #1e2235;
+}
+
+.team-select-btn.taken {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Card wrapper — allows override button below the main button */
+.team-select-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.team-select-card .team-select-btn {
+  width: 100%;
+}
+
+/* "This is my team" override for crashed/disconnected players */
+.rejoin-override-btn {
+  background: transparent;
+  border: none;
+  color: #4f7ef8;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-align: right;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.rejoin-override-btn:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.commissioner-btn {
+  border-color: #f59e0b !important;
+  background: #1c1a0f !important;
+  margin-bottom: 0.5rem;
+}
+
+.commissioner-btn:hover {
+  border-color: #fbbf24 !important;
+  background: #221e0f !important;
+}
+
+.commissioner-btn .team-select-name {
+  color: #fbbf24;
+}
+
+.team-select-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.team-select-owner {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.team-select-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #166534;
+  color: #86efac;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Waiting room ─────────────────────────────── */
+.lobby-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .lobby-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lobby-qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: #1a1d2a;
+  border: 1px solid #2e3348;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.lobby-url {
+  font-size: 0.8rem;
+  color: #7dd3fc;
+  word-break: break-all;
+  text-align: center;
+}
+
+.lobby-url-hint {
+  font-size: 0.78rem;
+  color: #555;
+  text-align: center;
+}
+
+.lobby-teams-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lobby-connected-count {
+  font-size: 1.1rem;
+  color: #aaa;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #2e3348;
+}
+
+.count-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #86efac;
+}
+
+.lobby-team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lobby-team-row {
+  display: grid;
+  grid-template-columns: 12px 1fr 1fr auto;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  background: #14161f;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+
+.lobby-team-row.connected {
+  background: #0d1f14;
+}
+
+.lobby-team-row.mine {
+  border: 1px solid #4f7ef8;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.on  { background: #86efac; }
+.status-dot.off { background: #374151; }
+
+.lobby-team-name {
+  font-weight: 600;
+  color: #f0f0f0;
+}
+
+.lobby-team-owner {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.lobby-joined-badge {
+  font-size: 0.75rem;
+  color: #86efac;
+  font-weight: 600;
+}
+
+/* ── Start Draft button ───────────────────────── */
+.start-draft-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.start-draft-btn:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.start-draft-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.start-hint {
+  font-size: 0.8rem;
+  color: #555;
+  text-align: center;
+}
+
+/* ── Rejoin badge ─────────────────────────────── */
+.rejoin-badge {
+  display: inline-block;
+  margin-top: 0.6rem;
+  background: #7f1d1d;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 99px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Confirmation modal ───────────────────────── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirm-modal {
+  background: #1a1d2a;
+  border: 1px solid #2e3348;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.confirm-modal h2 {
+  font-size: 1.4rem;
+  color: #f0f0f0;
+}
+
+.confirm-modal p {
+  color: #888;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.confirm-cancel-btn {
+  background: #2e3348;
+  color: #aaa;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.confirm-cancel-btn:hover {
+  background: #3a4060;
+}
+
+.confirm-go-btn {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.confirm-go-btn:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.confirm-go-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

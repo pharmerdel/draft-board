@@ -1,0 +1,256 @@
+.setup-screen {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.setup-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.setup-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f0f0f0;
+}
+
+.setup-subtitle {
+  margin-top: 0.4rem;
+  color: #888;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.setup-errors {
+  background: #2a1515;
+  border: 1px solid #7f2020;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.setup-errors p {
+  color: #f87171;
+  font-size: 0.9rem;
+}
+
+.setup-section {
+  margin-bottom: 2rem;
+}
+
+.setup-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+.setup-input {
+  width: 100%;
+  background: #1a1d2a;
+  border: 1px solid #2e3348;
+  border-radius: 6px;
+  color: #f0f0f0;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.75rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.setup-input:focus {
+  border-color: #4f7ef8;
+}
+
+.setup-input::placeholder {
+  color: #555;
+}
+
+.setup-field-hint {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.csv-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.csv-upload-btn {
+  display: inline-block;
+  background: #1a1d2a;
+  border: 1px dashed #2e3348;
+  border-radius: 6px;
+  color: #aaa;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.csv-upload-btn:hover {
+  border-color: #4f7ef8;
+  color: #f0f0f0;
+}
+
+.csv-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.csv-preview-count {
+  color: #86efac;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.csv-preview-breakdown {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.setup-select {
+  width: 100%;
+  background: #1a1d2a;
+  border: 1px solid #2e3348;
+  border-radius: 6px;
+  color: #f0f0f0;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.setup-select:focus {
+  border-color: #4f7ef8;
+}
+
+/* Teams grid */
+.teams-grid-header {
+  display: grid;
+  grid-template-columns: 32px 1fr 1fr 110px;
+  gap: 0.6rem;
+  padding: 0 0 0.5rem;
+  border-bottom: 1px solid #2e3348;
+  margin-bottom: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.team-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 1fr 110px;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #1a1d2a;
+}
+
+.team-num {
+  color: #555;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Launch button */
+.setup-launch {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.launch-btn {
+  background: #4f7ef8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.85rem 2.5rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.launch-btn:hover:not(:disabled) {
+  background: #3a6ae8;
+  transform: translateY(-1px);
+}
+
+.launch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.launch-hint {
+  margin-top: 0.75rem;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+/* ── Restore section ── */
+.restore-section {
+  margin-top: 3rem;
+  border-top: 1px solid #2e3348;
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.restore-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.restore-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #aaa;
+}
+
+.restore-subtitle {
+  font-size: 0.82rem;
+  color: #555;
+  line-height: 1.5;
+  max-width: 520px;
+}
+
+.restore-btn {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid #2e3348;
+  border-radius: 6px;
+  color: #86efac;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  align-self: flex-start;
+}
+
+.restore-btn:hover {
+  border-color: #86efac;
+  background: #0d1f14;
+}
+
+.restore-success {
+  color: #86efac;
+  font-size: 0.9rem;
+  font-weight: 600;
+}

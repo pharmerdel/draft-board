@@ -1,0 +1,158 @@
+.my-team-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.my-team-empty {
+  color: #555;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Stats bar */
+.my-team-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #13151f;
+  border: 1px solid #2e3348;
+  border-radius: 10px;
+  padding: 0.75rem 0.5rem;
+  gap: 0.5rem;
+}
+
+.my-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.my-stat-label {
+  font-size: 0.62rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.my-stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f0f0f0;
+}
+
+.my-stat-value.green  { color: #86efac; }
+.my-stat-value.yellow { color: #fbbf24; }
+
+/* Roster */
+.my-team-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.my-slot-group {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 0.2rem;
+  align-items: start;
+}
+
+.my-slot-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 0.4rem;
+}
+
+.my-slot-players {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.my-player-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 40px 48px;
+  align-items: center;
+  gap: 0.4rem;
+  background: #14161f;
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+}
+
+.my-pos-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.my-player-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-player-nfl {
+  font-size: 0.72rem;
+  color: #666;
+}
+
+.my-player-price {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #86efac;
+  text-align: right;
+}
+
+.my-empty-row {
+  background: #13151f;
+  border: 1px dashed #2e3348;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+}
+
+.my-empty-label {
+  font-size: 0.75rem;
+  color: #374151;
+}
+
+/* Watchlist placeholder */
+.my-watchlist-placeholder {
+  margin-top: 0.25rem;
+  background: #13151f;
+  border: 1px dashed #2e3348;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.watchlist-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.watchlist-hint {
+  font-size: 0.75rem;
+  color: #374151;
+}
+
+/* Position badge colors */
+.pos-QB { background: #1e3a1e; color: #86efac; }
+.pos-RB { background: #1e2e4a; color: #7dd3fc; }
+.pos-WR { background: #3a1e3a; color: #d8b4fe; }
+.pos-TE { background: #3a2a10; color: #fbbf24; }
