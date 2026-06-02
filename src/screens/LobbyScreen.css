@@ -12,20 +12,19 @@
 .lobby-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #f0f0f0;
+  color: #1B3A6B;
 }
 
 .lobby-subtitle {
   margin-top: 0.4rem;
-  color: #888;
+  color: #6B7280;
   font-size: 1rem;
 }
 
 .lobby-subtitle strong {
-  color: #7dd3fc;
+  color: #1B3A6B;
 }
 
-/* ── Team selection ───────────────────────────── */
 .team-select-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -33,10 +32,10 @@
 }
 
 .team-select-btn {
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
   border-radius: 8px;
-  color: #f0f0f0;
+  color: #111827;
   padding: 1rem;
   cursor: pointer;
   text-align: left;
@@ -48,8 +47,8 @@
 }
 
 .team-select-btn:hover:not(:disabled) {
-  border-color: #4f7ef8;
-  background: #1e2235;
+  border-color: #1B3A6B;
+  background: #F0F4FA;
 }
 
 .team-select-btn.taken {
@@ -57,7 +56,6 @@
   cursor: not-allowed;
 }
 
-/* Card wrapper — allows override button below the main button */
 .team-select-card {
   display: flex;
   flex-direction: column;
@@ -68,11 +66,10 @@
   width: 100%;
 }
 
-/* "This is my team" override for crashed/disconnected players */
 .rejoin-override-btn {
   background: transparent;
   border: none;
-  color: #4f7ef8;
+  color: #1B3A6B;
   font-size: 0.72rem;
   font-weight: 600;
   text-align: right;
@@ -88,18 +85,18 @@
 }
 
 .commissioner-btn {
-  border-color: #f59e0b !important;
-  background: #1c1a0f !important;
+  border-color: #F59E0B !important;
+  background: #FFFBEB !important;
   margin-bottom: 0.5rem;
 }
 
 .commissioner-btn:hover {
-  border-color: #fbbf24 !important;
-  background: #221e0f !important;
+  border-color: #D97706 !important;
+  background: #FEF3C7 !important;
 }
 
 .commissioner-btn .team-select-name {
-  color: #fbbf24;
+  color: #92400E;
 }
 
 .team-select-name {
@@ -109,15 +106,15 @@
 
 .team-select-owner {
   font-size: 0.85rem;
-  color: #888;
+  color: #6B7280;
 }
 
 .team-select-badge {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: #166534;
-  color: #86efac;
+  background: #D1FAE5;
+  color: #065F46;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 7px;
@@ -126,7 +123,6 @@
   letter-spacing: 0.05em;
 }
 
-/* ── Waiting room ─────────────────────────────── */
 .lobby-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -145,22 +141,22 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #F0F4FA;
+  border: 1px solid #E2E6EE;
   border-radius: 12px;
   padding: 2rem;
 }
 
 .lobby-url {
   font-size: 0.8rem;
-  color: #7dd3fc;
+  color: #1B3A6B;
   word-break: break-all;
   text-align: center;
 }
 
 .lobby-url-hint {
   font-size: 0.78rem;
-  color: #555;
+  color: #9CA3AF;
   text-align: center;
 }
 
@@ -172,15 +168,15 @@
 
 .lobby-connected-count {
   font-size: 1.1rem;
-  color: #aaa;
+  color: #6B7280;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #2e3348;
+  border-bottom: 1px solid #E2E6EE;
 }
 
 .count-num {
   font-size: 2rem;
   font-weight: 800;
-  color: #86efac;
+  color: #059669;
 }
 
 .lobby-team-list {
@@ -196,17 +192,19 @@
   align-items: center;
   padding: 0.45rem 0.6rem;
   border-radius: 6px;
-  background: #14161f;
+  background: #F8F9FC;
+  border: 1px solid #E2E6EE;
   font-size: 0.9rem;
   transition: background 0.15s;
 }
 
 .lobby-team-row.connected {
-  background: #0d1f14;
+  background: #ECFDF5;
+  border-color: #6EE7B7;
 }
 
 .lobby-team-row.mine {
-  border: 1px solid #4f7ef8;
+  border-color: #1B3A6B;
 }
 
 .status-dot {
@@ -216,30 +214,29 @@
   flex-shrink: 0;
 }
 
-.status-dot.on  { background: #86efac; }
-.status-dot.off { background: #374151; }
+.status-dot.on  { background: #059669; }
+.status-dot.off { background: #C8D0DE; }
 
 .lobby-team-name {
   font-weight: 600;
-  color: #f0f0f0;
+  color: #111827;
 }
 
 .lobby-team-owner {
-  color: #666;
+  color: #9CA3AF;
   font-size: 0.85rem;
 }
 
 .lobby-joined-badge {
   font-size: 0.75rem;
-  color: #86efac;
+  color: #059669;
   font-weight: 600;
 }
 
-/* ── Start Draft button ───────────────────────── */
 .start-draft-btn {
   margin-top: 0.5rem;
   width: 100%;
-  background: #16a34a;
+  background: #1B3A6B;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -251,7 +248,7 @@
 }
 
 .start-draft-btn:hover:not(:disabled) {
-  background: #15803d;
+  background: #142D54;
   transform: translateY(-1px);
 }
 
@@ -262,16 +259,15 @@
 
 .start-hint {
   font-size: 0.8rem;
-  color: #555;
+  color: #9CA3AF;
   text-align: center;
 }
 
-/* ── Rejoin badge ─────────────────────────────── */
 .rejoin-badge {
   display: inline-block;
   margin-top: 0.6rem;
-  background: #7f1d1d;
-  color: #fca5a5;
+  background: #FEF2F2;
+  color: #DC2626;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 4px 12px;
@@ -279,11 +275,10 @@
   letter-spacing: 0.05em;
 }
 
-/* ── Confirmation modal ───────────────────────── */
 .confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,8 +286,8 @@
 }
 
 .confirm-modal {
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
   border-radius: 12px;
   padding: 2rem;
   max-width: 420px;
@@ -301,15 +296,16 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
 
 .confirm-modal h2 {
   font-size: 1.4rem;
-  color: #f0f0f0;
+  color: #1B3A6B;
 }
 
 .confirm-modal p {
-  color: #888;
+  color: #6B7280;
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -322,9 +318,9 @@
 }
 
 .confirm-cancel-btn {
-  background: #2e3348;
-  color: #aaa;
-  border: none;
+  background: #F0F4FA;
+  color: #6B7280;
+  border: 1px solid #E2E6EE;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
@@ -334,11 +330,11 @@
 }
 
 .confirm-cancel-btn:hover {
-  background: #3a4060;
+  background: #E2E6EE;
 }
 
 .confirm-go-btn {
-  background: #16a34a;
+  background: #1B3A6B;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -350,7 +346,7 @@
 }
 
 .confirm-go-btn:hover:not(:disabled) {
-  background: #15803d;
+  background: #142D54;
 }
 
 .confirm-go-btn:disabled {

@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background: #0f1117;
+  background: #F8F9FC;
 }
 
 /* ── On the block strip ── */
@@ -13,40 +13,69 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid #2e3348;
+  border-bottom: 1px solid #E2E6EE;
   min-height: 60px;
+  background: #FFFFFF;
 }
 
 .mobile-block-strip.active {
-  background: #13151f;
-  border-bottom-color: #f59e0b;
+  background: #F0F4FA;
+  border-bottom: 3px solid #1B3A6B;
 }
 
 .mobile-block-strip.waiting {
-  background: #13151f;
+  background: #FFFFFF;
 }
 
 .mobile-block-strip.your-turn {
-  background: #0d1f14;
-  border-bottom-color: #16a34a;
+  background: #FFFBEB;
+  border-bottom: 3px solid #F59E0B;
 }
 
 .mobile-block-your-turn {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #86efac;
+  color: #92400E;
 }
 
 .mobile-nom-search-wrap {
   padding: 0.75rem;
-  background: #0d1f14;
-  border-bottom: 1px solid #16a34a;
+  background: #FFFBEB;
+  border-bottom: 1px solid #FDE68A;
 }
 
 .mobile-block-left {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+}
+
+.mobile-block-headshot {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #E2E6EE;
+  border: 2px solid #C8D0DE;
+}
+
+.mobile-block-headshot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.mobile-block-headshot-sil {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #9CA3AF;
 }
 
 .mobile-block-pos {
@@ -66,12 +95,12 @@
 .mobile-block-name {
   font-size: 1rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: #111827;
 }
 
 .mobile-block-team {
   font-size: 0.75rem;
-  color: #888;
+  color: #6B7280;
 }
 
 .mobile-block-right {
@@ -84,18 +113,18 @@
 .mobile-block-label {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #f59e0b;
+  color: #1B3A6B;
   letter-spacing: 0.08em;
 }
 
 .mobile-block-value {
   font-size: 0.8rem;
-  color: #fbbf24;
+  color: #D97706;
 }
 
 .mobile-block-waiting {
   font-size: 0.85rem;
-  color: #555;
+  color: #9CA3AF;
   font-style: italic;
 }
 
@@ -119,24 +148,25 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 0.75rem;
-  background: #14161f;
+  background: #FFFFFF;
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #E2E6EE;
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
 .mobile-team-row.mine {
-  border-color: #4f7ef8;
+  border-color: #1B3A6B;
+  border-left: 3px solid #1B3A6B;
 }
 
 .mobile-team-row:active {
-  background: #1a1d2a;
+  background: #F0F4FA;
 }
 
 .mobile-team-num {
   font-size: 0.75rem;
-  color: #555;
+  color: #9CA3AF;
   text-align: center;
 }
 
@@ -149,12 +179,12 @@
 .mobile-team-name {
   font-weight: 700;
   font-size: 0.9rem;
-  color: #f0f0f0;
+  color: #111827;
 }
 
 .mobile-team-owner {
   font-size: 0.75rem;
-  color: #666;
+  color: #6B7280;
 }
 
 .mobile-team-stats {
@@ -167,21 +197,21 @@
 .mobile-team-budget {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #86efac;
+  color: #059669;
 }
 
 .mobile-team-roster {
   font-size: 0.72rem;
-  color: #666;
+  color: #9CA3AF;
 }
 
 .mobile-team-max {
   font-size: 0.72rem;
-  color: #fbbf24;
+  color: #D97706;
 }
 
 .mobile-team-arrow {
-  color: #374151;
+  color: #C8D0DE;
   font-size: 1.2rem;
 }
 
@@ -192,7 +222,7 @@
 
 .mobile-queue-section {
   padding: 1rem 0.75rem 1.5rem;
-  border-top: 1px solid #2e3348;
+  border-top: 1px solid #E2E6EE;
 }
 
 /* ── Players tab ── */
@@ -205,10 +235,10 @@
 
 .mobile-search-input {
   width: 100%;
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 8px;
-  color: #f0f0f0;
+  color: #111827;
   font-size: 1rem;
   padding: 0.6rem 0.9rem;
   outline: none;
@@ -216,8 +246,8 @@
   box-sizing: border-box;
 }
 
-.mobile-search-input:focus { border-color: #4f7ef8; }
-.mobile-search-input::placeholder { color: #555; }
+.mobile-search-input:focus { border-color: #1B3A6B; }
+.mobile-search-input::placeholder { color: #9CA3AF; }
 
 .mobile-filters {
   display: flex;
@@ -234,29 +264,57 @@
 
 .mobile-player-row {
   display: grid;
-  grid-template-columns: 46px 1fr 38px auto;
+  grid-template-columns: 46px 1fr 38px auto 22px 28px;
   gap: 0.4rem;
   align-items: center;
   padding: 0.45rem 0.5rem;
-  background: #14161f;
+  background: #FFFFFF;
   border-radius: 6px;
   font-size: 0.85rem;
+  border: 1px solid #E2E6EE;
 }
 
-.mobile-player-row.sold { opacity: 0.4; }
+.mobile-player-row.sold { opacity: 0.55; }
+
+.info-btn {
+  background: transparent;
+  border: none;
+  color: #C8D0DE;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.info-btn:hover { color: #1B3A6B; }
+
+.watch-btn {
+  background: transparent;
+  border: none;
+  color: #C8D0DE;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.watch-btn:hover { color: #F59E0B; }
+.watch-btn.watched { color: #F59E0B; }
 
 .mobile-player-name {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #f0f0f0;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.mobile-player-nfl { color: #666; font-size: 0.75rem; }
-.mobile-player-value { color: #fbbf24; font-size: 0.78rem; text-align: right; }
-.mobile-player-sold { color: #555; font-size: 0.72rem; text-align: right; }
+.mobile-player-nfl { color: #9CA3AF; font-size: 0.75rem; }
+.mobile-player-value { color: #D97706; font-size: 0.78rem; text-align: right; }
+.mobile-player-sold { color: #059669; font-size: 0.72rem; font-weight: 600; text-align: right; }
 
 /* ── Log tab ── */
 .mobile-log {
@@ -268,12 +326,12 @@
 
 .mobile-log-count {
   font-size: 0.78rem;
-  color: #555;
+  color: #9CA3AF;
   padding: 0.25rem 0;
 }
 
 .log-empty {
-  color: #555;
+  color: #9CA3AF;
   font-size: 0.85rem;
   text-align: center;
   padding: 2rem;
@@ -283,8 +341,8 @@
 .mobile-tabbar {
   flex-shrink: 0;
   display: flex;
-  border-top: 1px solid #2e3348;
-  background: #13151f;
+  border-top: 1px solid #E2E6EE;
+  background: #FFFFFF;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
@@ -302,7 +360,7 @@
 }
 
 .mobile-tab.active {
-  background: #1a1d2a;
+  background: #F0F4FA;
 }
 
 .mobile-tab-icon {
@@ -312,20 +370,20 @@
 .mobile-tab-label {
   font-size: 0.65rem;
   font-weight: 600;
-  color: #666;
+  color: #9CA3AF;
   letter-spacing: 0.03em;
 }
 
 .mobile-tab.active .mobile-tab-label {
-  color: #7dd3fc;
+  color: #1B3A6B;
 }
 
 /* ── Shared filter/badge styles ── */
 .pos-filter-btn {
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 5px;
-  color: #888;
+  color: #6B7280;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 3px 10px;
@@ -334,16 +392,16 @@
 }
 
 .pos-filter-btn.active {
-  background: #1e3a5f;
-  border-color: #4f7ef8;
-  color: #7dd3fc;
+  background: #1B3A6B;
+  border-color: #1B3A6B;
+  color: #FFFFFF;
 }
 
 .show-sold-toggle {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: #666;
+  color: #6B7280;
   font-size: 0.8rem;
   cursor: pointer;
   margin-left: auto;
@@ -358,15 +416,15 @@
 }
 
 /* Position badge colors */
-.pos-QB { background: #1e3a1e; color: #86efac; }
-.pos-RB { background: #1e2e4a; color: #7dd3fc; }
-.pos-WR { background: #3a1e3a; color: #d8b4fe; }
-.pos-TE { background: #3a2a10; color: #fbbf24; }
+.pos-QB { background: #DCFCE7; color: #166534; }
+.pos-RB { background: #DBEAFE; color: #1e40af; }
+.pos-WR { background: #EDE9FE; color: #5B21B6; }
+.pos-TE { background: #FEF3C7; color: #92400E; }
 
-/* Log entry styles (shared with RightColumn) */
+/* Log entry styles */
 .log-entry {
-  background: #14161f;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
   border-radius: 6px;
   padding: 0.5rem 0.65rem;
   display: flex;
@@ -390,11 +448,11 @@
 .log-player-name {
   font-weight: 700;
   font-size: 0.88rem;
-  color: #f0f0f0;
+  color: #111827;
   flex: 1;
 }
 
-.log-nfl-team { font-size: 0.75rem; color: #666; }
+.log-nfl-team { font-size: 0.75rem; color: #9CA3AF; }
 
 .log-entry-bottom {
   display: flex;
@@ -402,8 +460,8 @@
   gap: 0.5rem;
 }
 
-.log-team-name { font-size: 0.8rem; color: #888; flex: 1; }
-.log-price { font-size: 0.88rem; font-weight: 700; color: #86efac; }
+.log-team-name { font-size: 0.8rem; color: #6B7280; flex: 1; }
+.log-price { font-size: 0.88rem; font-weight: 700; color: #059669; }
 .log-delta { font-size: 0.75rem; font-weight: 600; }
-.log-delta.over  { color: #f87171; }
-.log-delta.under { color: #86efac; }
+.log-delta.over  { color: #DC2626; }
+.log-delta.under { color: #059669; }

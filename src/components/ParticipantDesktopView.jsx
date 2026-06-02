@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
+import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
 import NominationQueue from './NominationQueue';
@@ -20,9 +21,10 @@ export default function ParticipantDesktopView({
   draft, teams, players, log,
   nominatedPlayer, currentNomination,
   selectedTeamId, nominatingTeamId,
-  onNominate,
+  onNominate, watchlist, onToggleWatch,
 }) {
   const [tab, setTab]             = useState('myteam');
+  const [cardPlayer, setCardPlayer] = useState(null);
   const [posFilter, setPosFilter] = useState('ALL');
   const [showSold, setShowSold]   = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -140,7 +142,7 @@ export default function ParticipantDesktopView({
 
           <div className="pd-tab-content">
 
-            {tab === 'myteam' && <MyTeamPanel team={myTeam} />}
+            {tab === 'myteam' && <MyTeamPanel team={myTeam} players={players} watchlist={watchlist} onToggleWatch={onToggleWatch} selectedTeamId={selectedTeamId} nominatingTeamId={nominatingTeamId} currentNomination={currentNomination} onNominate={onNominate} />}
 
             {tab === 'allteams' && (
               <div className="pd-all-teams">
@@ -206,6 +208,16 @@ export default function ParticipantDesktopView({
                         ? <span className="pd-player-sold">{teams[p.soldTo]?.name} · ${p.soldPrice}</span>
                         : p.projectedValue && <span className="pd-player-value">${p.projectedValue}</span>
                       }
+                      <button
+                        className="info-btn"
+                        onClick={e => { e.stopPropagation(); setCardPlayer(p); }}
+                      >ⓘ</button>
+                      {p.status !== 'sold' && (
+                        <button
+                          className={`watch-btn ${watchlist?.[p.id] ? 'watched' : ''}`}
+                          onClick={e => { e.stopPropagation(); onToggleWatch(p.id); }}
+                        >★</button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -240,6 +252,8 @@ export default function ParticipantDesktopView({
           </div>
         </div>
       </div>
+
+      {cardPlayer && <PlayerCard player={cardPlayer} onClose={() => setCardPlayer(null)} />}
 
       {modalTeamId && (
         <RosterModal

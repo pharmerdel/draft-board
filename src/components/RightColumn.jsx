@@ -6,6 +6,7 @@ const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
 export default function RightColumn({ players, teams, log, onUndo, selectedTeamId }) {
   const [tab, setTab]           = useState('log');
+  // Note: no My Team tab — commissioner doesn't have a team
   const [posFilter, setPosFilter] = useState('ALL');
   const [showSold, setShowSold]   = useState(false);
   const [confirmUndo, setConfirmUndo] = useState(false);
@@ -26,12 +27,6 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
     <div className="right-col">
       <div className="right-tabs">
         <button
-          className={`right-tab ${tab === 'myteam' ? 'active' : ''}`}
-          onClick={() => setTab('myteam')}
-        >
-          My Team
-        </button>
-        <button
           className={`right-tab ${tab === 'log' ? 'active' : ''}`}
           onClick={() => setTab('log')}
         >
@@ -44,11 +39,6 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
           Players
         </button>
       </div>
-
-      {/* ── MY TEAM ── */}
-      {tab === 'myteam' && (
-        <MyTeamPanel team={selectedTeamId ? teams[selectedTeamId] : null} />
-      )}
 
       {/* ── LOG ── */}
       {tab === 'log' && (

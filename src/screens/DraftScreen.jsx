@@ -3,6 +3,7 @@ import { ref, onValue, update, set, push, remove } from 'firebase/database';
 import { db } from '../firebase';
 import TeamsColumn from '../components/TeamsColumn';
 import CenterColumn from '../components/CenterColumn';
+import NominationOverlay from '../components/NominationOverlay';
 import RightColumn from '../components/RightColumn';
 import MobileView from '../components/MobileView';
 import ParticipantDesktopView from '../components/ParticipantDesktopView';
@@ -16,10 +17,11 @@ import DraftSummaryScreen from './DraftSummaryScreen';
 import './DraftScreen.css';
 
 export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
-  const [draft, setDraft]     = useState(null);
-  const [teams, setTeams]     = useState({});
-  const [players, setPlayers] = useState({});
-  const [log, setLog]         = useState({});
+  const [draft, setDraft]         = useState(null);
+  const [teams, setTeams]         = useState({});
+  const [players, setPlayers]     = useState({});
+  const [log, setLog]             = useState({});
+  const [watchlist, setWatchlist] = useState({});
 
   // Live sync everything
   useEffect(() => {
@@ -31,6 +33,13 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     ];
     return () => unsubs.forEach(u => u());
   }, []);
+
+  // Sync watchlist for this participant
+  useEffect(() => {
+    if (!selectedTeamId || selectedTeamId === 'commissioner') return;
+    const unsub = onValue(ref(db, `watchlists/${selectedTeamId}`), s => setWatchlist(s.val() || {}));
+    return () => unsub();
+  }, [selectedTeamId]);
 
   // Mark this device connected
   useEffect(() => {
@@ -116,6 +125,39 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     await update(ref(db, 'draft'), {
       nominationIndex: nextIndex,
       timerStartedAt: draft.timerEnabled ? Date.now() : null,
+    });
+  }
+
+  async function toggleWatch(playerId) {
+    if (!selectedTeamId) return;
+    const path = `watchlists/${selectedTeamId}/${playerId}`;
+    if (watchlist[playerId]) {
+      await remove(ref(db, path));
+    } else {
+      await update(ref(db, path), { watched: true });
+    }
+  }
+
+  async function addPlayer({ name, position, nflTeam }) {
+    const existingRanks = Object.values(players)
+      .filter(p => p.position === position)
+      .map(p => p.positionalRank || 0);
+    const positionalRank = existingRanks.length > 0 ? Math.max(...existingRanks) + 1 : 1;
+    const overallRanks = Object.values(players).map(p => p.overallRank || 0);
+    const overallRank = overallRanks.length > 0 ? Math.max(...overallRanks) + 1 : 999;
+
+    await push(ref(db, 'players'), {
+      name: name.trim(),
+      position,
+      nflTeam: nflTeam.trim().toUpperCase(),
+      positionalRank,
+      overallRank,
+      projectedValue: null,
+      sleeperPlayerId: null,
+      headshotUrl: null,
+      status: 'available',
+      soldTo: null,
+      soldPrice: null,
     });
   }
 
@@ -255,6 +297,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     nominatedPlayer, currentNomination,
     selectedTeamId, nominatingTeamId,
     onNominate: nominatePlayer,
+    watchlist, onToggleWatch: toggleWatch,
   };
 
   return (
@@ -303,6 +346,14 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
               💾 Backup
             </button>
             <button
+              className="export-csv-btn"
+              onClick={undoLastSale}
+              disabled={!Object.values(log).some(e => e.type === 'sold')}
+              title="Undo last pick"
+            >
+              ↩ Undo
+            </button>
+            <button
               className="end-draft-btn"
               onClick={async () => {
                 if (window.confirm('End the draft and show final results? This cannot be undone.')) {
@@ -331,6 +382,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
               onNominate={nominatePlayer}
               onSell={sellPlayer}
               onCancelNomination={cancelNomination}
+              onAddPlayer={addPlayer}
+              commissionerMode
             />
             <RightColumn
               players={players}
@@ -340,6 +393,18 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
               selectedTeamId={selectedTeamId}
             />
           </div>
+
+          {/* Nomination overlay — covers everything below the topbar */}
+          {nominatedPlayer && currentNomination && (
+            <NominationOverlay
+              nominatedPlayer={nominatedPlayer}
+              currentNomination={currentNomination}
+              teams={teams}
+              draft={draft}
+              onSell={sellPlayer}
+              onCancelNomination={cancelNomination}
+            />
+          )}
         </div>
       )}
 

@@ -3,6 +3,7 @@ import { ref, set } from 'firebase/database';
 import { db } from '../firebase';
 import { parseFantasyProsCsv } from '../utils/csvParser';
 import { parseBackupFile } from '../utils/backup';
+import { enrichPlayersWithHeadshots } from '../utils/sleeperApi';
 import './SetupScreen.css';
 
 const TEAM_COUNT = 12;
@@ -14,6 +15,7 @@ export default function SetupScreen() {
   const [csvFile, setCsvFile] = useState(null);
   const [csvPreview, setCsvPreview] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [savingStatus, setSavingStatus] = useState('');
   const [errors, setErrors] = useState([]);
   const [restoring, setRestoring] = useState(false);
   const [restoreSuccess, setRestoreSuccess] = useState(false);
@@ -84,9 +86,15 @@ export default function SetupScreen() {
         reader.onload = e => res(e.target.result);
         reader.readAsText(csvFile);
       });
-      const playersList = parseFantasyProsCsv(csvText);
+      const rawPlayers = parseFantasyProsCsv(csvText);
+
+      // Enrich with Sleeper headshots — makes an API call to sleeper.app
+      // Matched players get a headshotUrl; unmatched silently use a silhouette
+      const { players: enrichedPlayers, matchCount, total } = await enrichPlayersWithHeadshots(rawPlayers);
+      console.log(`Sleeper headshots: ${matchCount}/${total} players matched`);
+
       const playersData = {};
-      playersList.forEach((p, i) => {
+      enrichedPlayers.forEach((p, i) => {
         playersData[`player_${i + 1}`] = { ...p, status: 'available', soldTo: null, soldPrice: null };
       });
 

@@ -1,0 +1,357 @@
+.no-overlay {
+  position: fixed;
+  inset: 0;
+  top: 43px; /* below topbar */
+  background: #F8F9FC;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  z-index: 200;
+  overflow: hidden;
+}
+
+/* ── Left panel ── */
+.no-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: #FFFFFF;
+  border-right: 1px solid #E2E6EE;
+  overflow-y: auto;
+}
+
+/* Player card */
+.no-player-card {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  background: #F0F4FA;
+  border-radius: 12px;
+  border-top: 4px solid #1B3A6B;
+}
+
+.no-headshot {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #E2E6EE;
+}
+
+.no-headshot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.no-headshot-sil {
+  width: 100%;
+  height: 100%;
+  background: #E2E6EE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #9CA3AF;
+}
+
+.no-player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.no-pos-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 5px;
+  align-self: flex-start;
+}
+
+.no-player-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1B3A6B;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.no-nfl-team {
+  font-size: 0.95rem;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.no-nominated-by {
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  margin-top: 0.25rem;
+}
+
+/* Stats */
+.no-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.no-stats-loading {
+  font-size: 0.82rem;
+  color: #9CA3AF;
+  margin: 0;
+  text-align: center;
+}
+
+/* Sell controls */
+.no-sell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #F0F4FA;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.no-sell-heading {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9CA3AF;
+  margin: 0;
+}
+
+.no-sell-select {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
+  border-radius: 7px;
+  color: #111827;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.no-sell-select:focus { border-color: #1B3A6B; }
+
+.no-price-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.no-price-wrap {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
+  border-radius: 7px;
+  padding: 0 0.75rem;
+  flex: 1;
+}
+
+.no-price-dollar {
+  color: #059669;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.no-price-input {
+  background: transparent;
+  border: none;
+  color: #111827;
+  font-size: 1.3rem;
+  font-weight: 700;
+  width: 100%;
+  padding: 0.5rem 0.4rem;
+  outline: none;
+}
+
+.no-price-input::-webkit-inner-spin-button { display: none; }
+
+.no-sold-btn {
+  background: #1B3A6B;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.no-sold-btn:hover:not(:disabled) { background: #142D54; }
+.no-sold-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.no-cancel-btn {
+  background: transparent;
+  border: none;
+  color: #DC2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  align-self: flex-start;
+  transition: opacity 0.15s;
+}
+
+.no-cancel-btn:hover { opacity: 0.7; }
+
+/* ── Right panel: team grid ── */
+.no-teams-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 1.25rem;
+  overflow: hidden;
+}
+
+.no-team-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.no-team-card.dimmed {
+  opacity: 0.35;
+}
+
+.no-team-card.winner {
+  border: 2px solid #1B3A6B;
+  background: #EEF4FF;
+}
+
+.no-team-card.nominating {
+  border-color: #F59E0B;
+  background: #FFFBEB;
+}
+
+.no-team-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.no-team-idx {
+  font-size: 0.65rem;
+  color: #C8D0DE;
+  font-weight: 700;
+  min-width: 14px;
+  padding-top: 1px;
+}
+
+.no-team-names {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.no-team-name {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-team-owner {
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-nom-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  background: #F59E0B;
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.no-team-stats {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.no-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  background: #F8F9FC;
+  border-radius: 5px;
+  padding: 0.3rem 0.25rem;
+}
+
+.no-stat-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+.no-stat-val.budget { color: #059669; }
+.no-stat-val.max    { color: #D97706; }
+
+.no-stat-label {
+  font-size: 0.58rem;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+/* Slot pills */
+.no-slot-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.no-slot-pill {
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 1px 3px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.no-slot-pill.filled {
+  background: #DBEAFE;
+  color: #1e40af;
+}
+
+.no-slot-pill.empty {
+  background: #F0F4FA;
+  color: #C8D0DE;
+  border: 1px solid #E2E6EE;
+}
+
+/* Position badge colors */
+.pos-QB { background: #DCFCE7; color: #166534; }
+.pos-RB { background: #DBEAFE; color: #1e40af; }
+.pos-WR { background: #EDE9FE; color: #5B21B6; }
+.pos-TE { background: #FEF3C7; color: #92400E; }

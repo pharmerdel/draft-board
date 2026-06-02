@@ -1,12 +1,16 @@
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
+import PlayerCard from './PlayerCard';
 import './CenterColumn.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
+const ADD_POSITIONS = ['QB', 'RB', 'WR', 'TE'];
+
 export default function CenterColumn({
   draft, teams, players, nominatedPlayer, currentNomination,
-  nominatingTeamId, onNominate, onSell, onCancelNomination,
+  nominatingTeamId, onNominate, onSell, onCancelNomination, onAddPlayer,
+  commissionerMode,
 }) {
   const [query, setQuery]         = useState('');
   const [posFilter, setPosFilter] = useState('ALL');
@@ -14,6 +18,12 @@ export default function CenterColumn({
   const [winTeamId, setWinTeamId] = useState('');
   const [price, setPrice]         = useState('');
   const [selling, setSelling]     = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [cardPlayer, setCardPlayer] = useState(null);
+  const [addName, setAddName]         = useState('');
+  const [addPos, setAddPos]           = useState('RB');
+  const [addTeam, setAddTeam]         = useState('');
+  const [adding, setAdding]           = useState(false);
 
   const nominatingTeam = teams[nominatingTeamId];
 
@@ -35,6 +45,20 @@ export default function CenterColumn({
     ? fuse.search(query).map(r => r.item)
     : playerList;
 
+  async function handleAdd() {
+    if (!addName.trim() || adding) return;
+    setAdding(true);
+    try {
+      await onAddPlayer({ name: addName, position: addPos, nflTeam: addTeam });
+      setAddName('');
+      setAddTeam('');
+      setAddPos('RB');
+      setShowAddForm(false);
+    } finally {
+      setAdding(false);
+    }
+  }
+
   async function handleSell() {
     if (!winTeamId || !price || parseInt(price) < 1) return;
     setSelling(true);
@@ -50,8 +74,8 @@ export default function CenterColumn({
     }
   }
 
-  // ── ON THE BLOCK ──────────────────────────────────────────────────────────
-  if (nominatedPlayer && currentNomination) {
+  // ── ON THE BLOCK (participant view only — commissioner uses NominationOverlay) ──
+  if (nominatedPlayer && currentNomination && !commissionerMode) {
     const nomTeam = teams[currentNomination.nominatingTeamId];
 
     return (
@@ -190,8 +214,13 @@ export default function CenterColumn({
             {player.projectedValue && player.status !== 'sold' && (
               <span className="result-value">${player.projectedValue}</span>
             )}
+            <button
+              className="info-btn"
+              onClick={e => { e.stopPropagation(); setCardPlayer(player); }}
+              title="Player stats"
+            >ⓘ</button>
             {player.status === 'available' && (
-              <button className="nominate-btn">Nominate</button>
+              <button className="nominate-btn">+</button>
             )}
           </div>
         ))}
@@ -199,6 +228,55 @@ export default function CenterColumn({
           <p className="no-results">No players found.</p>
         )}
       </div>
+
+      {cardPlayer && <PlayerCard player={cardPlayer} onClose={() => setCardPlayer(null)} />}
+
+      {/* ── Add Player ── */}
+      {!showAddForm ? (
+        <button className="add-player-btn" onClick={() => setShowAddForm(true)}>
+          ＋ Add Player
+        </button>
+      ) : (
+        <div className="add-player-form">
+          <input
+            className="add-player-input"
+            type="text"
+            placeholder="Player name"
+            value={addName}
+            onChange={e => setAddName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleAdd()}
+            autoFocus
+          />
+          <select
+            className="add-player-select"
+            value={addPos}
+            onChange={e => setAddPos(e.target.value)}
+          >
+            {ADD_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+          <input
+            className="add-player-input add-player-team"
+            type="text"
+            placeholder="Team (e.g. KC)"
+            value={addTeam}
+            onChange={e => setAddTeam(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleAdd()}
+            maxLength={4}
+          />
+          <div className="add-player-actions">
+            <button
+              className="add-player-submit"
+              onClick={handleAdd}
+              disabled={!addName.trim() || adding}
+            >
+              {adding ? 'Adding…' : 'Add'}
+            </button>
+            <button className="add-player-cancel" onClick={() => { setShowAddForm(false); setAddName(''); setAddTeam(''); }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

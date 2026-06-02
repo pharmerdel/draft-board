@@ -12,20 +12,20 @@
 .setup-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #f0f0f0;
+  color: #1B3A6B;
 }
 
 .setup-subtitle {
   margin-top: 0.4rem;
-  color: #888;
+  color: #9CA3AF;
   font-size: 1rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .setup-errors {
-  background: #2a1515;
-  border: 1px solid #7f2020;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
   border-radius: 8px;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
@@ -35,7 +35,7 @@
 }
 
 .setup-errors p {
-  color: #f87171;
+  color: #DC2626;
   font-size: 0.9rem;
 }
 
@@ -47,7 +47,7 @@
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #aaa;
+  color: #6B7280;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 0.5rem;
@@ -55,10 +55,10 @@
 
 .setup-input {
   width: 100%;
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 6px;
-  color: #f0f0f0;
+  color: #111827;
   font-size: 0.95rem;
   padding: 0.55rem 0.75rem;
   outline: none;
@@ -66,17 +66,17 @@
 }
 
 .setup-input:focus {
-  border-color: #4f7ef8;
+  border-color: #1B3A6B;
 }
 
 .setup-input::placeholder {
-  color: #555;
+  color: #9CA3AF;
 }
 
 .setup-field-hint {
   margin-top: 0.4rem;
   font-size: 0.8rem;
-  color: #555;
+  color: #9CA3AF;
 }
 
 .csv-upload-area {
@@ -88,10 +88,10 @@
 
 .csv-upload-btn {
   display: inline-block;
-  background: #1a1d2a;
-  border: 1px dashed #2e3348;
+  background: #FFFFFF;
+  border: 1px dashed #C8D0DE;
   border-radius: 6px;
-  color: #aaa;
+  color: #6B7280;
   font-size: 0.9rem;
   padding: 0.6rem 1.25rem;
   cursor: pointer;
@@ -99,8 +99,8 @@
 }
 
 .csv-upload-btn:hover {
-  border-color: #4f7ef8;
-  color: #f0f0f0;
+  border-color: #1B3A6B;
+  color: #1B3A6B;
 }
 
 .csv-preview {
@@ -110,22 +110,22 @@
 }
 
 .csv-preview-count {
-  color: #86efac;
+  color: #059669;
   font-weight: 700;
   font-size: 0.9rem;
 }
 
 .csv-preview-breakdown {
-  color: #666;
+  color: #9CA3AF;
   font-size: 0.8rem;
 }
 
 .setup-select {
   width: 100%;
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 6px;
-  color: #f0f0f0;
+  color: #111827;
   font-size: 0.95rem;
   padding: 0.55rem 0.5rem;
   outline: none;
@@ -134,20 +134,19 @@
 }
 
 .setup-select:focus {
-  border-color: #4f7ef8;
+  border-color: #1B3A6B;
 }
 
-/* Teams grid */
 .teams-grid-header {
   display: grid;
   grid-template-columns: 32px 1fr 1fr 110px;
   gap: 0.6rem;
   padding: 0 0 0.5rem;
-  border-bottom: 1px solid #2e3348;
+  border-bottom: 1px solid #E2E6EE;
   margin-bottom: 0.5rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #666;
+  color: #9CA3AF;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -158,23 +157,22 @@
   gap: 0.6rem;
   align-items: center;
   padding: 0.35rem 0;
-  border-bottom: 1px solid #1a1d2a;
+  border-bottom: 1px solid #F0F4FA;
 }
 
 .team-num {
-  color: #555;
+  color: #9CA3AF;
   font-size: 0.85rem;
   text-align: center;
 }
 
-/* Launch button */
 .setup-launch {
   text-align: center;
   margin-top: 2.5rem;
 }
 
 .launch-btn {
-  background: #4f7ef8;
+  background: #1B3A6B;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -186,7 +184,7 @@
 }
 
 .launch-btn:hover:not(:disabled) {
-  background: #3a6ae8;
+  background: #142D54;
   transform: translateY(-1px);
 }
 
@@ -197,14 +195,13 @@
 
 .launch-hint {
   margin-top: 0.75rem;
-  color: #555;
+  color: #9CA3AF;
   font-size: 0.85rem;
 }
 
-/* ── Restore section ── */
 .restore-section {
   margin-top: 3rem;
-  border-top: 1px solid #2e3348;
+  border-top: 1px solid #E2E6EE;
   padding-top: 2rem;
   display: flex;
   flex-direction: column;
@@ -220,12 +217,12 @@
 .restore-title {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #aaa;
+  color: #6B7280;
 }
 
 .restore-subtitle {
   font-size: 0.82rem;
-  color: #555;
+  color: #9CA3AF;
   line-height: 1.5;
   max-width: 520px;
 }
@@ -233,9 +230,9 @@
 .restore-btn {
   display: inline-block;
   background: transparent;
-  border: 1px solid #2e3348;
+  border: 1px solid #C8D0DE;
   border-radius: 6px;
-  color: #86efac;
+  color: #1B3A6B;
   font-size: 0.88rem;
   font-weight: 600;
   padding: 0.55rem 1.25rem;
@@ -245,12 +242,12 @@
 }
 
 .restore-btn:hover {
-  border-color: #86efac;
-  background: #0d1f14;
+  border-color: #1B3A6B;
+  background: #F0F4FA;
 }
 
 .restore-success {
-  color: #86efac;
+  color: #059669;
   font-size: 0.9rem;
   font-weight: 600;
 }

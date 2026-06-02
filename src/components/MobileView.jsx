@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
+import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
 import NominationQueue from './NominationQueue';
@@ -20,9 +21,10 @@ export default function MobileView({
   draft, teams, players, log,
   nominatedPlayer, currentNomination,
   selectedTeamId, nominatingTeamId,
-  onNominate,
+  onNominate, watchlist, onToggleWatch,
 }) {
   const [tab, setTab]             = useState('myteam');
+  const [cardPlayer, setCardPlayer] = useState(null);
   const [posFilter, setPosFilter] = useState('ALL');
   const [showSold, setShowSold]   = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -63,6 +65,12 @@ export default function MobileView({
         {nominatedPlayer ? (
           <>
             <div className="mobile-block-left">
+              <div className="mobile-block-headshot">
+                {nominatedPlayer.headshotUrl
+                  ? <img src={nominatedPlayer.headshotUrl} alt={nominatedPlayer.name} />
+                  : <div className="mobile-block-headshot-sil">{nominatedPlayer.position}</div>
+                }
+              </div>
               <span className={`mobile-block-pos pos-${nominatedPlayer.position}`}>
                 {nominatedPlayer.position}{nominatedPlayer.positionalRank}
               </span>
@@ -105,7 +113,7 @@ export default function MobileView({
                 <NominationSearch players={players} onNominate={onNominate} />
               </div>
             )}
-            <MyTeamPanel team={myTeam} />
+            <MyTeamPanel team={myTeam} players={players} watchlist={watchlist} onToggleWatch={onToggleWatch} selectedTeamId={selectedTeamId} nominatingTeamId={nominatingTeamId} currentNomination={currentNomination} onNominate={onNominate} />
             <div className="mobile-queue-section">
               <NominationQueue
                 draft={draft}
@@ -181,6 +189,16 @@ export default function MobileView({
                     ? <span className="mobile-player-sold">{teams[p.soldTo]?.name} · ${p.soldPrice}</span>
                     : p.projectedValue && <span className="mobile-player-value">${p.projectedValue}</span>
                   }
+                  <button
+                    className="info-btn"
+                    onClick={e => { e.stopPropagation(); setCardPlayer(p); }}
+                  >ⓘ</button>
+                  {p.status !== 'sold' && (
+                    <button
+                      className={`watch-btn ${watchlist?.[p.id] ? 'watched' : ''}`}
+                      onClick={e => { e.stopPropagation(); onToggleWatch(p.id); }}
+                    >★</button>
+                  )}
                 </div>
               ))}
               {filteredPlayers.length === 0 && (
@@ -218,6 +236,8 @@ export default function MobileView({
           </div>
         )}
       </div>
+
+      {cardPlayer && <PlayerCard player={cardPlayer} onClose={() => setCardPlayer(null)} />}
 
       {/* ── Bottom tab bar ── */}
       <div className="mobile-tabbar">

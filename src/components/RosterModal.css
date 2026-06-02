@@ -1,7 +1,7 @@
 .roster-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,8 +10,8 @@
 }
 
 .roster-modal {
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
   border-radius: 14px;
   width: 100%;
   max-width: 520px;
@@ -19,16 +19,17 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
 
-/* Header */
 .roster-modal-header {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
   padding: 1.25rem 1.25rem 1rem;
-  border-bottom: 1px solid #2e3348;
+  border-bottom: 1px solid #E2E6EE;
   flex-shrink: 0;
+  background: #F0F4FA;
 }
 
 .roster-modal-team-info {
@@ -41,12 +42,12 @@
 .roster-modal-team-name {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: #1B3A6B;
 }
 
 .roster-modal-owner {
   font-size: 0.85rem;
-  color: #666;
+  color: #6B7280;
 }
 
 .roster-modal-stats {
@@ -63,7 +64,7 @@
 
 .roster-stat-label {
   font-size: 0.65rem;
-  color: #555;
+  color: #9CA3AF;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -71,16 +72,16 @@
 .roster-stat-value {
   font-size: 1rem;
   font-weight: 700;
-  color: #f0f0f0;
+  color: #111827;
 }
 
-.roster-stat-value.green  { color: #86efac; }
-.roster-stat-value.yellow { color: #fbbf24; }
+.roster-stat-value.green  { color: #059669; }
+.roster-stat-value.yellow { color: #D97706; }
 
 .roster-modal-close {
   background: transparent;
   border: none;
-  color: #555;
+  color: #9CA3AF;
   font-size: 1.1rem;
   cursor: pointer;
   padding: 0.2rem 0.4rem;
@@ -89,9 +90,8 @@
   flex-shrink: 0;
 }
 
-.roster-modal-close:hover { color: #f0f0f0; }
+.roster-modal-close:hover { color: #111827; }
 
-/* Body */
 .roster-modal-body {
   overflow-y: auto;
   padding: 0.75rem 1.25rem 1.25rem;
@@ -110,7 +110,7 @@
 .slot-group-label {
   font-size: 0.7rem;
   font-weight: 800;
-  color: #555;
+  color: #9CA3AF;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding-top: 0.45rem;
@@ -127,9 +127,10 @@
   grid-template-columns: 40px 1fr 44px 52px;
   align-items: center;
   gap: 0.5rem;
-  background: #14161f;
+  background: #F8F9FC;
   border-radius: 6px;
   padding: 0.4rem 0.6rem;
+  border: 1px solid #E2E6EE;
 }
 
 .roster-pos-badge {
@@ -143,7 +144,7 @@
 .roster-player-name {
   font-weight: 600;
   font-size: 0.88rem;
-  color: #f0f0f0;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -151,30 +152,30 @@
 
 .roster-nfl-team {
   font-size: 0.75rem;
-  color: #666;
+  color: #9CA3AF;
 }
 
 .roster-price {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #86efac;
+  color: #059669;
   text-align: right;
 }
 
 .roster-empty-row {
-  background: #13151f;
-  border: 1px dashed #2e3348;
+  background: #FFFFFF;
+  border: 1px dashed #E2E6EE;
   border-radius: 6px;
   padding: 0.4rem 0.6rem;
 }
 
 .roster-empty-label {
   font-size: 0.78rem;
-  color: #374151;
+  color: #C8D0DE;
 }
 
-/* Position badge colors — reuse same palette */
-.pos-QB { background: #1e3a1e; color: #86efac; }
-.pos-RB { background: #1e2e4a; color: #7dd3fc; }
-.pos-WR { background: #3a1e3a; color: #d8b4fe; }
-.pos-TE { background: #3a2a10; color: #fbbf24; }
+/* Position badge colors */
+.pos-QB { background: #DCFCE7; color: #166534; }
+.pos-RB { background: #DBEAFE; color: #1e40af; }
+.pos-WR { background: #EDE9FE; color: #5B21B6; }
+.pos-TE { background: #FEF3C7; color: #92400E; }

@@ -3,7 +3,6 @@
   align-items: center;
 }
 
-/* Activate state */
 .nom-timer-activate {
   display: flex;
   align-items: center;
@@ -12,7 +11,7 @@
 
 .nom-timer-label {
   font-size: 0.7rem;
-  color: #555;
+  color: rgba(255,255,255,0.5);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -20,8 +19,8 @@
 
 .nom-timer-btn {
   background: transparent;
-  border: 1px solid #2e3348;
-  color: #888;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.7);
   border-radius: 5px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -31,18 +30,16 @@
 }
 
 .nom-timer-btn:hover {
-  border-color: #fbbf24;
-  color: #fbbf24;
+  border-color: #F59E0B;
+  color: #FEF3C7;
 }
 
-/* Active state */
 .nom-timer-active {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-/* Countdown display */
 .nom-timer-display {
   font-size: 1.1rem;
   font-weight: 800;
@@ -54,17 +51,16 @@
   transition: color 0.3s, background 0.3s;
 }
 
-.nom-timer-display.idle    { color: #fbbf24; background: #1c1a0f; border: 1px solid #92400e; }
-.nom-timer-display.running { color: #fbbf24; background: #1c1a0f; border: 1px solid #92400e; }
-.nom-timer-display.warning { color: #f87171; background: #1f0a0a; border: 1px solid #991b1b; animation: timer-pulse 0.5s ease-in-out infinite alternate; }
-.nom-timer-display.expired { color: #fff;    background: #991b1b; border: 1px solid #dc2626; }
+.nom-timer-display.idle    { color: #FEF3C7; background: rgba(245,158,11,0.2); border: 1px solid #F59E0B; }
+.nom-timer-display.running { color: #FEF3C7; background: rgba(245,158,11,0.2); border: 1px solid #F59E0B; }
+.nom-timer-display.warning { color: #FEF2F2; background: rgba(220,38,38,0.3); border: 1px solid #DC2626; animation: timer-pulse 0.5s ease-in-out infinite alternate; }
+.nom-timer-display.expired { color: #fff; background: #DC2626; border: 1px solid #DC2626; }
 
 @keyframes timer-pulse {
   from { opacity: 1; }
   to   { opacity: 0.6; }
 }
 
-/* Duration buttons */
 .nom-timer-controls {
   display: flex;
   gap: 0.25rem;
@@ -73,8 +69,8 @@
 
 .nom-timer-dur-btn {
   background: transparent;
-  border: 1px solid #2e3348;
-  color: #555;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
   border-radius: 4px;
   font-size: 0.7rem;
   font-weight: 700;
@@ -84,20 +80,20 @@
 }
 
 .nom-timer-dur-btn.active {
-  border-color: #f59e0b;
-  color: #fbbf24;
-  background: #1c1a0f;
+  border-color: #F59E0B;
+  color: #FEF3C7;
+  background: rgba(245,158,11,0.2);
 }
 
 .nom-timer-dur-btn:hover:not(.active) {
-  border-color: #f59e0b;
-  color: #fbbf24;
+  border-color: #F59E0B;
+  color: #FEF3C7;
 }
 
 .nom-timer-off-btn {
   background: transparent;
-  border: 1px solid #7f1d1d;
-  color: #fca5a5;
+  border: 1px solid rgba(252,165,165,0.4);
+  color: #FCA5A5;
   border-radius: 4px;
   font-size: 0.7rem;
   font-weight: 700;
@@ -106,11 +102,10 @@
   transition: background 0.15s;
 }
 
-.nom-timer-off-btn:hover { background: #2a1515; }
+.nom-timer-off-btn:hover { background: rgba(220,38,38,0.2); }
 
-/* Skip button */
 .nom-timer-skip-btn {
-  background: #991b1b;
+  background: #DC2626;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -122,4 +117,4 @@
   transition: background 0.15s;
 }
 
-.nom-timer-skip-btn:hover { background: #b91c1c; }
+.nom-timer-skip-btn:hover { background: #B91C1C; }

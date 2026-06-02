@@ -7,16 +7,16 @@
 
 .nom-search-prompt {
   font-size: 0.82rem;
-  color: #86efac;
+  color: #1B3A6B;
   font-weight: 600;
 }
 
 .nom-search-input {
   width: 100%;
-  background: #1a1d2a;
-  border: 1px solid #16a34a;
+  background: #FFFFFF;
+  border: 1px solid #1B3A6B;
   border-radius: 8px;
-  color: #f0f0f0;
+  color: #111827;
   font-size: 1rem;
   padding: 0.65rem 0.9rem;
   outline: none;
@@ -24,8 +24,8 @@
   box-sizing: border-box;
 }
 
-.nom-search-input:focus { border-color: #86efac; }
-.nom-search-input::placeholder { color: #555; }
+.nom-search-input:focus { border-color: #142D54; }
+.nom-search-input::placeholder { color: #9CA3AF; }
 
 .nom-search-filters {
   display: flex;
@@ -47,14 +47,15 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.45rem 0.6rem;
-  background: #14161f;
+  background: #FFFFFF;
   border-radius: 6px;
-  border: 1px solid transparent;
+  border: 1px solid #E2E6EE;
   transition: border-color 0.1s;
 }
 
 .nom-search-row:hover {
-  border-color: #2e3348;
+  border-color: #1B3A6B;
+  background: #F0F4FA;
 }
 
 .nom-search-pos {
@@ -68,7 +69,7 @@
 .nom-search-name {
   font-weight: 600;
   font-size: 0.88rem;
-  color: #f0f0f0;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,11 +77,11 @@
 
 .nom-search-nfl {
   font-size: 0.75rem;
-  color: #666;
+  color: #9CA3AF;
 }
 
 .nom-search-btn {
-  background: #16a34a;
+  background: #1B3A6B;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -92,28 +93,27 @@
   transition: background 0.15s;
 }
 
-.nom-search-btn:hover:not(:disabled) { background: #15803d; }
+.nom-search-btn:hover:not(:disabled) { background: #142D54; }
 .nom-search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .nom-search-empty {
-  color: #555;
+  color: #9CA3AF;
   font-size: 0.85rem;
   text-align: center;
   padding: 1rem;
 }
 
 /* Position badge colors */
-.pos-QB { background: #1e3a1e; color: #86efac; }
-.pos-RB { background: #1e2e4a; color: #7dd3fc; }
-.pos-WR { background: #3a1e3a; color: #d8b4fe; }
-.pos-TE { background: #3a2a10; color: #fbbf24; }
+.pos-QB { background: #DCFCE7; color: #166534; }
+.pos-RB { background: #DBEAFE; color: #1e40af; }
+.pos-WR { background: #EDE9FE; color: #5B21B6; }
+.pos-TE { background: #FEF3C7; color: #92400E; }
 
-/* Shared filter button */
 .pos-filter-btn {
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 5px;
-  color: #888;
+  color: #6B7280;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 3px 10px;
@@ -122,7 +122,7 @@
 }
 
 .pos-filter-btn.active {
-  background: #1e3a5f;
-  border-color: #4f7ef8;
-  color: #7dd3fc;
+  background: #1B3A6B;
+  border-color: #1B3A6B;
+  color: #FFFFFF;
 }

@@ -1,39 +1,41 @@
+/* Read the existing file to preserve its structure but update colors */
+
+/* ── Top bar ── */
 .pd-view {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background: #0f1117;
-  color: #f0f0f0;
+  background: #F8F9FC;
 }
 
-/* ── Top bar ── */
 .pd-topbar {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.6rem 1.25rem;
-  background: #13151f;
-  border-bottom: 1px solid #2e3348;
+  padding: 0.65rem 1.25rem;
+  background: #1B3A6B;
+  border-bottom: 1px solid #142D54;
   flex-shrink: 0;
 }
 
 .pd-league-name {
-  font-weight: 700;
   font-size: 1rem;
+  font-weight: 700;
+  color: #FFFFFF;
   flex: 1;
 }
 
 .pd-my-stats {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .pd-my-team-name {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #7dd3fc;
+  color: rgba(255,255,255,0.85);
 }
 
 .pd-stat-pill {
@@ -41,39 +43,38 @@
   font-weight: 700;
   padding: 2px 10px;
   border-radius: 99px;
-  background: #13151f;
-  border: 1px solid #2e3348;
 }
 
-.pd-stat-pill.green  { color: #86efac; border-color: #166534; }
-.pd-stat-pill.yellow { color: #fbbf24; border-color: #92400e; }
+.pd-stat-pill.green  { background: #D1FAE5; color: #065F46; }
+.pd-stat-pill.yellow { background: #FEF3C7; color: #92400E; }
 
 .pd-status-badge {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #86efac;
-  background: #0d1f14;
-  border: 1px solid #166534;
+  color: #FEF3C7;
+  background: #D97706;
+  border: 1px solid #F59E0B;
   border-radius: 99px;
   padding: 2px 10px;
 }
 
-/* ── Two columns ── */
+/* ── Columns ── */
 .pd-columns {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  height: calc(100vh - 43px);
+  grid-template-columns: 320px 1fr;
+  flex: 1;
   overflow: hidden;
 }
 
-/* ── Left column ── */
+/* ── Left: On the Block ── */
 .pd-left {
-  border-right: 1px solid #2e3348;
-  overflow-y: auto;
-  padding: 1rem 1.25rem;
+  border-right: 1px solid #E2E6EE;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  background: #FFFFFF;
 }
 
 .pd-col-heading {
@@ -81,28 +82,29 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #555;
+  color: #9CA3AF;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #2e3348;
+  border-bottom: 1px solid #E2E6EE;
 }
 
-/* On the block card */
 .pd-block-card {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: flex-start;
-  background: #13151f;
-  border: 1px solid #2e3348;
-  border-radius: 12px;
-  padding: 1.25rem;
+  padding: 1rem;
+  background: #F0F4FA;
+  border: 1px solid #C8D0DE;
+  border-radius: 10px;
+  border-top: 3px solid #1B3A6B;
 }
 
 .pd-block-headshot {
+  width: 80px;
+  height: 80px;
   flex-shrink: 0;
-  width: 120px;
-  height: 120px;
   border-radius: 8px;
   overflow: hidden;
+  border: 2px solid #E2E6EE;
 }
 
 .pd-block-headshot img {
@@ -114,117 +116,96 @@
 .pd-headshot-sil {
   width: 100%;
   height: 100%;
-  background: #1a1d2a;
+  background: #E2E6EE;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 1.2rem;
   font-weight: 800;
-  color: #374151;
+  color: #9CA3AF;
 }
 
 .pd-block-details {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 
 .pd-pos-badge {
   display: inline-block;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 4px;
   align-self: flex-start;
 }
 
 .pd-player-name {
-  font-size: 2rem;
+  font-size: 1.4rem;
   font-weight: 800;
-  color: #f0f0f0;
+  color: #111827;
   line-height: 1.1;
 }
 
-.pd-nfl-team { font-size: 0.95rem; color: #888; font-weight: 600; }
-.pd-proj-value { font-size: 0.85rem; color: #fbbf24; }
-.pd-nominated-by { font-size: 0.8rem; color: #555; margin-top: 0.25rem; }
+.pd-nfl-team {
+  font-size: 0.85rem;
+  color: #6B7280;
+  font-weight: 600;
+}
 
-/* Waiting state */
-.pd-nom-search-wrap {
-  background: #0d1f14;
-  border: 1px solid #16a34a;
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 300px;
+.pd-proj-value {
+  font-size: 0.82rem;
+  color: #D97706;
+}
+
+.pd-nominated-by {
+  font-size: 0.78rem;
+  color: #9CA3AF;
 }
 
 .pd-waiting {
-  background: #13151f;
-  border: 1px dashed #2e3348;
-  border-radius: 12px;
-  padding: 2.5rem;
-  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-
-.pd-waiting-text { font-size: 1.1rem; color: #555; }
-.pd-waiting-sub  { font-size: 0.9rem; color: #7dd3fc; }
-
-/* Nomination queue */
-.pd-nom-queue { display: flex; flex-direction: column; gap: 0.5rem; }
-
-.pd-queue-heading {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #444;
-}
-
-.pd-queue-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pd-queue-row {
-  display: grid;
-  grid-template-columns: 24px 1fr auto;
-  gap: 0.6rem;
   align-items: center;
-  padding: 0.35rem 0.6rem;
-  border-radius: 5px;
-  background: #14161f;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: #F0F4FA;
+  border-radius: 10px;
+  border: 1px solid #E2E6EE;
+}
+
+.pd-waiting-text {
+  font-size: 0.9rem;
+  color: #9CA3AF;
+  margin: 0;
+}
+
+.pd-waiting-sub {
   font-size: 0.85rem;
-  opacity: 0.5;
+  color: #6B7280;
+  font-weight: 600;
+  margin: 0;
 }
 
-.pd-queue-row.current {
-  opacity: 1;
-  background: #1c1a0f;
-  border: 1px solid #f59e0b;
+.pd-nom-search-wrap {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 10px;
+  padding: 0.75rem;
 }
 
-.pd-queue-row.past { opacity: 0.25; }
-
-.pd-queue-num  { color: #555; font-size: 0.75rem; text-align: center; }
-.pd-queue-name { font-weight: 600; color: #f0f0f0; }
-.pd-queue-budget { font-size: 0.8rem; color: #86efac; font-weight: 700; }
-
-/* ── Right column ── */
+/* ── Right: Tabs ── */
 .pd-right {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: #F8F9FC;
 }
 
 .pd-tabs {
   display: flex;
-  border-bottom: 1px solid #2e3348;
+  border-bottom: 1px solid #E2E6EE;
+  background: #FFFFFF;
   flex-shrink: 0;
 }
 
@@ -233,49 +214,57 @@
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #666;
-  font-size: 0.8rem;
+  color: #9CA3AF;
+  font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.6rem 0.25rem;
+  padding: 0.65rem;
   cursor: pointer;
   transition: color 0.15s;
 }
 
 .pd-tab.active {
-  color: #7dd3fc;
-  border-bottom-color: #4f7ef8;
+  color: #1B3A6B;
+  border-bottom-color: #1B3A6B;
 }
 
 .pd-tab-content {
   flex: 1;
   overflow-y: auto;
+  padding: 0.75rem;
 }
 
-/* All Teams */
+/* ── All Teams ── */
 .pd-all-teams {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 0.5rem;
 }
 
 .pd-team-row {
   display: grid;
-  grid-template-columns: 24px 1fr auto 16px;
+  grid-template-columns: 24px 1fr auto 20px;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 0.75rem;
-  background: #14161f;
+  background: #FFFFFF;
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #E2E6EE;
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
-.pd-team-row.mine { border-color: #4f7ef8; }
-.pd-team-row:hover { border-color: #2e3348; }
+.pd-team-row.mine {
+  border-color: #1B3A6B;
+  border-left: 3px solid #1B3A6B;
+}
 
-.pd-team-num { font-size: 0.75rem; color: #555; text-align: center; }
+.pd-team-row:active { background: #F0F4FA; }
+
+.pd-team-num {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  text-align: center;
+}
 
 .pd-team-info {
   display: flex;
@@ -283,8 +272,16 @@
   gap: 0.1rem;
 }
 
-.pd-team-name  { font-weight: 700; font-size: 0.88rem; color: #f0f0f0; }
-.pd-team-owner { font-size: 0.75rem; color: #666; }
+.pd-team-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.pd-team-owner {
+  font-size: 0.75rem;
+  color: #6B7280;
+}
 
 .pd-team-stats {
   display: flex;
@@ -293,29 +290,48 @@
   gap: 0.1rem;
 }
 
-.pd-team-budget { font-size: 0.88rem; font-weight: 700; color: #86efac; }
-.pd-team-roster { font-size: 0.7rem; color: #666; }
-.pd-team-max    { font-size: 0.7rem; color: #fbbf24; }
-.pd-team-arrow  { color: #374151; font-size: 1.1rem; }
+.pd-team-budget {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #059669;
+}
 
-/* Players */
-.pd-players { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; }
+.pd-team-roster {
+  font-size: 0.72rem;
+  color: #9CA3AF;
+}
+
+.pd-team-max {
+  font-size: 0.72rem;
+  color: #D97706;
+}
+
+.pd-team-arrow {
+  color: #C8D0DE;
+  font-size: 1.2rem;
+}
+
+/* ── Players tab ── */
+.pd-players {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 
 .pd-search-input {
   width: 100%;
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 8px;
-  color: #f0f0f0;
+  color: #111827;
   font-size: 0.95rem;
   padding: 0.6rem 0.9rem;
   outline: none;
   transition: border-color 0.15s;
-  box-sizing: border-box;
 }
 
-.pd-search-input:focus { border-color: #4f7ef8; }
-.pd-search-input::placeholder { color: #555; }
+.pd-search-input:focus { border-color: #1B3A6B; }
+.pd-search-input::placeholder { color: #9CA3AF; }
 
 .pd-filters {
   display: flex;
@@ -324,65 +340,92 @@
   flex-wrap: wrap;
 }
 
-.pd-player-list { display: flex; flex-direction: column; gap: 2px; }
+.pd-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
 .pd-player-row {
   display: grid;
-  grid-template-columns: 46px 1fr 38px auto;
+  grid-template-columns: 46px 1fr 38px auto 22px 28px;
   gap: 0.4rem;
   align-items: center;
   padding: 0.4rem 0.5rem;
-  background: #14161f;
+  background: #FFFFFF;
   border-radius: 5px;
   font-size: 0.83rem;
+  border: 1px solid #E2E6EE;
 }
 
-.pd-player-row.sold { opacity: 0.4; }
-.pd-player-name { font-size: 0.88rem; font-weight: 600; color: #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pd-player-nfl  { color: #666; font-size: 0.75rem; }
-.pd-player-value { color: #fbbf24; font-size: 0.78rem; text-align: right; }
-.pd-player-sold  { color: #555; font-size: 0.72rem; text-align: right; }
+.pd-player-row.sold { opacity: 0.55; }
 
-/* Log */
+.info-btn {
+  background: transparent;
+  border: none;
+  color: #C8D0DE;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.info-btn:hover { color: #1B3A6B; }
+
+.watch-btn {
+  background: transparent;
+  border: none;
+  color: #C8D0DE;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.watch-btn:hover { color: #F59E0B; }
+.watch-btn.watched { color: #F59E0B; }
+
+.pd-player-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-player-nfl { color: #9CA3AF; font-size: 0.75rem; }
+.pd-player-value { color: #D97706; font-size: 0.78rem; text-align: right; }
+.pd-player-sold { color: #059669; font-size: 0.72rem; font-weight: 600; text-align: right; }
+
+/* ── Log tab ── */
 .pd-log {
-  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.pd-log-count { font-size: 0.78rem; color: #555; padding: 0.25rem 0; }
-.pd-empty { color: #555; font-size: 0.85rem; text-align: center; padding: 2rem; }
-
-/* Shared log entry styles */
-.log-entry {
-  background: #14161f;
-  border: 1px solid #2e3348;
-  border-radius: 6px;
-  padding: 0.5rem 0.65rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+.pd-log-count {
+  font-size: 0.78rem;
+  color: #9CA3AF;
+  padding: 0.25rem 0;
 }
 
-.log-entry-top  { display: flex; align-items: center; gap: 0.5rem; }
-.log-entry-bottom { display: flex; align-items: center; gap: 0.5rem; }
+.pd-empty {
+  color: #9CA3AF;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem;
+}
 
-.log-pos { font-size: 0.7rem; font-weight: 800; padding: 1px 5px; border-radius: 3px; }
-.log-player-name { font-weight: 700; font-size: 0.88rem; color: #f0f0f0; flex: 1; }
-.log-nfl-team    { font-size: 0.75rem; color: #666; }
-.log-team-name   { font-size: 0.8rem; color: #888; flex: 1; }
-.log-price       { font-size: 0.88rem; font-weight: 700; color: #86efac; }
-.log-delta       { font-size: 0.75rem; font-weight: 600; }
-.log-delta.over  { color: #f87171; }
-.log-delta.under { color: #86efac; }
-
-/* Shared filter/badge styles */
+/* ── Shared filter/badge styles ── */
 .pos-filter-btn {
-  background: #1a1d2a;
-  border: 1px solid #2e3348;
+  background: #FFFFFF;
+  border: 1px solid #C8D0DE;
   border-radius: 5px;
-  color: #888;
+  color: #6B7280;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 3px 10px;
@@ -391,16 +434,16 @@
 }
 
 .pos-filter-btn.active {
-  background: #1e3a5f;
-  border-color: #4f7ef8;
-  color: #7dd3fc;
+  background: #1B3A6B;
+  border-color: #1B3A6B;
+  color: #FFFFFF;
 }
 
 .show-sold-toggle {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: #666;
+  color: #6B7280;
   font-size: 0.8rem;
   cursor: pointer;
   margin-left: auto;
@@ -415,7 +458,52 @@
 }
 
 /* Position badge colors */
-.pos-QB { background: #1e3a1e; color: #86efac; }
-.pos-RB { background: #1e2e4a; color: #7dd3fc; }
-.pos-WR { background: #3a1e3a; color: #d8b4fe; }
-.pos-TE { background: #3a2a10; color: #fbbf24; }
+.pos-QB { background: #DCFCE7; color: #166534; }
+.pos-RB { background: #DBEAFE; color: #1e40af; }
+.pos-WR { background: #EDE9FE; color: #5B21B6; }
+.pos-TE { background: #FEF3C7; color: #92400E; }
+
+/* Log entry styles */
+.log-entry {
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.log-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.log-pos {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.log-player-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #111827;
+  flex: 1;
+}
+
+.log-nfl-team { font-size: 0.75rem; color: #9CA3AF; }
+
+.log-entry-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.log-team-name { font-size: 0.8rem; color: #6B7280; flex: 1; }
+.log-price { font-size: 0.88rem; font-weight: 700; color: #059669; }
+.log-delta { font-size: 0.75rem; font-weight: 600; }
+.log-delta.over  { color: #DC2626; }
+.log-delta.under { color: #059669; }
