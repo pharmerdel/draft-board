@@ -47,52 +47,64 @@
 .my-stat-value.green  { color: #86efac; }
 .my-stat-value.yellow { color: #FEF3C7; }
 
+/* Roster + Watchlist side by side */
+.my-team-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  min-width: 0;
+}
+
 /* Roster */
 .my-team-roster {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .my-slot-row {
   display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 0.3rem;
+  grid-template-columns: 32px 1fr;
+  gap: 0.25rem;
   align-items: center;
+  min-width: 0;
 }
 
 .my-slot-label {
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   font-weight: 800;
   color: #9CA3AF;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   text-align: right;
-  padding-right: 4px;
+  padding-right: 3px;
 }
 
 .my-player-row {
   display: grid;
-  grid-template-columns: 36px 1fr 40px 48px;
+  grid-template-columns: 28px 1fr 32px;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.3rem;
   background: #F8F9FC;
-  border-radius: 6px;
-  padding: 0.4rem 0.5rem;
+  border-radius: 5px;
+  padding: 0.28rem 0.4rem;
   border: 1px solid #E2E6EE;
+  min-width: 0;
 }
 
 .my-pos-badge {
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  padding: 2px 4px;
+  padding: 1px 3px;
   border-radius: 3px;
   text-align: center;
 }
 
 .my-player-name {
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   color: #111827;
   white-space: nowrap;
   overflow: hidden;
@@ -100,12 +112,12 @@
 }
 
 .my-player-nfl {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: #9CA3AF;
 }
 
 .my-player-price {
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #059669;
   text-align: right;
@@ -114,18 +126,17 @@
 .my-empty-row {
   background: #FFFFFF;
   border: 1px dashed #E2E6EE;
-  border-radius: 6px;
-  padding: 0.35rem 0.5rem;
+  border-radius: 5px;
+  padding: 0.25rem 0.4rem;
 }
 
 .my-empty-label {
-  font-size: 0.75rem;
+  font-size: 0.64rem;
   color: #C8D0DE;
 }
 
 /* Watchlist */
 .my-watchlist {
-  margin-top: 0.25rem;
   background: #FFFBEB;
   border: 1px solid #FDE68A;
   border-radius: 10px;
@@ -133,6 +144,30 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.watchlist-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.watchlist-toggle-btn {
+  background: transparent;
+  border: 1px solid #FDE68A;
+  border-radius: 4px;
+  color: #92400E;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.watchlist-toggle-btn:hover {
+  background: #FEF3C7;
 }
 
 .watchlist-heading {
@@ -169,7 +204,7 @@
 .watchlist-row.sold { opacity: 0.5; }
 
 .watchlist-player-name {
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
@@ -178,7 +213,7 @@
 }
 
 .watchlist-nfl {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: #9CA3AF;
 }
 

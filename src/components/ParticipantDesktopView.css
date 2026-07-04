@@ -98,6 +98,55 @@
   border-top: 3px solid #1B3A6B;
 }
 
+.pd-sold-card {
+  background: #DC2626;
+  border: 1px solid #B91C1C;
+  border-top: 3px solid #991B1B;
+  animation: pd-sold-flash 0.4s ease;
+}
+
+@keyframes pd-sold-flash {
+  0%   { background: #FF2222; }
+  40%  { background: #EF4444; }
+  100% { background: #DC2626; }
+}
+
+.pd-sold-sil {
+  background: rgba(0,0,0,0.15) !important;
+  color: rgba(255,255,255,0.5) !important;
+}
+
+.pd-sold-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.1rem;
+}
+
+.pd-sold-player-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin: 0 0 0.25rem;
+}
+
+.pd-sold-arrow {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.pd-sold-price {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
 .pd-block-headshot {
   width: 80px;
   height: 80px;
@@ -311,6 +360,137 @@
   font-size: 1.2rem;
 }
 
+/* ── All Teams grid ── */
+.pd-teams-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.pd-team-grid-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pd-team-grid-card:hover {
+  border-color: #1B3A6B;
+  background: #F0F4FA;
+}
+
+.pd-team-grid-card.mine {
+  border-left: 3px solid #1B3A6B;
+}
+
+.pd-tgc-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.pd-tgc-idx {
+  font-size: 0.65rem;
+  color: #C8D0DE;
+  font-weight: 700;
+  min-width: 14px;
+  padding-top: 1px;
+}
+
+.pd-tgc-names {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.pd-tgc-name {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-tgc-owner {
+  font-size: 0.72rem;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-tgc-stats {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.pd-tgc-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  background: #F8F9FC;
+  border-radius: 5px;
+  padding: 0.25rem;
+}
+
+.pd-tgc-val {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+.pd-tgc-val.green  { color: #059669; }
+.pd-tgc-val.amber  { color: #D97706; }
+.pd-tgc-val.red    { color: #DC2626; }
+
+.pd-tgc-label {
+  font-size: 0.55rem;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.pd-tgc-pills {
+  display: grid;
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.pd-tgc-pill {
+  font-size: 0.5rem;
+  font-weight: 700;
+  border-radius: 3px;
+  text-transform: uppercase;
+  aspect-ratio: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-tgc-pill.filled {
+  background: #DBEAFE;
+  color: #1e40af;
+}
+
+.pd-tgc-pill.empty {
+  background: #F0F4FA;
+  color: #C8D0DE;
+  border: 1px solid #E2E6EE;
+}
+
 /* ── Players tab ── */
 .pd-players {
   display: flex;
@@ -348,7 +528,7 @@
 
 .pd-player-row {
   display: grid;
-  grid-template-columns: 46px 1fr 38px auto 22px 28px;
+  grid-template-columns: 18px 30px 46px 1fr 38px auto 22px 28px;
   gap: 0.4rem;
   align-items: center;
   padding: 0.4rem 0.5rem;
@@ -359,6 +539,42 @@
 }
 
 .pd-player-row.sold { opacity: 0.55; }
+
+.pd-drag-handle {
+  color: #B0B8C8;
+  cursor: grab;
+  font-size: 1rem;
+  line-height: 1;
+  user-select: none;
+  touch-action: none;
+}
+.pd-drag-handle:active { cursor: grabbing; }
+
+.pd-drag-spacer {
+  width: 18px;
+  height: 1px;
+}
+
+.pd-rank-num {
+  color: #8A94A6;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: right;
+  min-width: 0;
+}
+
+.pd-player-row.sorting {
+  background: #F0F4FF;
+}
+
+.drag-overlay-row {
+  background: #FFFFFF;
+  border: 2px solid #3B6FD4;
+  border-radius: 5px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  opacity: 0.95;
+  grid-template-columns: 18px 30px 46px 1fr 38px auto;
+}
 
 .info-btn {
   background: transparent;
@@ -391,9 +607,11 @@
   font-size: 0.88rem;
   font-weight: 600;
   color: #111827;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pd-player-nfl { color: #9CA3AF; font-size: 0.75rem; }

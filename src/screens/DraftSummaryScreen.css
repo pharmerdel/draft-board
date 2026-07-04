@@ -44,10 +44,88 @@
 
 .summary-export-btn:hover { opacity: 0.85; }
 
-.summary-export-btn.excel  { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
-.summary-export-btn.csv    { background: #DBEAFE; color: #1e40af; border: 1px solid #93C5FD; }
-.summary-export-btn.resume { background: #FFFBEB; color: #92400E; border: 1px solid #F59E0B; }
-.summary-export-btn.reset  { background: transparent; color: #DC2626; border: 1px solid #FECACA; }
+.summary-export-btn.excel     { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+.summary-export-btn.csv       { background: #DBEAFE; color: #1e40af; border: 1px solid #93C5FD; }
+.summary-export-btn.resume    { background: #FFFBEB; color: #92400E; border: 1px solid #F59E0B; }
+.summary-export-btn.reset     { background: transparent; color: #DC2626; border: 1px solid #FECACA; }
+.summary-export-btn.ai-review { background: #EDE9FE; color: #5B21B6; border: 1px solid #C4B5FD; }
+.summary-export-btn:disabled  { opacity: 0.6; cursor: not-allowed; }
+
+/* ── AI Reviews ── */
+.review-error {
+  text-align: center;
+  color: #DC2626;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+.reviews-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #E2E6EE;
+}
+
+.reviews-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1B3A6B;
+  margin-bottom: 1.5rem;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+
+.review-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E6EE;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.review-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.review-card-names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-team-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.review-owner-name {
+  font-size: 0.78rem;
+  color: #6B7280;
+}
+
+.review-grade {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.review-text {
+  font-size: 0.88rem;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+}
 
 .summary-grid {
   display: grid;

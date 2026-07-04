@@ -109,3 +109,21 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* ── Shared injury badge — used in all player row views ── */
+.inj-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.inj-badge.inj-q   { background: #FEF3C7; color: #92400E; }
+.inj-badge.inj-d   { background: #FED7AA; color: #9A3412; }
+.inj-badge.inj-out { background: #FEE2E2; color: #991B1B; }
+.inj-badge.inj-ir  { background: #FEE2E2; color: #991B1B; }
+.inj-badge.inj-pup { background: #FEE2E2; color: #991B1B; }
+.inj-badge.inj-dnr { background: #F3F4F6; color: #6B7280; }

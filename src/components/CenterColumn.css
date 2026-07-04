@@ -287,9 +287,11 @@
   font-weight: 600;
   font-size: 0.9rem;
   color: #111827;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .result-team {

@@ -11,7 +11,7 @@ function maxBid(team) {
   return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
 }
 
-export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, selectedTeamId, nominatingTeamId, currentNomination, onNominate }) {
+export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, selectedTeamId, nominatingTeamId, currentNomination, onNominate, showWatchlist = true }) {
   if (!team) {
     return (
       <div className="my-team-panel">
@@ -20,7 +20,8 @@ export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, s
     );
   }
 
-  const [confirmPlayer, setConfirmPlayer] = useState(null); // { id, name }
+  const [confirmPlayer, setConfirmPlayer]     = useState(null); // { id, name }
+  const [showDraftedWatch, setShowDraftedWatch] = useState(false);
 
   const isMyTurn = nominatingTeamId === selectedTeamId && !currentNomination;
 
@@ -60,7 +61,8 @@ export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, s
         </div>
       </div>
 
-      {/* Roster */}
+      {/* Roster (+ optional side-by-side watchlist on desktop) */}
+      <div className={showWatchlist ? 'my-team-body' : ''}>
       <div className="my-team-roster">
         {SLOT_ORDER.map(slot => {
           const limit = SLOT_LIMITS[slot];
@@ -88,37 +90,54 @@ export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, s
             </div>
           ));
         })}
-      </div>
+      </div>{/* end my-team-roster */}
 
-      {/* Watchlist */}
-      <div className="my-watchlist">
-        <span className="watchlist-heading">⭐ Watchlist</span>
-        {Object.keys(watchlist || {}).length === 0 ? (
-          <p className="watchlist-empty">Star players in the Players tab to track them here.</p>
-        ) : (
-          <div className="watchlist-rows">
-            {Object.keys(watchlist).map(playerId => {
-              const p = players?.[playerId];
-              if (!p) return null;
-              const nominatable = isMyTurn && p.status === 'available';
-              return (
-                <div key={playerId} className={`watchlist-row ${p.status === 'sold' ? 'sold' : ''}`}>
-                  <span className={`my-pos-badge pos-${p.position}`}>{p.position}</span>
-                  {nominatable
-                    ? <button className="watchlist-nominate-link" onClick={() => setConfirmPlayer({ id: playerId, name: p.name })}>{p.name}</button>
-                    : <span className="watchlist-player-name">{p.name}</span>
-                  }
-                  <span className="watchlist-nfl">{p.nflTeam}</span>
-                  {p.status === 'sold'
-                    ? <span className="watchlist-sold">SOLD ${p.soldPrice}</span>
-                    : <button className="watch-btn watched" onClick={() => onToggleWatch(playerId)}>★</button>
-                  }
-                </div>
-              );
-            })}
+      {/* Watchlist — desktop side-by-side only */}
+      {showWatchlist && (() => {
+        const allIds = Object.keys(watchlist || {});
+        const draftedCount = allIds.filter(id => players?.[id]?.status === 'sold').length;
+        const visibleIds = showDraftedWatch ? allIds : allIds.filter(id => players?.[id]?.status !== 'sold');
+        return (
+          <div className="my-watchlist">
+            <div className="watchlist-header-row">
+              <span className="watchlist-heading">⭐ Watchlist</span>
+              {draftedCount > 0 && (
+                <button className="watchlist-toggle-btn" onClick={() => setShowDraftedWatch(s => !s)}>
+                  {showDraftedWatch ? 'Hide drafted' : `+${draftedCount} drafted`}
+                </button>
+              )}
+            </div>
+            {allIds.length === 0 ? (
+              <p className="watchlist-empty">Star players in the Players tab to track them here.</p>
+            ) : visibleIds.length === 0 ? (
+              <p className="watchlist-empty">All drafted.</p>
+            ) : (
+              <div className="watchlist-rows">
+                {visibleIds.map(playerId => {
+                  const p = players?.[playerId];
+                  if (!p) return null;
+                  const nominatable = isMyTurn && p.status === 'available';
+                  return (
+                    <div key={playerId} className={`watchlist-row ${p.status === 'sold' ? 'sold' : ''}`}>
+                      <span className={`my-pos-badge pos-${p.position}`}>{p.position}</span>
+                      {nominatable
+                        ? <button className="watchlist-nominate-link" onClick={() => setConfirmPlayer({ id: playerId, name: p.name })}>{p.name}</button>
+                        : <span className="watchlist-player-name">{p.name}</span>
+                      }
+                      <span className="watchlist-nfl">{p.nflTeam}</span>
+                      {p.status === 'sold'
+                        ? <span className="watchlist-sold">SOLD ${p.soldPrice}</span>
+                        : <button className="watch-btn watched" onClick={() => onToggleWatch(playerId)}>★</button>
+                      }
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        );
+      })()}
+      </div>{/* end my-team-body */}
 
       {/* Nominate confirmation popup */}
       {confirmPlayer && (

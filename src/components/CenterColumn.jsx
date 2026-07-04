@@ -4,8 +4,28 @@ import PlayerCard from './PlayerCard';
 import './CenterColumn.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
-
 const ADD_POSITIONS = ['QB', 'RB', 'WR', 'TE'];
+
+function injClass(s) {
+  if (!s) return null;
+  const l = s.toLowerCase();
+  if (l === 'questionable') return 'q';
+  if (l === 'doubtful')     return 'd';
+  if (l === 'out')          return 'out';
+  if (l === 'ir')           return 'ir';
+  if (l.startsWith('pup'))  return 'pup';
+  return 'dnr';
+}
+function injAbbr(s) {
+  if (!s) return '';
+  const l = s.toLowerCase();
+  if (l === 'questionable') return 'Q';
+  if (l === 'doubtful')     return 'D';
+  if (l === 'out')          return 'OUT';
+  if (l === 'ir')           return 'IR';
+  if (l.startsWith('pup'))  return 'PUP';
+  return s.slice(0, 3).toUpperCase();
+}
 
 export default function CenterColumn({
   draft, teams, players, nominatedPlayer, currentNomination,
@@ -204,7 +224,12 @@ export default function CenterColumn({
             <span className={`result-pos pos-${player.position}`}>
               {player.position}{player.positionalRank}
             </span>
-            <span className="result-name">{player.name}</span>
+            <span className="result-name">
+              {player.name}
+              {player.injuryStatus && (
+                <span className={`inj-badge inj-${injClass(player.injuryStatus)}`}>{injAbbr(player.injuryStatus)}</span>
+              )}
+            </span>
             <span className="result-team">{player.nflTeam}</span>
             {player.status === 'sold' && (
               <span className="result-sold-info">

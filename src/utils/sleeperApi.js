@@ -63,8 +63,15 @@ export async function fetchSleeperPlayers() {
 
   skillPlayers.forEach(([playerId, p]) => {
     const norm = normalizeName(p.full_name);
-    byName.set(norm, playerId);
-    byNameTeam.set(`${norm}|${p.team}`, playerId);
+    const data = {
+      sleeperPlayerId: playerId,
+      espnId: p.espn_id ? String(p.espn_id) : null,
+      injuryStatus:   p.injury_status    || null,
+      injuryBodyPart: p.injury_body_part || null,
+      injuryNotes:    p.injury_notes     || null,
+    };
+    byName.set(norm, data);
+    byNameTeam.set(`${norm}|${p.team}`, data);
   });
 
   return { byName, byNameTeam };
@@ -72,21 +79,13 @@ export async function fetchSleeperPlayers() {
 
 // ── Match a single FantasyPros player to a Sleeper ID ────────────────────────
 
+// Returns a data object { sleeperPlayerId, espnId, injuryStatus, ... } or null
 export function matchPlayer(fpPlayer, lookupMaps) {
   const { byName, byNameTeam } = lookupMaps;
   const norm = normalizeName(fpPlayer.name);
   const teamNorm = (fpPlayer.nflTeam || '').toUpperCase();
 
-  // Try name + team first (most precise)
-  const idByNameTeam = byNameTeam.get(`${norm}|${teamNorm}`);
-  if (idByNameTeam) return idByNameTeam;
-
-  // Fall back to name only
-  const idByName = byName.get(norm);
-  if (idByName) return idByName;
-
-  // No match — player will use silhouette fallback
-  return null;
+  return byNameTeam.get(`${norm}|${teamNorm}`) || byName.get(norm) || null;
 }
 
 // ── Build headshot URL from player ID ─────────────────────────────────────────
@@ -112,17 +111,102 @@ export async function enrichPlayersWithHeadshots(players) {
   }
 
   const enriched = players.map(player => {
-    const sleeperPlayerId = matchPlayer(player, lookupMaps);
-    if (sleeperPlayerId) {
+    const match = matchPlayer(player, lookupMaps);
+    if (match) {
       matchCount++;
       return {
         ...player,
-        sleeperPlayerId,
-        headshotUrl: headshotUrl(sleeperPlayerId),
+        sleeperPlayerId: match.sleeperPlayerId,
+        headshotUrl:     headshotUrl(match.sleeperPlayerId),
+        espnId:          match.espnId,
+        injuryStatus:    match.injuryStatus,
+        injuryBodyPart:  match.injuryBodyPart,
+        injuryNotes:     match.injuryNotes,
       };
     }
     return player; // no match — headshotUrl stays null, silhouette shows
   });
 
   return { players: enriched, matchCount, total: players.length };
+}
+
+// ── Fetch recent player news via Google News RSS (nbcsports + rotowire) ───────
+// Proxied through rss2json to handle CORS — no signup required for our volume.
+// Only called on-demand when a user opens the PlayerCard.
+// Returns up to 3 blurbs, or [] on any failure.
+
+function stripHtml(str) {
+  return (str || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+}
+
+function decodeXmlEntities(str) {
+  return (str || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+}
+
+const NEWS_WORKER = 'https://draft-board-news.zachdelaney2012.workers.dev';
+
+// ── DOM-based extraction (fast, accurate) ─────────────────────────────────────
+function extractItemsDom(xml) {
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  if (doc.querySelector('parsererror')) return null; // signal: try regex fallback
+  return Array.from(doc.getElementsByTagName('item')).slice(0, 3).map(item => ({
+    headline:    stripHtml(item.getElementsByTagName('title')[0]?.textContent)       || '',
+    description: stripHtml(item.getElementsByTagName('description')[0]?.textContent) || '',
+    published:   item.getElementsByTagName('pubDate')[0]?.textContent?.trim()        || '',
+    url:         item.getElementsByTagName('link')[0]?.textContent?.trim()           || '',
+  }));
+}
+
+// ── Regex-based extraction (fallback for malformed XML) ───────────────────────
+// Google News RSS occasionally has unquoted attributes or other XML violations.
+// This bypasses DOMParser and pulls fields directly from the raw string.
+function extractItemsRegex(xml) {
+  const results = [];
+  const itemRe = /<item>([\s\S]*?)<\/item>/g;
+  let m;
+  while ((m = itemRe.exec(xml)) !== null && results.length < 3) {
+    const block = m[1];
+    const get = (tag) => {
+      const match = block.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`));
+      return match?.[1] || '';
+    };
+    results.push({
+      headline:    stripHtml(decodeXmlEntities(get('title'))),
+      description: stripHtml(decodeXmlEntities(get('description'))),
+      published:   get('pubDate').trim(),
+      url:         decodeXmlEntities(get('link')).trim(),
+    });
+  }
+  return results;
+}
+
+export async function fetchPlayerNews(playerName) {
+  if (!playerName) return [];
+  try {
+    const url = `${NEWS_WORKER}/?player=${encodeURIComponent(playerName)}`;
+    console.log('[news] fetching:', url);
+    const res = await fetch(url);
+    console.log('[news] status:', res.status);
+    if (!res.ok) return [];
+
+    const xml = await res.text();
+    console.log('[news] xml length:', xml?.length);
+
+    // Try DOM parser first; fall back to regex if XML isn't well-formed
+    let items = extractItemsDom(xml);
+    if (items === null) {
+      console.warn('[news] XML not well-formed — using regex fallback');
+      items = extractItemsRegex(xml);
+    }
+    console.log('[news] items found:', items.length);
+    return items;
+  } catch (err) {
+    console.error('[news] fetch error:', err);
+    return [];
+  }
 }

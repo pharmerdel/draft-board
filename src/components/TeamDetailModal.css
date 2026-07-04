@@ -1,0 +1,176 @@
+.tdm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 1.5rem;
+}
+
+.tdm-panel {
+  background: #F8F9FC;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+}
+
+/* Header */
+.tdm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #1B3A6B;
+  flex-shrink: 0;
+}
+
+.tdm-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.tdm-team-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tdm-owner {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+}
+
+.tdm-budget {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tdm-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.12);
+  border-radius: 7px;
+  padding: 0.35rem 0.7rem;
+  min-width: 60px;
+}
+
+.tdm-stat-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.tdm-stat-val.green { color: #86efac; }
+.tdm-stat-val.amber { color: #FEF3C7; }
+
+.tdm-stat-label {
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.tdm-close {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.tdm-close:hover { color: #FFFFFF; }
+
+/* Tile grid — same pattern as WinnerPanel */
+.tdm-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 6px;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.tdm-tile {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.4rem;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 0;
+}
+
+.tdm-tile.empty {
+  background: #F0F4FA;
+  border: 1px solid #E2E6EE;
+}
+
+.tdm-tile.filled {
+  background: #1e2e4a;
+  border: 1px solid #2a4070;
+}
+
+.tdm-tile-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tdm-tile-slot {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tdm-tile.empty .tdm-tile-slot   { color: #9CA3AF; }
+.tdm-tile.filled .tdm-tile-slot  { color: rgba(255,255,255,0.45); }
+
+.tdm-tile-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tdm-tile.empty .tdm-tile-name  { color: #C8D0DE; font-size: 1rem; font-weight: 400; }
+.tdm-tile.filled .tdm-tile-name { color: #FFFFFF; }
+
+.tdm-tile-price {
+  font-size: 0.72rem;
+  font-weight: 800;
+  min-height: 1em;
+}
+
+.tdm-tile.filled .tdm-tile-price { color: #86efac; }

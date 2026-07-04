@@ -1,8 +1,19 @@
+import { useState } from 'react';
 import { ref, set, remove } from 'firebase/database';
 import { db } from '../firebase';
 import { generateDraftCsv, downloadCsv } from '../utils/exportCsv';
 import { exportDraftExcel } from '../utils/exportExcel';
 import './DraftSummaryScreen.css';
+
+const NEWS_WORKER = 'https://draft-board-news.zachdelaney2012.workers.dev';
+
+const GRADE_COLORS = {
+  'A+': '#059669', 'A': '#059669', 'A-': '#059669',
+  'B+': '#2563EB', 'B': '#2563EB', 'B-': '#2563EB',
+  'C+': '#D97706', 'C': '#D97706', 'C-': '#D97706',
+  'D+': '#DC2626', 'D': '#DC2626', 'D-': '#DC2626',
+  'F':  '#991B1B',
+};
 
 const SLOT_ORDER = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
 
@@ -20,8 +31,61 @@ function sortRosterBySlot(rosterEntries) {
   return SLOT_ORDER.flatMap(s => grouped[s] || []);
 }
 
-export default function DraftSummaryScreen({ draft, teams, log, isCommissioner }) {
+export default function DraftSummaryScreen({ draft, teams, players, log, isCommissioner }) {
+  const [reviews, setReviews]       = useState(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewError, setReviewError]     = useState(null);
+
   const nominationOrderIds = draft?.nominationOrderIds || [];
+
+  async function generateReviews() {
+    setReviewLoading(true);
+    setReviewError(null);
+    try {
+      const teamsPayload = nominationOrderIds.map(teamId => {
+        const team = teams[teamId];
+        if (!team) return null;
+        const rosterPlayers = Object.entries(team.roster || {}).map(([id, r]) => {
+          const playerData = players[id] || {};
+          const projectedValue = playerData.projectedValue ?? null;
+          const delta = projectedValue != null ? projectedValue - (r.pricePaid || 0) : null;
+          return {
+            name:           r.playerName,
+            position:       r.position,
+            positionalRank: playerData.positionalRank ?? null,
+            pricePaid:      r.pricePaid || 0,
+            projectedValue,
+            delta,
+            slotType:       r.slotType,
+          };
+        });
+        const totalSpent = rosterPlayers.reduce((s, p) => s + p.pricePaid, 0);
+        return {
+          name:            team.name,
+          ownerName:       team.ownerName,
+          budgetSpent:     totalSpent,
+          budgetRemaining: team.budgetRemaining ?? 0,
+          players:         rosterPlayers,
+        };
+      }).filter(Boolean);
+
+      const res = await fetch(`${NEWS_WORKER}/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teams: teamsPayload }),
+      });
+
+      if (!res.ok) throw new Error(`Worker error: ${res.status}`);
+      const data = await res.json();
+      const parsed = JSON.parse(data.review);
+      setReviews(parsed);
+    } catch (err) {
+      console.error('[reviews] error:', err);
+      setReviewError('Something went wrong generating reviews. Try again.');
+    } finally {
+      setReviewLoading(false);
+    }
+  }
   const draftDate = draft?.startedAt
     ? new Date(draft.startedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : '';
@@ -39,6 +103,13 @@ export default function DraftSummaryScreen({ draft, teams, log, isCommissioner }
 
         {isCommissioner && (
           <div className="summary-export-btns">
+            <button
+              className="summary-export-btn ai-review"
+              onClick={generateReviews}
+              disabled={reviewLoading}
+            >
+              {reviewLoading ? '⏳ Generating…' : '🤖 AI Draft Reviews'}
+            </button>
             <button
               className="summary-export-btn excel"
               onClick={() => exportDraftExcel({ teams, log: log || {}, draft })}
@@ -137,6 +208,35 @@ export default function DraftSummaryScreen({ draft, teams, log, isCommissioner }
           );
         })}
       </div>
+
+      {/* AI Reviews */}
+      {reviewError && (
+        <p className="review-error">{reviewError}</p>
+      )}
+      {reviews && (
+        <div className="reviews-section">
+          <h2 className="reviews-title">🤖 AI Draft Reviews</h2>
+          <div className="reviews-grid">
+            {reviews.map((r, i) => (
+              <div key={i} className="review-card">
+                <div className="review-card-header">
+                  <div className="review-card-names">
+                    <span className="review-team-name">{r.team}</span>
+                    <span className="review-owner-name">{r.owner}</span>
+                  </div>
+                  <span
+                    className="review-grade"
+                    style={{ color: GRADE_COLORS[r.grade] || '#6B7280' }}
+                  >
+                    {r.grade}
+                  </span>
+                </div>
+                <p className="review-text">{r.review}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

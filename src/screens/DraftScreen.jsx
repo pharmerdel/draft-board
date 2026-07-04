@@ -21,7 +21,9 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
   const [teams, setTeams]         = useState({});
   const [players, setPlayers]     = useState({});
   const [log, setLog]             = useState({});
-  const [watchlist, setWatchlist] = useState({});
+  const [watchlist, setWatchlist]           = useState({});
+  const [personalRanks, setPersonalRanks]   = useState({});
+  const [soldData, setSoldData]             = useState(null); // { player, team, price, playerId }
 
   // Live sync everything
   useEffect(() => {
@@ -34,12 +36,18 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     return () => unsubs.forEach(u => u());
   }, []);
 
-  // Sync watchlist for this participant
+  // Sync watchlist + personal ranks for this participant
   useEffect(() => {
     if (!selectedTeamId || selectedTeamId === 'commissioner') return;
-    const unsub = onValue(ref(db, `watchlists/${selectedTeamId}`), s => setWatchlist(s.val() || {}));
-    return () => unsub();
+    const unsub1 = onValue(ref(db, `watchlists/${selectedTeamId}`), s => setWatchlist(s.val() || {}));
+    const unsub2 = onValue(ref(db, `personalRanks/${selectedTeamId}`), s => setPersonalRanks(s.val() || {}));
+    return () => { unsub1(); unsub2(); };
   }, [selectedTeamId]);
+
+  async function savePersonalRanks(ranks) {
+    if (!selectedTeamId) return;
+    await update(ref(db, `personalRanks/${selectedTeamId}`), ranks);
+  }
 
   // Mark this device connected
   useEffect(() => {
@@ -65,6 +73,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
       <DraftSummaryScreen
         draft={draft}
         teams={teams}
+        players={players}
         log={log}
         isCommissioner={selectedTeamId === 'commissioner'}
       />
@@ -73,7 +82,18 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
 
   // ── Derived data ─────────────────────────────────────────────────────────
 
-  const nominatingTeamId = draft.nominationOrderIds?.[draft.nominationIndex % 12];
+  // Find the next team that still has open roster slots, starting from nominationIndex.
+  // This skips teams that have already filled all 13 spots.
+  const nominatingTeamId = (() => {
+    const ids = draft.nominationOrderIds || [];
+    const n = ids.length;
+    for (let i = 0; i < n * 2; i++) {
+      const teamId = ids[(draft.nominationIndex + i) % n];
+      const team = teams[teamId];
+      if (team && Object.values(team.roster || {}).length < TOTAL_DRAFT_SLOTS) return teamId;
+    }
+    return null; // all teams full
+  })();
   const currentNomination = draft.currentNomination;
   const nominatedPlayer = currentNomination ? players[currentNomination.playerId] : null;
 
@@ -220,6 +240,15 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
       timerStartedAt: draft.timerEnabled ? Date.now() : null,
     });
 
+    // Auto-end draft if every team has filled all roster slots
+    const allTeamsFull = Object.entries(teams).every(([tid, t]) => {
+      const filled = Object.values(t.roster || {}).length + (tid === winningTeamId ? 1 : 0);
+      return filled >= TOTAL_DRAFT_SLOTS;
+    });
+    if (allTeamsFull) {
+      await set(ref(db, 'draft/status'), 'complete');
+    }
+
     // Auto-save backup to localStorage after every pick
     // Uses current React state + the updates we just made to build an accurate snapshot
     const updatedTeam = {
@@ -237,6 +266,9 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
         }
       }
     };
+    // Trigger SOLD animation with a snapshot of the updated data
+    setSoldData({ player, team: updatedTeam, price: priceInt, playerId });
+
     saveBackup({
       draft: { ...draft, currentNomination: null, nominationIndex: nextIndex },
       teams: { ...teams, [winningTeamId]: updatedTeam },
@@ -298,6 +330,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     selectedTeamId, nominatingTeamId,
     onNominate: nominatePlayer,
     watchlist, onToggleWatch: toggleWatch,
+    personalRanks, onSavePersonalRanks: savePersonalRanks,
   };
 
   return (
@@ -394,8 +427,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
             />
           </div>
 
-          {/* Nomination overlay — covers everything below the topbar */}
-          {nominatedPlayer && currentNomination && (
+          {/* Nomination overlay — stays mounted during sold animation */}
+          {((nominatedPlayer && currentNomination) || soldData) && (
             <NominationOverlay
               nominatedPlayer={nominatedPlayer}
               currentNomination={currentNomination}
@@ -403,6 +436,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
               draft={draft}
               onSell={sellPlayer}
               onCancelNomination={cancelNomination}
+              soldData={soldData}
+              onSoldDone={() => setSoldData(null)}
             />
           )}
         </div>
@@ -415,6 +450,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
 // ── Slot assignment helper ────────────────────────────────────────────────────
 // Fills QB → RB → WR → TE → FLEX → BN in order
 
+const TOTAL_DRAFT_SLOTS = 13;
 const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
 const FLEX_ELIGIBLE = ['RB', 'WR', 'TE'];
 

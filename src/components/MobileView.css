@@ -23,6 +23,49 @@
   border-bottom: 3px solid #1B3A6B;
 }
 
+.mobile-block-strip.sold {
+  background: #DC2626;
+  border-bottom: 3px solid #B91C1C;
+  animation: sold-strip-flash 0.4s ease;
+}
+
+@keyframes sold-strip-flash {
+  0%   { background: #FF2222; }
+  40%  { background: #EF4444; }
+  100% { background: #DC2626; }
+}
+
+.mobile-block-sold-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.mobile-block-sold-player {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.mobile-block-sold-arrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+.mobile-block-sold-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.1em;
+}
+
+.mobile-block-sold-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
 .mobile-block-strip.waiting {
   background: #FFFFFF;
 }
@@ -264,8 +307,8 @@
 
 .mobile-player-row {
   display: grid;
-  grid-template-columns: 46px 1fr 38px auto 22px 28px;
-  gap: 0.4rem;
+  grid-template-columns: 24px 26px 46px 1fr 38px auto 22px 28px;
+  gap: 0.3rem;
   align-items: center;
   padding: 0.45rem 0.5rem;
   background: #FFFFFF;
@@ -275,6 +318,42 @@
 }
 
 .mobile-player-row.sold { opacity: 0.55; }
+
+.mobile-drag-handle {
+  color: #B0B8C8;
+  cursor: grab;
+  font-size: 1.1rem;
+  line-height: 1;
+  user-select: none;
+  touch-action: none;
+  padding: 2px 0;
+}
+.mobile-drag-handle:active { cursor: grabbing; }
+
+.mobile-drag-spacer {
+  width: 24px;
+  height: 1px;
+}
+
+.mobile-rank-num {
+  color: #8A94A6;
+  font-size: 0.73rem;
+  font-weight: 600;
+  text-align: right;
+  min-width: 0;
+}
+
+.mobile-player-row.sorting {
+  background: #F0F4FF;
+}
+
+.mobile-drag-overlay-row {
+  background: #FFFFFF;
+  border: 2px solid #3B6FD4;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  opacity: 0.95;
+}
 
 .info-btn {
   background: transparent;
@@ -307,14 +386,94 @@
   font-size: 0.88rem;
   font-weight: 600;
   color: #111827;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mobile-player-nfl { color: #9CA3AF; font-size: 0.75rem; }
 .mobile-player-value { color: #D97706; font-size: 0.78rem; text-align: right; }
 .mobile-player-sold { color: #059669; font-size: 0.72rem; font-weight: 600; text-align: right; }
+
+/* ── Watchlist tab ── */
+.mobile-watchlist-tab {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-watchlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.watchlist-toggle-btn {
+  background: transparent;
+  border: 1px solid #FDE68A;
+  border-radius: 4px;
+  color: #92400E;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.watchlist-toggle-btn:hover { background: #FEF3C7; }
+
+.mobile-watchlist-heading {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #92400E;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.mobile-watchlist-empty {
+  font-size: 0.82rem;
+  color: #9CA3AF;
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.mobile-watchlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mobile-watchlist-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 36px auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.6rem;
+  background: #FFFBEB;
+  border-radius: 8px;
+  border: 1px solid #FDE68A;
+  font-size: 0.88rem;
+}
+
+.mobile-watchlist-row.sold { opacity: 0.5; }
+
+.mobile-watchlist-name {
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-watchlist-nfl { font-size: 0.75rem; color: #9CA3AF; }
+.mobile-watchlist-sold { font-size: 0.75rem; font-weight: 700; color: #DC2626; text-align: right; }
 
 /* ── Log tab ── */
 .mobile-log {

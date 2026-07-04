@@ -9,6 +9,240 @@
   overflow: hidden;
 }
 
+/* ── SOLD stamp (phase 1) ── */
+.no-sold-stamp {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22vw;
+  font-weight: 900;
+  color: #DC2626;
+  opacity: 0.85;
+  transform: rotate(-35deg);
+  pointer-events: none;
+  z-index: 10;
+  letter-spacing: -0.02em;
+  -webkit-text-stroke: 3px rgba(139, 0, 0, 0.4);
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+  animation: no-stamp-in 0.15s cubic-bezier(0.2, 0, 0.2, 1.5);
+  user-select: none;
+}
+
+@keyframes no-stamp-in {
+  from { transform: rotate(-35deg) scale(1.5); opacity: 0; }
+  to   { transform: rotate(-35deg) scale(1);   opacity: 0.85; }
+}
+
+/* ── Winner panel (phase 2) ── */
+.no-winner-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  gap: 1rem;
+  overflow-y: auto;
+  animation: no-winner-in 0.3s ease;
+}
+
+@keyframes no-winner-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.no-winner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #1B3A6B;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.no-winner-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.no-winner-team-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.no-winner-owner {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+.no-winner-budget {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.no-winner-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  min-width: 72px;
+}
+
+.no-winner-stat-val {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.no-winner-stat-val.green { color: #86efac; }
+.no-winner-stat-val.amber { color: #FEF3C7; }
+
+.no-winner-stat-label {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+}
+
+/* Uniform slot tile grid — all tiles same size */
+.no-winner-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+
+.no-wtile {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.5rem 0.55rem;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 0;
+}
+
+/* Empty tile */
+.no-wtile.empty {
+  background: #F0F4FA;
+  border: 1px solid #E2E6EE;
+}
+
+/* Filled tile */
+.no-wtile.filled {
+  background: #1e2e4a;
+  border: 1px solid #2a4070;
+}
+
+/* New player tile */
+.no-wtile.new-player {
+  background: #FFFBEB;
+  border: 2px solid #F59E0B;
+  animation: no-highlight-pulse 0.4s ease;
+}
+
+@keyframes no-highlight-pulse {
+  0%   { background: #FEF3C7; }
+  100% { background: #FFFBEB; }
+}
+
+/* Tile top row: slot label + NEW badge */
+.no-wtile-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.no-wtile-slot {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.no-wtile.empty .no-wtile-slot    { color: #9CA3AF; }
+.no-wtile.filled .no-wtile-slot   { color: rgba(255,255,255,0.45); }
+.no-wtile.new-player .no-wtile-slot { color: #92400E; }
+
+.no-wtile-new {
+  font-size: 0.55rem;
+  font-weight: 800;
+  background: #F59E0B;
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* Player name — center of tile, 2-line clamp */
+.no-wtile-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.no-wtile.empty .no-wtile-name  { color: #C8D0DE; font-size: 1.1rem; font-weight: 400; }
+.no-wtile.filled .no-wtile-name { color: #FFFFFF; }
+.no-wtile.new-player .no-wtile-name { color: #111827; }
+
+/* Price — bottom of tile */
+.no-wtile-price {
+  font-size: 0.78rem;
+  font-weight: 800;
+  min-height: 1em;
+}
+
+.no-wtile.filled .no-wtile-price   { color: #86efac; }
+.no-wtile.new-player .no-wtile-price { color: #059669; }
+
+/* Sold confirmation in left panel */
+.no-sold-confirm {
+  font-size: 0.88rem;
+  color: #059669;
+  margin-top: 0.25rem;
+}
+
+.no-sold-confirm strong {
+  color: #1B3A6B;
+}
+
+/* Progress bar */
+.no-progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #E2E6EE;
+  z-index: 201;
+}
+
+.no-progress-fill {
+  height: 100%;
+  background: #1B3A6B;
+  transition: width 0.05s linear;
+}
+
 /* ── Left panel ── */
 .no-left {
   display: flex;
@@ -94,6 +328,11 @@
   margin-top: 0.25rem;
 }
 
+.no-nominated-owner {
+  font-size: 0.75rem;
+  color: #C8D0DE;
+}
+
 /* Stats */
 .no-stats {
   display: flex;
@@ -127,19 +366,29 @@
   margin: 0;
 }
 
-.no-sell-select {
-  width: 100%;
-  background: #FFFFFF;
-  border: 1px solid #C8D0DE;
-  border-radius: 7px;
-  color: #111827;
-  font-size: 0.95rem;
-  padding: 0.6rem 0.75rem;
-  outline: none;
-  cursor: pointer;
+.no-sell-directive {
+  font-size: 0.82rem;
+  color: #9CA3AF;
+  margin: 0;
+  font-style: italic;
 }
 
-.no-sell-select:focus { border-color: #1B3A6B; }
+.no-sell-selected {
+  color: #059669;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.no-bid-warning {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #D97706;
+  margin: 0;
+}
+
+.no-bid-warning.error {
+  color: #DC2626;
+}
 
 .no-price-row {
   display: flex;
@@ -225,16 +474,64 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: opacity 0.2s, border-color 0.2s;
+  transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.no-team-card.clickable {
+  cursor: pointer;
+}
+
+.no-team-card.clickable:hover {
+  border-color: #1B3A6B;
+  background: #F0F4FA;
 }
 
 .no-team-card.dimmed {
-  opacity: 0.35;
+  opacity: 0.3;
+}
+
+.no-team-card.full {
+  opacity: 0.25;
+  cursor: not-allowed;
 }
 
 .no-team-card.winner {
-  border: 2px solid #1B3A6B;
-  background: #EEF4FF;
+  border: 3px solid #1B3A6B;
+  background: #1B3A6B;
+}
+
+.no-team-card.winner .no-team-name,
+.no-team-card.winner .no-team-owner,
+.no-team-card.winner .no-team-idx {
+  color: #FFFFFF;
+}
+
+.no-team-card.winner .no-stat {
+  background: rgba(255,255,255,0.15);
+}
+
+.no-team-card.winner .no-stat-val {
+  color: #FFFFFF;
+}
+
+.no-team-card.winner .no-stat-val.budget,
+.no-team-card.winner .no-stat-val.max {
+  color: #FEF3C7;
+}
+
+.no-team-card.winner .no-stat-label {
+  color: rgba(255,255,255,0.6);
+}
+
+.no-team-card.winner .no-slot-pill.filled {
+  background: rgba(255,255,255,0.25);
+  color: #FFFFFF;
+}
+
+.no-team-card.winner .no-slot-pill.empty {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4);
+  border-color: rgba(255,255,255,0.2);
 }
 
 .no-team-card.nominating {

@@ -6,10 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:github": "VITE_BASE_PATH=/draft-board/ vite build",
+    "firebase:deploy": "firebase deploy",
+    "firebase:emulators": "firebase emulators:start",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "firebase": "^12.13.0",
     "fuse.js": "^7.3.0",
     "qrcode.react": "^4.2.0",
