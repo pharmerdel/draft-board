@@ -49,20 +49,38 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     await update(ref(db, `personalRanks/${selectedTeamId}`), ranks);
   }
 
+  const selectedTeamIsStale =
+    selectedTeamId &&
+    selectedTeamId !== 'commissioner' &&
+    Object.keys(teams).length > 0 &&
+    !teams[selectedTeamId];
+
   // Mark this device connected
   useEffect(() => {
-    if (!selectedTeamId) return;
+    if (!selectedTeamId || selectedTeamIsStale) return;
     update(ref(db, `teams/${selectedTeamId}`), { connected: true, lastSeen: Date.now() });
     const bye = () => update(ref(db, `teams/${selectedTeamId}`), { connected: false });
     window.addEventListener('beforeunload', bye);
     return () => { window.removeEventListener('beforeunload', bye); bye(); };
-  }, [selectedTeamId]);
+  }, [selectedTeamId, selectedTeamIsStale]);
+
+  useEffect(() => {
+    if (selectedTeamIsStale) onTeamClear?.();
+  }, [selectedTeamIsStale, onTeamClear]);
 
   if (!draft || !Object.keys(players).length) {
     return (
       <div className="draft-loading">
         <p>Loading draft data…</p>
         <ResetButton />
+      </div>
+    );
+  }
+
+  if (selectedTeamIsStale) {
+    return (
+      <div className="draft-loading">
+        <p>Rejoining draft…</p>
       </div>
     );
   }
