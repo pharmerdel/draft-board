@@ -4,12 +4,16 @@ import { db } from './firebase';
 import SetupScreen from './screens/SetupScreen';
 import LobbyScreen from './screens/LobbyScreen';
 import DraftScreen from './screens/DraftScreen';
+import ThemeToggle from './components/ThemeToggle';
 import './App.css';
 
 export default function App() {
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem('ff_theme') || 'light'
+  );
 
   // Lifted to state so selecting a team in LobbyScreen immediately re-routes
   const [selectedTeamId, setSelectedTeamId] = useState(
@@ -25,6 +29,19 @@ export default function App() {
     localStorage.removeItem('ff_selected_team');
     setSelectedTeamId(null);
   }
+
+  function toggleTheme() {
+    setTheme(current => {
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('ff_theme', next);
+      return next;
+    });
+  }
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   useEffect(() => {
     const unsub = onValue(
@@ -44,38 +61,68 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="app-loading">
-        <p>Connecting to database...</p>
-      </div>
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <div className="app-loading">
+          <p>Connecting to database...</p>
+        </div>
+      </>
     );
   }
 
   if (firebaseError) {
     return (
-      <div className="app-error">
-        <h2>⚠️ Firebase Not Configured</h2>
-        <p>Open <code>src/firebase.js</code> and paste in your Firebase config keys.</p>
-      </div>
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <div className="app-error">
+          <h2>Firebase Not Configured</h2>
+          <p>Open <code>src/firebase.js</code> and paste in your Firebase config keys.</p>
+        </div>
+      </>
     );
   }
 
   // Route to the right screen based on draft status + selected team
-  if (!draftStatus || draftStatus === 'setup') return <SetupScreen />;
+  const themeToggle = <ThemeToggle theme={theme} onToggle={toggleTheme} />;
+
+  if (!draftStatus || draftStatus === 'setup') {
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <SetupScreen />
+      </>
+    );
+  }
 
   if (draftStatus === 'lobby') {
-    return <LobbyScreen selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} />;
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <LobbyScreen selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} />
+      </>
+    );
   }
 
   if (draftStatus === 'active' || draftStatus === 'paused') {
     if (!selectedTeamId) {
-      return <LobbyScreen rejoin selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} />;
+      return (
+        <>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+          <LobbyScreen rejoin selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} />
+        </>
+      );
     }
-    return <DraftScreen selectedTeamId={selectedTeamId} onTeamClear={handleTeamClear} />;
+    return <DraftScreen selectedTeamId={selectedTeamId} onTeamClear={handleTeamClear} themeToggle={themeToggle} />;
   }
 
   if (draftStatus === 'complete') {
-    return <DraftScreen complete selectedTeamId={selectedTeamId} onTeamClear={handleTeamClear} />;
+    return <DraftScreen complete selectedTeamId={selectedTeamId} onTeamClear={handleTeamClear} themeToggle={themeToggle} />;
   }
 
-  return <SetupScreen />;
+  return (
+    <>
+      <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+      <SetupScreen />
+    </>
+  );
 }

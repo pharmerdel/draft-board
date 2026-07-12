@@ -106,6 +106,7 @@ export default function ParticipantDesktopView({
   selectedTeamId, nominatingTeamId,
   onNominate, watchlist, onToggleWatch,
   personalRanks, onSavePersonalRanks,
+  themeToggle,
 }) {
   const [tab, setTab]               = useState('myteam');
   const [cardPlayer, setCardPlayer]   = useState(null);
@@ -232,6 +233,7 @@ export default function ParticipantDesktopView({
           <span className="pd-status-dot" />
           Live
         </span>
+        {themeToggle}
       </div>
 
       <div className="pd-columns">

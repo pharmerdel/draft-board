@@ -17,7 +17,7 @@ import TimerDisplay from '../components/TimerDisplay';
 import DraftSummaryScreen from './DraftSummaryScreen';
 import './DraftScreen.css';
 
-export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
+export default function DraftScreen({ complete, selectedTeamId, onTeamClear, themeToggle }) {
   const [draft, setDraft]         = useState(null);
   const [teams, setTeams]         = useState({});
   const [players, setPlayers]     = useState({});
@@ -89,13 +89,16 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
   // ── Summary screen when draft is complete ───────────────────────────────
   if (complete || draft.status === 'complete') {
     return (
-      <DraftSummaryScreen
-        draft={draft}
-        teams={teams}
-        players={players}
-        log={log}
-        isCommissioner={selectedTeamId === 'commissioner'}
-      />
+      <>
+        <span className="summary-theme-slot">{themeToggle}</span>
+        <DraftSummaryScreen
+          draft={draft}
+          teams={teams}
+          players={players}
+          log={log}
+          isCommissioner={selectedTeamId === 'commissioner'}
+        />
+      </>
     );
   }
 
@@ -356,12 +359,12 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
     <>
       {/* ── Participant mobile ── */}
       {activeView === 'participant-mobile' && (
-        <MobileView {...participantProps} />
+        <MobileView {...participantProps} themeToggle={themeToggle} />
       )}
 
       {/* ── Participant desktop ── */}
       {activeView === 'participant-desktop' && (
-        <ParticipantDesktopView {...participantProps} />
+        <ParticipantDesktopView {...participantProps} themeToggle={themeToggle} />
       )}
 
       {/* ── Commissioner big board ── */}
@@ -373,6 +376,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
               <span className="draft-status-dot" />
               {complete ? 'Complete' : 'Live'}
             </span>
+            {themeToggle}
             <DraftClock startedAt={draft.startedAt} />
             <NominationTimer
               draft={draft}

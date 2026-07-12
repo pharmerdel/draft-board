@@ -6,6 +6,8 @@ import './NominationOverlay.css';
 const TOTAL_DRAFT_SLOTS = 13;
 const SLOT_ORDER  = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
 const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
+const STARTER_SLOTS = ['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'FLEX'];
+const BENCH_SLOTS = ['BN', 'BN', 'BN', 'BN', 'BN'];
 
 function maxBid(team) {
   const filled = Object.values(team.roster || {}).length;
@@ -183,6 +185,28 @@ export default function NominationOverlay({
               const canAfford = priceNum === 0 || team.budgetRemaining >= priceNum;
               const isWinner = teamId === winTeamId;
               const isNominating = teamId === currentNomination?.nominatingTeamId;
+              const rosterEntries = Object.values(team.roster || {});
+
+              const renderSlotGroup = (label, slots) => (
+                <div className="no-slot-group">
+                  <span className="no-slot-group-label">{label}</span>
+                  <div className="no-slot-track">
+                    {slots.map((slot, slotIdx) => {
+                      const occurrence = slots.slice(0, slotIdx + 1).filter(s => s === slot).length;
+                      const filledCount = rosterEntries.filter(p => p.slotType === slot).length;
+                      const filled = filledCount >= occurrence;
+                      return (
+                        <span
+                          key={`${label}-${slot}-${slotIdx}`}
+                          className={`no-slot-pill ${filled ? 'filled' : 'empty'}`}
+                        >
+                          {slot === 'FLEX' ? 'FLX' : slot}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
 
               return (
                 <div
@@ -215,15 +239,8 @@ export default function NominationOverlay({
                     </div>
                   </div>
                   <div className="no-slot-pills">
-                    {Object.entries(SLOT_LIMITS).map(([slot, limit]) => {
-                      const filledCount = Object.values(team.roster || {})
-                        .filter(p => p.slotType === slot).length;
-                      return Array.from({ length: limit }, (_, i) => (
-                        <span key={`${slot}${i}`} className={`no-slot-pill ${i < filledCount ? 'filled' : 'empty'}`}>
-                          {slot}
-                        </span>
-                      ));
-                    })}
+                    {renderSlotGroup('Starters', STARTER_SLOTS)}
+                    {renderSlotGroup('Bench', BENCH_SLOTS)}
                   </div>
                 </div>
               );

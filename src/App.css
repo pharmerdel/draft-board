@@ -11,7 +11,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #F8F9FC;
+  background: #EEF2F7;
   color: #111827;
   min-height: 100vh;
 }
@@ -52,4 +52,788 @@ body {
   border-radius: 4px;
   font-size: 0.9rem;
   color: #1B3A6B;
+}
+
+body[data-theme='dark'] {
+  --dark-bg: #0B121C;
+  --dark-panel: #111B2A;
+  --dark-panel-2: #162235;
+  --dark-card: #1A273B;
+  --dark-card-hover: #20304A;
+  --dark-field: #0F1826;
+  --dark-border: #314056;
+  --dark-border-soft: #253247;
+  --dark-text: #F4F7FB;
+  --dark-text-muted: #A7B2C3;
+  --dark-text-faint: #7F8CA0;
+  --dark-blue: #78A6E8;
+  --dark-blue-strong: #1F4E8C;
+  --dark-green: #34D399;
+  --dark-amber: #FBBF24;
+  background: var(--dark-bg);
+  color: #E5E7EB;
+  color-scheme: dark;
+}
+
+body[data-theme='light'] {
+  color-scheme: light;
+}
+
+html[data-theme='dark'],
+body[data-theme='dark'] #root {
+  background: var(--dark-bg);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .app-loading,
+body[data-theme='dark'] .app-error,
+body[data-theme='dark'] .lobby-screen,
+body[data-theme='dark'] .setup-screen,
+body[data-theme='dark'] .draft-loading,
+body[data-theme='dark'] .summary-screen {
+  background: var(--dark-bg);
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .lobby-hero,
+body[data-theme='dark'] .setup-header,
+body[data-theme='dark'] .summary-header {
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .lobby-hero h1,
+body[data-theme='dark'] .setup-title,
+body[data-theme='dark'] .summary-title,
+body[data-theme='dark'] .app-error h2,
+body[data-theme='dark'] .commissioner-title,
+body[data-theme='dark'] .entry-section-title,
+body[data-theme='dark'] .team-select-name,
+body[data-theme='dark'] .lobby-team-name,
+body[data-theme='dark'] .confirm-modal h2 {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .lobby-kicker,
+body[data-theme='dark'] .lobby-subtitle,
+body[data-theme='dark'] .entry-section-subtitle,
+body[data-theme='dark'] .commissioner-subtitle,
+body[data-theme='dark'] .team-select-owner,
+body[data-theme='dark'] .lobby-team-owner,
+body[data-theme='dark'] .lobby-url-hint,
+body[data-theme='dark'] .start-hint,
+body[data-theme='dark'] .confirm-modal p {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .commissioner-access,
+body[data-theme='dark'] .owner-entry-panel,
+body[data-theme='dark'] .lobby-qr-section,
+body[data-theme='dark'] .lobby-teams-section,
+body[data-theme='dark'] .confirm-modal,
+body[data-theme='dark'] .summary-team-card,
+body[data-theme='dark'] .review-card {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.22);
+}
+
+body[data-theme='dark'] .commissioner-access:hover,
+body[data-theme='dark'] .team-select-btn:hover:not(:disabled) {
+  background: var(--dark-card-hover);
+  border-color: #4E6D9C;
+}
+
+body[data-theme='dark'] .commissioner-icon {
+  color: #FDE68A;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+body[data-theme='dark'] .team-select-order,
+body[data-theme='dark'] .entry-connected-chip,
+body[data-theme='dark'] .lobby-team-order {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+  color: #D6DEEA;
+}
+
+body[data-theme='dark'] .team-select-btn,
+body[data-theme='dark'] .lobby-team-row,
+body[data-theme='dark'] .qr-frame,
+body[data-theme='dark'] .confirm-cancel-btn {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .team-select-btn.active,
+body[data-theme='dark'] .lobby-team-row.connected {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+body[data-theme='dark'] .lobby-state-pill,
+body[data-theme='dark'] .team-select-badge {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #A7F3D0;
+}
+
+body[data-theme='dark'] .lobby-state-pill.live {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.32);
+  color: #FCA5A5;
+}
+
+body[data-theme='dark'] .lobby-url,
+body[data-theme='dark'] .lobby-panel-header {
+  color: var(--dark-blue);
+}
+
+body[data-theme='dark'] .mobile-view,
+body[data-theme='dark'] .pd-view,
+body[data-theme='dark'] .draft-columns {
+  background: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .mobile-block-strip,
+body[data-theme='dark'] .mobile-block-strip.waiting,
+body[data-theme='dark'] .mobile-tabbar,
+body[data-theme='dark'] .pd-left,
+body[data-theme='dark'] .pd-right,
+body[data-theme='dark'] .right-col,
+body[data-theme='dark'] .center-col,
+body[data-theme='dark'] .teams-col {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .mobile-block-strip.active,
+body[data-theme='dark'] .mobile-block-strip.your-turn,
+body[data-theme='dark'] .mobile-nom-search-wrap {
+  background: var(--dark-panel-2);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .mobile-team-row,
+body[data-theme='dark'] .mobile-player-row,
+body[data-theme='dark'] .mobile-watchlist-row,
+body[data-theme='dark'] .log-entry,
+body[data-theme='dark'] .pd-block-card,
+body[data-theme='dark'] .pd-team-grid-card,
+body[data-theme='dark'] .pd-player-row,
+body[data-theme='dark'] .pd-watchlist-row,
+body[data-theme='dark'] .team-card,
+body[data-theme='dark'] .nom-queue,
+body[data-theme='dark'] .nom-search,
+body[data-theme='dark'] .right-content,
+body[data-theme='dark'] .player-row,
+body[data-theme='dark'] .no-player-card,
+body[data-theme='dark'] .no-stats,
+body[data-theme='dark'] .no-team-card,
+body[data-theme='dark'] .no-winner-panel,
+body[data-theme='dark'] .my-team-panel,
+body[data-theme='dark'] .roster-modal,
+body[data-theme='dark'] .player-card {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .mobile-team-name,
+body[data-theme='dark'] .mobile-player-name,
+body[data-theme='dark'] .mobile-watchlist-name,
+body[data-theme='dark'] .mobile-block-name,
+body[data-theme='dark'] .pd-player-name,
+body[data-theme='dark'] .pd-tgc-name,
+body[data-theme='dark'] .pd-block-name,
+body[data-theme='dark'] .log-player-name,
+body[data-theme='dark'] .team-name,
+body[data-theme='dark'] .player-row-name,
+body[data-theme='dark'] .no-player-name,
+body[data-theme='dark'] .no-team-name,
+body[data-theme='dark'] .my-team-name,
+body[data-theme='dark'] .roster-modal h2,
+body[data-theme='dark'] .player-card h2 {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .mobile-team-owner,
+body[data-theme='dark'] .mobile-player-nfl,
+body[data-theme='dark'] .mobile-block-team,
+body[data-theme='dark'] .pd-tgc-owner,
+body[data-theme='dark'] .pd-player-nfl,
+body[data-theme='dark'] .log-nfl-team,
+body[data-theme='dark'] .team-owner,
+body[data-theme='dark'] .player-row-team,
+body[data-theme='dark'] .no-nfl-team,
+body[data-theme='dark'] .no-team-owner,
+body[data-theme='dark'] .col-heading,
+body[data-theme='dark'] .pd-col-heading {
+  color: var(--dark-text-muted);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .mobile-search-input,
+body[data-theme='dark'] .pd-search-input,
+body[data-theme='dark'] .nom-search-input,
+body[data-theme='dark'] .setup-input,
+body[data-theme='dark'] .setup-select {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .mobile-search-input::placeholder,
+body[data-theme='dark'] .pd-search-input::placeholder,
+body[data-theme='dark'] .nom-search-input::placeholder,
+body[data-theme='dark'] .setup-input::placeholder {
+  color: var(--dark-text-faint);
+}
+
+body[data-theme='dark'] .mobile-tab,
+body[data-theme='dark'] .pd-tab,
+body[data-theme='dark'] .right-tab {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .mobile-tab.active,
+body[data-theme='dark'] .pd-tab.active,
+body[data-theme='dark'] .right-tab.active {
+  background: #244267;
+  color: #DBEAFF;
+}
+
+body[data-theme='dark'] .info-btn,
+body[data-theme='dark'] .watch-btn,
+body[data-theme='dark'] .pos-filter-btn {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+  color: #D6DEEA;
+}
+
+body[data-theme='dark'] .pos-filter-btn.active,
+body[data-theme='dark'] .watch-btn.watched {
+  background: #1B3A6B;
+  border-color: #5B7FB4;
+  color: #FFFFFF;
+}
+
+body[data-theme='dark'] .pos-QB { background: rgba(22, 101, 52, 0.34); color: #BBF7D0; }
+body[data-theme='dark'] .pos-RB { background: rgba(30, 64, 175, 0.42); color: #BFDBFE; }
+body[data-theme='dark'] .pos-WR { background: rgba(91, 33, 182, 0.42); color: #DDD6FE; }
+body[data-theme='dark'] .pos-TE { background: rgba(146, 64, 14, 0.42); color: #FDE68A; }
+
+body[data-theme='dark'] .draft-topbar,
+body[data-theme='dark'] .pd-topbar {
+  background: #173866;
+  border-color: #0E2748;
+}
+
+body[data-theme='dark'] .team-card,
+body[data-theme='dark'] .no-team-card {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .team-card:hover,
+body[data-theme='dark'] .no-team-card:hover,
+body[data-theme='dark'] .search-result-row:hover:not(.sold),
+body[data-theme='dark'] .nom-search-row:hover,
+body[data-theme='dark'] .player-row:hover {
+  background: var(--dark-card-hover);
+  border-color: #4E6D9C;
+}
+
+body[data-theme='dark'] .team-card.nominating,
+body[data-theme='dark'] .no-team-card.nominating,
+body[data-theme='dark'] .no-team-card.selected {
+  background: #24314A;
+  border-color: rgba(251, 191, 36, 0.82);
+  box-shadow: inset 3px 0 0 var(--dark-amber);
+}
+
+body[data-theme='dark'] .team-card.my-team {
+  border-color: #6BA1E7;
+  box-shadow: inset 3px 0 0 #6BA1E7;
+}
+
+body[data-theme='dark'] .team-card-name,
+body[data-theme='dark'] .team-card-owner,
+body[data-theme='dark'] .result-name,
+body[data-theme='dark'] .nom-search-name,
+body[data-theme='dark'] .player-name,
+body[data-theme='dark'] .no-player-name,
+body[data-theme='dark'] .no-team-name,
+body[data-theme='dark'] .no-stat-val,
+body[data-theme='dark'] .stat-value {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .team-card-owner,
+body[data-theme='dark'] .result-team,
+body[data-theme='dark'] .nom-search-nfl,
+body[data-theme='dark'] .player-nfl-team,
+body[data-theme='dark'] .nominated-by,
+body[data-theme='dark'] .no-nfl-team,
+body[data-theme='dark'] .no-nominated-by,
+body[data-theme='dark'] .no-stat-label,
+body[data-theme='dark'] .stat-label,
+body[data-theme='dark'] .show-sold-toggle,
+body[data-theme='dark'] .log-count {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .team-card-stats .stat,
+body[data-theme='dark'] .no-team-stats .no-stat,
+body[data-theme='dark'] .no-winner-stat,
+body[data-theme='dark'] .sell-controls,
+body[data-theme='dark'] .no-sell,
+body[data-theme='dark'] .on-the-block,
+body[data-theme='dark'] .pd-block-card,
+body[data-theme='dark'] .my-player-row,
+body[data-theme='dark'] .watchlist-row,
+body[data-theme='dark'] .mobile-team-row,
+body[data-theme='dark'] .mobile-player-row,
+body[data-theme='dark'] .mobile-watchlist-row,
+body[data-theme='dark'] .pd-player-row,
+body[data-theme='dark'] .pd-team-row,
+body[data-theme='dark'] .pd-team-grid-card,
+body[data-theme='dark'] .pd-watchlist-row,
+body[data-theme='dark'] .search-result-row,
+body[data-theme='dark'] .nom-search-row,
+body[data-theme='dark'] .log-entry,
+body[data-theme='dark'] .player-row {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .sell-select,
+body[data-theme='dark'] .price-input-wrap,
+body[data-theme='dark'] .price-input,
+body[data-theme='dark'] .search-input,
+body[data-theme='dark'] .nom-search-input,
+body[data-theme='dark'] .mobile-search-input,
+body[data-theme='dark'] .pd-search-input {
+  background: var(--dark-field);
+  border-color: #3D4F68;
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .search-input:focus,
+body[data-theme='dark'] .nom-search-input:focus,
+body[data-theme='dark'] .mobile-search-input:focus,
+body[data-theme='dark'] .pd-search-input:focus {
+  border-color: #7BA7E6;
+  box-shadow: 0 0 0 2px rgba(123, 167, 230, 0.16);
+}
+
+body[data-theme='dark'] .search-input::placeholder,
+body[data-theme='dark'] .nom-search-input::placeholder,
+body[data-theme='dark'] .mobile-search-input::placeholder,
+body[data-theme='dark'] .pd-search-input::placeholder {
+  color: var(--dark-text-faint);
+}
+
+body[data-theme='dark'] .slot-pill.empty,
+body[data-theme='dark'] .no-slot-pill.empty,
+body[data-theme='dark'] .pd-tgc-pill.empty,
+body[data-theme='dark'] .my-empty-row,
+body[data-theme='dark'] .no-wtile.empty {
+  background: #223047;
+  border-color: #3A4B63;
+  color: #8090A6;
+}
+
+body[data-theme='dark'] .slot-pill.filled,
+body[data-theme='dark'] .no-slot-pill.filled,
+body[data-theme='dark'] .pd-tgc-pill.filled,
+body[data-theme='dark'] .no-wtile.filled {
+  background: #233F68;
+  border-color: #426A9C;
+  color: #BFDBFE;
+}
+
+body[data-theme='dark'] .right-tabs {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .right-content,
+body[data-theme='dark'] .center-col {
+  background: var(--dark-panel);
+}
+
+body[data-theme='dark'] .teams-col {
+  background: #101A2A;
+}
+
+body[data-theme='dark'] .no-overlay {
+  background: var(--dark-bg);
+}
+
+body[data-theme='dark'] .no-left {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .no-player-card,
+body[data-theme='dark'] .no-stats {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .no-stat {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .no-stat-val.budget,
+body[data-theme='dark'] .stat-value.budget,
+body[data-theme='dark'] .pd-team-budget,
+body[data-theme='dark'] .pd-player-sold,
+body[data-theme='dark'] .my-player-price,
+body[data-theme='dark'] .stat-value.green,
+body[data-theme='dark'] .log-price,
+body[data-theme='dark'] .result-sold-info,
+body[data-theme='dark'] .player-row-sold {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .no-stat-val.max,
+body[data-theme='dark'] .stat-value.max-bid,
+body[data-theme='dark'] .pd-team-max,
+body[data-theme='dark'] .pd-player-value,
+body[data-theme='dark'] .result-value,
+body[data-theme='dark'] .player-row-value {
+  color: var(--dark-amber);
+}
+
+body[data-theme='dark'] .cancel-nom-btn {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.46);
+  color: #FCA5A5;
+}
+
+body[data-theme='dark'] .no-price-wrap,
+body[data-theme='dark'] .no-price-input,
+body[data-theme='dark'] .add-player-input,
+body[data-theme='dark'] .add-player-select {
+  background: var(--dark-field);
+  border-color: #3D4F68;
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .no-price-dollar,
+body[data-theme='dark'] .price-dollar {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .no-bid-warning {
+  color: #FCD34D;
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.34);
+}
+
+body[data-theme='dark'] .no-bid-warning.error {
+  color: #FCA5A5;
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.34);
+}
+
+body[data-theme='dark'] .no-team-card.winner {
+  background: #214D86;
+  border-color: #8DBBFF;
+}
+
+body[data-theme='dark'] .no-team-card.winner .no-stat {
+  background: rgba(11, 18, 28, 0.32);
+}
+
+body[data-theme='dark'] .no-team-idx,
+body[data-theme='dark'] .no-slot-group-label,
+body[data-theme='dark'] .pd-team-num,
+body[data-theme='dark'] .pd-team-roster,
+body[data-theme='dark'] .pd-team-owner,
+body[data-theme='dark'] .pd-tgc-idx,
+body[data-theme='dark'] .pd-tgc-owner,
+body[data-theme='dark'] .pd-tgc-label,
+body[data-theme='dark'] .pd-rank-num,
+body[data-theme='dark'] .my-slot-label,
+body[data-theme='dark'] .my-player-nfl,
+body[data-theme='dark'] .watchlist-nfl,
+body[data-theme='dark'] .my-empty-label {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .no-team-card.winner .no-slot-group-label {
+  color: rgba(255,255,255,0.68);
+}
+
+body[data-theme='dark'] .no-wtile.new-player {
+  background: #263A58;
+  border-color: var(--dark-amber);
+}
+
+body[data-theme='dark'] .no-wtile.new-player .no-wtile-slot {
+  color: #FCD34D;
+}
+
+body[data-theme='dark'] .no-wtile.new-player .no-wtile-name {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .no-wtile.new-player .no-wtile-price {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .no-wtile.new-player .no-wtile-new {
+  background: var(--dark-amber);
+  color: #111827;
+}
+
+body[data-theme='dark'] .no-wtile.new-player {
+  animation-name: no-dark-highlight-pulse;
+}
+
+@keyframes no-dark-highlight-pulse {
+  0%   { background: #334A6D; }
+  100% { background: #263A58; }
+}
+
+body[data-theme='dark'] .pd-team-name,
+body[data-theme='dark'] .pd-tgc-name,
+body[data-theme='dark'] .pd-tgc-val,
+body[data-theme='dark'] .my-player-name,
+body[data-theme='dark'] .watchlist-player-name,
+body[data-theme='dark'] .watchlist-nominate-link {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .pd-team-row.mine,
+body[data-theme='dark'] .pd-team-grid-card.mine,
+body[data-theme='dark'] .mobile-team-row.mine {
+  border-color: #78A6E8;
+  border-left-color: #78A6E8;
+}
+
+body[data-theme='dark'] .pd-tgc-stat,
+body[data-theme='dark'] .add-player-form {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .pd-tabs {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .pd-tab.active {
+  background: #244267;
+  color: #DBEAFF;
+}
+
+body[data-theme='dark'] .pd-tab-content {
+  background: var(--dark-panel);
+}
+
+body[data-theme='dark'] .pd-player-row.sorting,
+body[data-theme='dark'] .drag-overlay-row {
+  background: #244267;
+  border-color: #78A6E8;
+}
+
+body[data-theme='dark'] .info-btn:hover,
+body[data-theme='dark'] .watch-btn:hover {
+  background: #24314A;
+  color: #FCD34D;
+}
+
+body[data-theme='dark'] .watchlist-row {
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+body[data-theme='dark'] .my-watchlist,
+body[data-theme='dark'] .pd-nom-search-wrap {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+body[data-theme='dark'] .watchlist-heading,
+body[data-theme='dark'] .watchlist-empty,
+body[data-theme='dark'] .watchlist-toggle-btn {
+  color: #FCD34D;
+}
+
+body[data-theme='dark'] .watchlist-toggle-btn {
+  border-color: rgba(251, 191, 36, 0.32);
+}
+
+body[data-theme='dark'] .pd-waiting,
+body[data-theme='dark'] .nom-turn-callout.waiting,
+body[data-theme='dark'] .nom-queue-row,
+body[data-theme='dark'] .my-empty-row {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .nom-turn-callout.soon,
+body[data-theme='dark'] .nom-queue-row.current {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.58);
+  color: #FCD34D;
+}
+
+body[data-theme='dark'] .nom-turn-callout.now,
+body[data-theme='dark'] .nom-queue-row.current.mine {
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.48);
+  color: #A7F3D0;
+}
+
+body[data-theme='dark'] .nom-queue-row.mine {
+  border-color: #78A6E8;
+}
+
+body[data-theme='dark'] .nom-queue-name,
+body[data-theme='dark'] .pd-waiting-sub,
+body[data-theme='dark'] .watchlist-confirm-text {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .nom-queue-title,
+body[data-theme='dark'] .nom-queue-round,
+body[data-theme='dark'] .nom-queue-pos,
+body[data-theme='dark'] .nom-queue-owner,
+body[data-theme='dark'] .pd-waiting-text {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .nom-queue-budget {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .nom-queue-me-badge {
+  background: #244267;
+  color: #DBEAFF;
+}
+
+body[data-theme='dark'] .my-team-stats {
+  background: #173866;
+  border: 1px solid #2E5E99;
+}
+
+body[data-theme='dark'] .my-player-row {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .my-empty-row {
+  border-style: dashed;
+}
+
+body[data-theme='dark'] .watchlist-confirm-box {
+  background: var(--dark-panel);
+  border-color: var(--dark-border);
+  box-shadow: 0 18px 42px rgba(0,0,0,0.35);
+}
+
+body[data-theme='dark'] .watchlist-confirm-text strong {
+  color: #93C5FD;
+}
+
+body[data-theme='dark'] .watchlist-confirm-no {
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .watchlist-confirm-no:hover {
+  border-color: #78A6E8;
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .mobile-team-stats {
+  background: transparent;
+  border: none;
+}
+
+body[data-theme='dark'] .mobile-team-row:active {
+  background: var(--dark-card-hover);
+}
+
+body[data-theme='dark'] .mobile-team-num,
+body[data-theme='dark'] .mobile-team-roster,
+body[data-theme='dark'] .mobile-team-arrow {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .mobile-team-budget {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .mobile-team-max {
+  color: var(--dark-amber);
+}
+
+body[data-theme='dark'] .roster-modal-overlay {
+  background: rgba(0, 0, 0, 0.62);
+}
+
+body[data-theme='dark'] .roster-modal {
+  background: var(--dark-panel);
+  border-color: var(--dark-border);
+  box-shadow: 0 22px 48px rgba(0,0,0,0.42);
+}
+
+body[data-theme='dark'] .roster-modal-header {
+  background: #173866;
+  border-color: #2E5E99;
+}
+
+body[data-theme='dark'] .roster-modal-team-name,
+body[data-theme='dark'] .roster-stat-value,
+body[data-theme='dark'] .roster-player-name {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .roster-modal-owner,
+body[data-theme='dark'] .roster-stat-label,
+body[data-theme='dark'] .slot-group-label,
+body[data-theme='dark'] .roster-nfl-team,
+body[data-theme='dark'] .roster-empty-label {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .roster-stat-value.green,
+body[data-theme='dark'] .roster-price {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .roster-stat-value.yellow {
+  color: var(--dark-amber);
+}
+
+body[data-theme='dark'] .roster-modal-close {
+  color: #CBD5E1;
+}
+
+body[data-theme='dark'] .roster-modal-close:hover {
+  color: var(--dark-text);
+  background: rgba(255,255,255,0.08);
+}
+
+body[data-theme='dark'] .roster-modal-body {
+  background: var(--dark-panel);
+}
+
+body[data-theme='dark'] .roster-player-row {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .roster-empty-row {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
 }

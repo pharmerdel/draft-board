@@ -6,7 +6,7 @@
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #F8F9FC;
+  background: #EEF2F7;
   overscroll-behavior: none;
 }
 
@@ -17,7 +17,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid #E2E6EE;
+  border-bottom: 1px solid #D5DDE9;
   min-height: 60px;
   background: #FFFFFF;
 }
@@ -193,6 +193,13 @@
   overscroll-behavior: contain;
 }
 
+.mobile-block-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 /* ── All Teams tab ── */
 .mobile-all-teams {
   display: flex;
@@ -209,7 +216,7 @@
   padding: 0.65rem 0.75rem;
   background: #FFFFFF;
   border-radius: 8px;
-  border: 1px solid #E2E6EE;
+  border: 1px solid #D5DDE9;
   cursor: pointer;
   transition: border-color 0.15s;
 }

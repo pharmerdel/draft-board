@@ -497,11 +497,12 @@
   background: #FFFFFF;
   border: 1px solid #E2E6EE;
   border-radius: 10px;
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.45rem;
   transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+  min-width: 0;
 }
 
 .no-team-card.clickable {
@@ -577,6 +578,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0.4rem;
+  min-width: 0;
 }
 
 .no-team-idx {
@@ -596,7 +598,7 @@
 }
 
 .no-team-name {
-  font-size: 0.88rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #111827;
   white-space: nowrap;
@@ -605,7 +607,7 @@
 }
 
 .no-team-owner {
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   color: #9CA3AF;
   white-space: nowrap;
   overflow: hidden;
@@ -623,8 +625,11 @@
 }
 
 .no-team-stats {
-  display: flex;
-  gap: 0.5rem;
+  align-self: center;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
 }
 
 .no-stat {
@@ -633,12 +638,13 @@
   align-items: center;
   flex: 1;
   background: #F8F9FC;
-  border-radius: 5px;
-  padding: 0.3rem 0.25rem;
+  border: 1px solid #E2E6EE;
+  border-radius: 8px;
+  padding: 0.65rem 0.35rem;
 }
 
 .no-stat-val {
-  font-size: 0.95rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: #111827;
   line-height: 1;
@@ -648,26 +654,58 @@
 .no-stat-val.max    { color: #D97706; }
 
 .no-stat-label {
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   color: #9CA3AF;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-top: 2px;
+  margin-top: 0.35rem;
 }
 
 /* Slot pills */
 .no-slot-pills {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.no-slot-group {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr);
+  gap: 0.35rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.no-slot-group-label {
+  color: #9CA3AF;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.no-slot-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 3px;
+  min-width: 0;
 }
 
 .no-slot-pill {
-  font-size: 0.55rem;
-  font-weight: 700;
-  padding: 1px 3px;
-  border-radius: 3px;
+  height: 1.35rem;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.53rem;
+  font-weight: 800;
+  padding: 0 2px;
+  border-radius: 4px;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .no-slot-pill.filled {

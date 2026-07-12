@@ -117,6 +117,7 @@ export default function MobileView({
   selectedTeamId, nominatingTeamId,
   onNominate, watchlist, onToggleWatch,
   personalRanks, onSavePersonalRanks,
+  themeToggle,
 }) {
   const [tab, setTab]               = useState('myteam');
   const [confirmPlayer, setConfirmPlayer]     = useState(null);
@@ -234,6 +235,7 @@ export default function MobileView({
             <div className="mobile-block-right">
               <span className="mobile-block-sold-label">SOLD</span>
               <span className="mobile-block-sold-price">${soldNotif.pricePaid}</span>
+              {themeToggle && <span className="mobile-theme-slot">{themeToggle}</span>}
             </div>
           </>
         ) : nominatedPlayer ? (
@@ -258,13 +260,17 @@ export default function MobileView({
               {nominatedPlayer.projectedValue && (
                 <span className="mobile-block-value">Proj ${nominatedPlayer.projectedValue}</span>
               )}
+              {themeToggle && <span className="mobile-theme-slot">{themeToggle}</span>}
             </div>
           </>
         ) : nominatingTeamId === selectedTeamId ? (
-          <span className="mobile-block-your-turn">
-            <Target size={16} strokeWidth={2.2} />
-            It's your turn - nominate a player below
-          </span>
+          <>
+            <span className="mobile-block-your-turn">
+              <Target size={16} strokeWidth={2.2} />
+              It's your turn - nominate a player below
+            </span>
+            {themeToggle && <span className="mobile-theme-slot">{themeToggle}</span>}
+          </>
         ) : (
           <>
             <span className="mobile-block-waiting">
@@ -272,7 +278,10 @@ export default function MobileView({
               Waiting for nomination
               {nominatingTeam && ` — ${nominatingTeam.name}'s pick`}
             </span>
-            <TimerDisplay draft={draft} />
+            <span className="mobile-block-actions">
+              <TimerDisplay draft={draft} />
+              {themeToggle && <span className="mobile-theme-slot">{themeToggle}</span>}
+            </span>
           </>
         )}
       </div>

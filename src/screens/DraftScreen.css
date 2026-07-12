@@ -126,7 +126,7 @@
   height: calc(100vh - var(--draft-topbar-height));
   height: calc(100dvh - var(--draft-topbar-height));
   overflow: hidden;
-  background: #F8F9FC;
+  background: #EEF2F7;
 }
 
 .col-heading {

@@ -6,7 +6,7 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background: #F8F9FC;
+  background: #EEF2F7;
 }
 
 .pd-topbar {
@@ -79,7 +79,7 @@
 
 /* ── Left: On the Block ── */
 .pd-left {
-  border-right: 1px solid #E2E6EE;
+  border-right: 1px solid #D5DDE9;
   display: flex;
   flex-direction: column;
   gap: 1rem;
