@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { TriangleAlert, X } from 'lucide-react';
 import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
 import { fetchFantasyProsPlayerNewsFromApi } from '../utils/fantasyProsNews';
 import './PlayerCard.css';
@@ -73,14 +74,17 @@ export default function PlayerCard({ player, onClose }) {
             <span className="pc-team">{player.nflTeam}</span>
             {player.injuryStatus && (
               <span className={`pc-injury-row inj-${injClass(player.injuryStatus)}`}>
-                ⚠ {player.injuryStatus}{player.injuryBodyPart ? ` · ${player.injuryBodyPart}` : ''}
+                <TriangleAlert size={14} strokeWidth={2.2} />
+                {player.injuryStatus}{player.injuryBodyPart ? ` · ${player.injuryBodyPart}` : ''}
               </span>
             )}
             {player.status === 'sold' && (
               <span className="pc-sold-badge">Sold ${player.soldPrice}</span>
             )}
           </div>
-          <button className="pc-close" onClick={onClose}>✕</button>
+          <button className="pc-close" onClick={onClose} aria-label="Close player details">
+            <X size={20} strokeWidth={2.2} />
+          </button>
         </div>
 
         <div className="pc-body">

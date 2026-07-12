@@ -16,6 +16,18 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  ArrowRight,
+  ClipboardList,
+  GripVertical,
+  History,
+  Hourglass,
+  Info,
+  Shield,
+  Star,
+  Target,
+  UserRound,
+} from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
@@ -68,7 +80,9 @@ function SortableMobilePlayerRow({ p, rank, teams, watchlist, onToggleWatch, onC
       style={style}
       className={`mobile-player-row ${p.status === 'sold' ? 'sold' : ''} ${isSorting ? 'sorting' : ''}`}
     >
-      <span className="mobile-drag-handle" {...attributes} {...listeners}>⠿</span>
+      <span className="mobile-drag-handle" {...attributes} {...listeners} aria-label="Drag to reorder">
+        <GripVertical size={18} strokeWidth={2.1} />
+      </span>
       <span className="mobile-rank-num">{rank}</span>
       <span className={`result-pos pos-${p.position}`}>{p.position}{p.positionalRank}</span>
       <span className="mobile-player-name">
@@ -82,12 +96,16 @@ function SortableMobilePlayerRow({ p, rank, teams, watchlist, onToggleWatch, onC
         ? <span className="mobile-player-sold">{teams[p.soldTo]?.name} · ${p.soldPrice}</span>
         : p.projectedValue && <span className="mobile-player-value">${p.projectedValue}</span>
       }
-      <button className="info-btn" onClick={e => { e.stopPropagation(); onCardOpen(p); }}>ⓘ</button>
+      <button className="info-btn" onClick={e => { e.stopPropagation(); onCardOpen(p); }} aria-label={`Open details for ${p.name}`}>
+        <Info size={16} strokeWidth={2.1} />
+      </button>
       {p.status !== 'sold' && (
         <button
           className={`watch-btn ${watchlist?.[p.id] ? 'watched' : ''}`}
           onClick={e => { e.stopPropagation(); onToggleWatch(p.id); }}
-        >★</button>
+        >
+          <Star size={16} strokeWidth={2.1} />
+        </button>
       )}
     </div>
   );
@@ -210,7 +228,7 @@ export default function MobileView({
             <div className="mobile-block-left">
               <div className="mobile-block-sold-info">
                 <span className="mobile-block-sold-player">{soldNotif.playerName}</span>
-                <span className="mobile-block-sold-arrow">→ {soldNotif.teamName}</span>
+                <span className="mobile-block-sold-arrow"><ArrowRight size={13} strokeWidth={2.2} /> {soldNotif.teamName}</span>
               </div>
             </div>
             <div className="mobile-block-right">
@@ -244,12 +262,14 @@ export default function MobileView({
           </>
         ) : nominatingTeamId === selectedTeamId ? (
           <span className="mobile-block-your-turn">
-            🎯 It's your turn — nominate a player below
+            <Target size={16} strokeWidth={2.2} />
+            It's your turn - nominate a player below
           </span>
         ) : (
           <>
             <span className="mobile-block-waiting">
-              ⏳ Waiting for nomination
+              <Hourglass size={15} strokeWidth={2.1} />
+              Waiting for nomination
               {nominatingTeam && ` — ${nominatingTeam.name}'s pick`}
             </span>
             <TimerDisplay draft={draft} />
@@ -354,12 +374,16 @@ export default function MobileView({
                       ? <span className="mobile-player-sold">{teams[p.soldTo]?.name} · ${p.soldPrice}</span>
                       : p.projectedValue && <span className="mobile-player-value">${p.projectedValue}</span>
                     }
-                    <button className="info-btn" onClick={e => { e.stopPropagation(); setCardPlayer(p); }}>ⓘ</button>
+                    <button className="info-btn" onClick={e => { e.stopPropagation(); setCardPlayer(p); }} aria-label={`Open details for ${p.name}`}>
+                      <Info size={16} strokeWidth={2.1} />
+                    </button>
                     {p.status !== 'sold' && (
                       <button
                         className={`watch-btn ${watchlist?.[p.id] ? 'watched' : ''}`}
                         onClick={e => { e.stopPropagation(); onToggleWatch(p.id); }}
-                      >★</button>
+                      >
+                        <Star size={16} strokeWidth={2.1} />
+                      </button>
                     )}
                   </div>
                 ))}
@@ -403,7 +427,7 @@ export default function MobileView({
                     if (!p) return null;
                     return (
                       <div className="mobile-player-row mobile-drag-overlay-row">
-                        <span className="mobile-drag-handle">⠿</span>
+                        <span className="mobile-drag-handle"><GripVertical size={18} strokeWidth={2.1} /></span>
                         <span className={`result-pos pos-${p.position}`}>{p.position}{p.positionalRank}</span>
                         <span className="mobile-player-name">{p.name}</span>
                         <span className="mobile-player-nfl">{p.nflTeam}</span>
@@ -452,7 +476,7 @@ export default function MobileView({
               return (
                 <>
                   <div className="mobile-watchlist-header">
-                    <p className="mobile-watchlist-heading">⭐ Watchlist</p>
+                    <p className="mobile-watchlist-heading"><Star size={15} strokeWidth={2.2} /> Watchlist</p>
                     {draftedCount > 0 && (
                       <button className="watchlist-toggle-btn" onClick={() => setShowDraftedWatch(s => !s)}>
                         {showDraftedWatch ? 'Hide drafted' : `Show drafted (${draftedCount})`}
@@ -479,7 +503,11 @@ export default function MobileView({
                             <span className="mobile-watchlist-nfl">{p.nflTeam}</span>
                             {p.status === 'sold'
                               ? <span className="mobile-watchlist-sold">SOLD ${p.soldPrice}</span>
-                              : <button className="watch-btn watched" onClick={() => onToggleWatch(playerId)}>★</button>
+                              : (
+                                <button className="watch-btn watched" onClick={() => onToggleWatch(playerId)} aria-label={`Remove ${p.name} from watchlist`}>
+                                  <Star size={16} strokeWidth={2.1} />
+                                </button>
+                              )
                             }
                           </div>
                         );
@@ -512,18 +540,20 @@ export default function MobileView({
       {/* ── Bottom tab bar ── */}
       <div className="mobile-tabbar">
         {[
-          { id: 'myteam',   label: 'My Team',   icon: '👤' },
-          { id: 'allteams', label: 'All Teams',  icon: '🏈' },
-          { id: 'players',  label: 'Players',    icon: '📋' },
-          { id: 'watchlist',label: 'Watchlist',  icon: '⭐' },
-          { id: 'log',      label: 'Log',        icon: '📝' },
+          { id: 'myteam',   label: 'My Team',   icon: UserRound },
+          { id: 'allteams', label: 'All Teams',  icon: Shield },
+          { id: 'players',  label: 'Players',    icon: ClipboardList },
+          { id: 'watchlist',label: 'Watchlist',  icon: Star },
+          { id: 'log',      label: 'Log',        icon: History },
         ].map(t => (
           <button
             key={t.id}
             className={`mobile-tab ${tab === t.id ? 'active' : ''}`}
             onClick={() => setTab(t.id)}
           >
-            <span className="mobile-tab-icon">{t.icon}</span>
+            <span className="mobile-tab-icon">
+              <t.icon size={19} strokeWidth={tab === t.id ? 2.5 : 2.1} />
+            </span>
             <span className="mobile-tab-label">{t.label}</span>
           </button>
         ))}

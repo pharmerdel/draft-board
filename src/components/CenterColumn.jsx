@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
+import { Info } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import './CenterColumn.css';
 
@@ -243,7 +244,10 @@ export default function CenterColumn({
               className="info-btn"
               onClick={e => { e.stopPropagation(); setCardPlayer(player); }}
               title="Player stats"
-            >ⓘ</button>
+              aria-label={`Open details for ${player.name}`}
+            >
+              <Info size={16} strokeWidth={2.1} />
+            </button>
             {player.status === 'available' && (
               <button className="nominate-btn">+</button>
             )}

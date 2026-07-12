@@ -171,6 +171,9 @@
 }
 
 .watchlist-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-size: 0.72rem;
   font-weight: 800;
   color: #92400E;
@@ -246,16 +249,25 @@
   background: transparent;
   border: none;
   color: #C8D0DE;
-  font-size: 1rem;
   cursor: pointer;
   padding: 0;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  transition: color 0.15s;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
   text-align: right;
 }
 
-.watch-btn:hover { color: #F59E0B; }
+.watch-btn:hover {
+  color: #F59E0B;
+  background: #FFFBEB;
+}
 .watch-btn.watched { color: #F59E0B; }
+.watch-btn.watched svg { fill: currentColor; }
 
 /* Nominate confirmation popup */
 .watchlist-confirm-overlay {

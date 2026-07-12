@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import './TeamDetailModal.css';
 
 const SLOT_ORDER  = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
@@ -56,7 +57,9 @@ export default function TeamDetailModal({ team, onClose }) {
               <span className="tdm-stat-label">Roster</span>
             </div>
           </div>
-          <button className="tdm-close" onClick={onClose}>✕</button>
+          <button className="tdm-close" onClick={onClose} aria-label="Close team details">
+            <X size={20} strokeWidth={2.2} />
+          </button>
         </div>
 
         <div className="tdm-tiles">

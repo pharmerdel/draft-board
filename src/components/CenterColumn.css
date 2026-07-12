@@ -315,14 +315,22 @@
   background: transparent;
   border: none;
   color: #1B3A6B;
-  font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  transition: color 0.15s;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
 }
 
-.info-btn:hover { color: #142D54; }
+.info-btn:hover {
+  color: #142D54;
+  background: #EEF3FA;
+}
 
 .nominate-btn {
   background: #1B3A6B;

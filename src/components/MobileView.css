@@ -2,8 +2,12 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
   background: #F8F9FC;
+  overscroll-behavior: none;
 }
 
 /* ── On the block strip ── */
@@ -48,6 +52,9 @@
 }
 
 .mobile-block-sold-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
   font-size: 0.78rem;
   font-weight: 600;
   color: rgba(255,255,255,0.8);
@@ -76,6 +83,9 @@
 }
 
 .mobile-block-your-turn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.9rem;
   font-weight: 700;
   color: #92400E;
@@ -166,6 +176,9 @@
 }
 
 .mobile-block-waiting {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.85rem;
   color: #9CA3AF;
   font-style: italic;
@@ -174,7 +187,10 @@
 /* ── Content area ── */
 .mobile-content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* ── All Teams tab ── */
@@ -320,9 +336,11 @@
 .mobile-player-row.sold { opacity: 0.55; }
 
 .mobile-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #B0B8C8;
   cursor: grab;
-  font-size: 1.1rem;
   line-height: 1;
   user-select: none;
   touch-action: none;
@@ -359,28 +377,45 @@
   background: transparent;
   border: none;
   color: #C8D0DE;
-  font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  transition: color 0.15s;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
 }
 
-.info-btn:hover { color: #1B3A6B; }
+.info-btn:hover {
+  color: #1B3A6B;
+  background: #EEF3FA;
+}
 
 .watch-btn {
   background: transparent;
   border: none;
   color: #C8D0DE;
-  font-size: 1rem;
   cursor: pointer;
   padding: 0;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  transition: color 0.15s;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
 }
 
-.watch-btn:hover { color: #F59E0B; }
+.watch-btn:hover {
+  color: #F59E0B;
+  background: #FFFBEB;
+}
 .watch-btn.watched { color: #F59E0B; }
+.watch-btn.watched svg { fill: currentColor; }
 
 .mobile-player-name {
   font-size: 0.88rem;
@@ -428,6 +463,9 @@
 .watchlist-toggle-btn:hover { background: #FEF3C7; }
 
 .mobile-watchlist-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-size: 0.72rem;
   font-weight: 800;
   color: #92400E;
@@ -502,7 +540,8 @@
   display: flex;
   border-top: 1px solid #E2E6EE;
   background: #FFFFFF;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.35rem);
+  box-shadow: 0 -8px 22px rgba(17, 24, 39, 0.07);
 }
 
 .mobile-tab {
@@ -510,26 +549,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 0.5rem 0.25rem;
+  gap: 3px;
+  padding: 0.42rem 0.25rem 0.36rem;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: background 0.15s;
+  color: #9CA3AF;
+  transition: color 0.15s, background 0.15s;
 }
 
 .mobile-tab.active {
-  background: #F0F4FA;
+  background: #F4F7FB;
+  color: #1B3A6B;
 }
 
 .mobile-tab-icon {
-  font-size: 1.1rem;
+  width: 34px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: currentColor;
+  transition: background 0.15s;
+}
+
+.mobile-tab.active .mobile-tab-icon {
+  background: #E6EDF8;
 }
 
 .mobile-tab-label {
   font-size: 0.65rem;
   font-weight: 600;
-  color: #9CA3AF;
+  color: currentColor;
   letter-spacing: 0.03em;
 }
 

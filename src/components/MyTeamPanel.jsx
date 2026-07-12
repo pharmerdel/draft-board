@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Star } from 'lucide-react';
 import './MyTeamPanel.css';
 
 const SLOT_ORDER = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
@@ -100,7 +101,7 @@ export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, s
         return (
           <div className="my-watchlist">
             <div className="watchlist-header-row">
-              <span className="watchlist-heading">⭐ Watchlist</span>
+              <span className="watchlist-heading"><Star size={15} strokeWidth={2.2} /> Watchlist</span>
               {draftedCount > 0 && (
                 <button className="watchlist-toggle-btn" onClick={() => setShowDraftedWatch(s => !s)}>
                   {showDraftedWatch ? 'Hide drafted' : `+${draftedCount} drafted`}
@@ -127,7 +128,11 @@ export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, s
                       <span className="watchlist-nfl">{p.nflTeam}</span>
                       {p.status === 'sold'
                         ? <span className="watchlist-sold">SOLD ${p.soldPrice}</span>
-                        : <button className="watch-btn watched" onClick={() => onToggleWatch(playerId)}>★</button>
+                        : (
+                          <button className="watch-btn watched" onClick={() => onToggleWatch(playerId)} aria-label={`Remove ${p.name} from watchlist`}>
+                            <Star size={16} strokeWidth={2.1} />
+                          </button>
+                        )
                       }
                     </div>
                   );

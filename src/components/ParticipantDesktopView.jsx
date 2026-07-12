@@ -16,6 +16,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { ArrowRight, GripVertical, Hourglass, Info, Star } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import TeamDetailModal from './TeamDetailModal';
@@ -68,7 +69,9 @@ function SortablePlayerRow({ p, rank, teams, watchlist, onToggleWatch, onCardOpe
       style={style}
       className={`pd-player-row ${p.status === 'sold' ? 'sold' : ''} ${isSorting ? 'sorting' : ''}`}
     >
-      <span className="pd-drag-handle" {...attributes} {...listeners} title="Drag to reorder">⠿</span>
+      <span className="pd-drag-handle" {...attributes} {...listeners} title="Drag to reorder">
+        <GripVertical size={18} strokeWidth={2.1} />
+      </span>
       <span className="pd-rank-num">{rank}</span>
       <span className={`result-pos pos-${p.position}`}>{p.position}{p.positionalRank}</span>
       <span className="pd-player-name">
@@ -82,12 +85,16 @@ function SortablePlayerRow({ p, rank, teams, watchlist, onToggleWatch, onCardOpe
         ? <span className="pd-player-sold">{teams[p.soldTo]?.name} · ${p.soldPrice}</span>
         : p.projectedValue && <span className="pd-player-value">${p.projectedValue}</span>
       }
-      <button className="info-btn" onClick={e => { e.stopPropagation(); onCardOpen(p); }}>ⓘ</button>
+      <button className="info-btn" onClick={e => { e.stopPropagation(); onCardOpen(p); }} aria-label={`Open details for ${p.name}`}>
+        <Info size={16} strokeWidth={2.1} />
+      </button>
       {p.status !== 'sold' && (
         <button
           className={`watch-btn ${watchlist?.[p.id] ? 'watched' : ''}`}
           onClick={e => { e.stopPropagation(); onToggleWatch(p.id); }}
-        >★</button>
+        >
+          <Star size={16} strokeWidth={2.1} />
+        </button>
       )}
     </div>
   );
@@ -241,7 +248,7 @@ export default function ParticipantDesktopView({
               <div className="pd-block-details">
                 <span className="pd-sold-badge">SOLD</span>
                 <h1 className="pd-sold-player-name">{soldNotif.playerName}</h1>
-                <span className="pd-sold-arrow">→ {soldNotif.teamName}</span>
+                <span className="pd-sold-arrow"><ArrowRight size={14} strokeWidth={2.2} /> {soldNotif.teamName}</span>
                 <span className="pd-sold-price">${soldNotif.pricePaid}</span>
               </div>
             </div>
@@ -274,7 +281,7 @@ export default function ParticipantDesktopView({
             </div>
           ) : (
             <div className="pd-waiting">
-              <p className="pd-waiting-text">⏳ Waiting for nomination</p>
+              <p className="pd-waiting-text"><Hourglass size={16} strokeWidth={2.1} /> Waiting for nomination</p>
               {nominatingTeam && (
                 <p className="pd-waiting-sub">{nominatingTeam.name}'s pick</p>
               )}
@@ -403,12 +410,16 @@ export default function ParticipantDesktopView({
                           ? <span className="pd-player-sold">{teams[p.soldTo]?.name} · ${p.soldPrice}</span>
                           : p.projectedValue && <span className="pd-player-value">${p.projectedValue}</span>
                         }
-                        <button className="info-btn" onClick={e => { e.stopPropagation(); setCardPlayer(p); }}>ⓘ</button>
+                        <button className="info-btn" onClick={e => { e.stopPropagation(); setCardPlayer(p); }} aria-label={`Open details for ${p.name}`}>
+                          <Info size={16} strokeWidth={2.1} />
+                        </button>
                         {p.status !== 'sold' && (
                           <button
                             className={`watch-btn ${watchlist?.[p.id] ? 'watched' : ''}`}
                             onClick={e => { e.stopPropagation(); onToggleWatch(p.id); }}
-                          >★</button>
+                          >
+                            <Star size={16} strokeWidth={2.1} />
+                          </button>
                         )}
                       </div>
                     ))}
@@ -447,7 +458,7 @@ export default function ParticipantDesktopView({
                         if (!p) return null;
                         return (
                           <div className="pd-player-row drag-overlay-row">
-                            <span className="pd-drag-handle">⠿</span>
+                            <span className="pd-drag-handle"><GripVertical size={18} strokeWidth={2.1} /></span>
                             <span className={`result-pos pos-${p.position}`}>{p.position}{p.positionalRank}</span>
                             <span className="pd-player-name">{p.name}</span>
                             <span className="pd-player-nfl">{p.nflTeam}</span>

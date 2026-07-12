@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { X } from 'lucide-react';
 import './RosterModal.css';
 
 const SLOT_ORDER = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
@@ -61,7 +62,9 @@ export default function RosterModal({ team, teamId, onClose }) {
               <span className="roster-stat-value">{rosterEntries.length}/{TOTAL_DRAFT_SLOTS}</span>
             </div>
           </div>
-          <button className="roster-modal-close" onClick={onClose}>✕</button>
+          <button className="roster-modal-close" onClick={onClose} aria-label="Close roster">
+            <X size={20} strokeWidth={2.2} />
+          </button>
         </div>
 
         {/* Roster slots */}
