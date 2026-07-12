@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "ff-draft-board",
+    "production": "ff-draft-board",
+    "development": "ff-draft-board-dev"
+  }
+}

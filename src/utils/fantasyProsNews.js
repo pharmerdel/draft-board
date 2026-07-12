@@ -88,6 +88,14 @@ export async function fetchFantasyProsPlayerNewsFromApi(playerName, options = {}
   }
 }
 
+export async function checkFantasyProsNewsHealth() {
+  const response = await fetch(`${NEWS_API_BASE_URL}/api/news/health`);
+  if (!response.ok) {
+    throw new Error(`FantasyPros news health check failed: ${response.status}`);
+  }
+  return response.json();
+}
+
 function fantasyProsNewsApiUrl(playerName, options = {}) {
   const params = new URLSearchParams({ player: playerName });
   if (Number.isFinite(options.maxAgeDays)) {

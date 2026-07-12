@@ -21,26 +21,36 @@ function xSearchUrl(playerName) {
 
 function usePlayerNews(playerName) {
   const [news, setNews] = useState(undefined);
+  const [error, setError] = useState(false);
+
   useEffect(() => {
-    if (!playerName) { setNews([]); return; }
+    if (!playerName) { setNews([]); setError(false); return; }
     let cancelled = false;
+    setNews(undefined);
+    setError(false);
     fetchFantasyProsPlayerNewsFromApi(playerName, {
       fallbackToDirect: true,
       maxAgeDays: 30,
     }).then(articles => {
-      if (!cancelled) setNews(articles);
+      if (!cancelled) {
+        setNews(articles);
+        setError(false);
+      }
     }).catch(error => {
       console.error('[fantasypros-news] fetch error:', error);
-      if (!cancelled) setNews([]);
+      if (!cancelled) {
+        setNews([]);
+        setError(true);
+      }
     });
     return () => { cancelled = true; };
   }, [playerName]);
-  return { news, loading: news === undefined };
+  return { news, loading: news === undefined, error };
 }
 
 export default function PlayerCard({ player, onClose }) {
   const { stats, proj, loading } = usePlayerStats(player.sleeperPlayerId);
-  const { news, loading: newsLoading } = usePlayerNews(player.name);
+  const { news, loading: newsLoading, error: newsError } = usePlayerNews(player.name);
   const pos = player.position;
 
   return (
@@ -95,6 +105,8 @@ export default function PlayerCard({ player, onClose }) {
             </div>
             {newsLoading ? (
               <p className="pc-loading">Loading news…</p>
+            ) : newsError ? (
+              <p className="pc-unavailable">News service unavailable. Use X Search for current updates.</p>
             ) : !news || news.length === 0 ? (
               <p className="pc-unavailable">No player-specific updates in the past 30 days.</p>
             ) : (
