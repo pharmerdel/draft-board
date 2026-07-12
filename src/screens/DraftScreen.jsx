@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, update, set, push, remove } from 'firebase/database';
+import { Download, Flag, RotateCcw, Save } from 'lucide-react';
 import { db } from '../firebase';
 import TeamsColumn from '../components/TeamsColumn';
 import CenterColumn from '../components/CenterColumn';
@@ -368,8 +369,9 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
         <div className="draft-screen">
           <div className="draft-topbar">
             <span className="draft-league-name">{draft.leagueName}</span>
-            <span className="draft-status-badge">
-              {complete ? '✅ Complete' : '🔴 Live'}
+            <span className={`draft-status-badge ${complete ? 'complete' : 'live'}`}>
+              <span className="draft-status-dot" />
+              {complete ? 'Complete' : 'Live'}
             </span>
             <DraftClock startedAt={draft.startedAt} />
             <NominationTimer
@@ -387,14 +389,16 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
                 downloadCsv(csv, `${draft.leagueName.replace(/\s+/g, '-')}-draft-${date}.csv`);
               }}
             >
-              ⬇ Export CSV
+              <Download size={15} strokeWidth={2.2} />
+              Export CSV
             </button>
             <button
               className="export-csv-btn backup-btn"
               onClick={downloadBackup}
               title="Download a backup JSON file. Restore it from the Setup screen if needed."
             >
-              💾 Backup
+              <Save size={15} strokeWidth={2.2} />
+              Backup
             </button>
             <button
               className="export-csv-btn"
@@ -402,7 +406,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
               disabled={!Object.values(log).some(e => e.type === 'sold')}
               title="Undo last pick"
             >
-              ↩ Undo
+              <RotateCcw size={15} strokeWidth={2.2} />
+              Undo
             </button>
             <button
               className="end-draft-btn"
@@ -412,7 +417,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear }) {
                 }
               }}
             >
-              🏁 End Draft
+              <Flag size={15} strokeWidth={2.2} />
+              End Draft
             </button>
             <ResetButton compact onTeamClear={onTeamClear} />
           </div>

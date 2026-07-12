@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import './NominationTimer.css';
 
 // Commissioner-facing timer component with controls
@@ -67,7 +68,8 @@ export default function NominationTimer({
           {/* Skip button — only appears when timer has expired */}
           {isExpired && (
             <button className="nom-timer-skip-btn" onClick={onSkip}>
-              Skip →
+              Skip
+              <ArrowRight size={14} strokeWidth={2.4} />
             </button>
           )}
         </div>

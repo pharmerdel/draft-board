@@ -16,7 +16,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowRight, GripVertical, Hourglass, Info, Star } from 'lucide-react';
+import { ArrowRight, ClipboardList, GripVertical, History, Hourglass, Info, Shield, Star, UserRound } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import TeamDetailModal from './TeamDetailModal';
@@ -228,7 +228,10 @@ export default function ParticipantDesktopView({
             <span className="pd-stat-pill yellow">Max ${maxBid(myTeam)}</span>
           </div>
         )}
-        <span className="pd-status-badge">🔴 Live</span>
+        <span className="pd-status-badge">
+          <span className="pd-status-dot" />
+          Live
+        </span>
       </div>
 
       <div className="pd-columns">
@@ -301,16 +304,17 @@ export default function ParticipantDesktopView({
         <div className="pd-right">
           <div className="pd-tabs">
             {[
-              { id: 'myteam',   label: 'My Team' },
-              { id: 'allteams', label: 'All Teams' },
-              { id: 'players',  label: 'Players' },
-              { id: 'log',      label: 'Draft Log' },
+              { id: 'myteam',   label: 'My Team', icon: UserRound },
+              { id: 'allteams', label: 'All Teams', icon: Shield },
+              { id: 'players',  label: 'Players', icon: ClipboardList },
+              { id: 'log',      label: 'Draft Log', icon: History },
             ].map(t => (
               <button
                 key={t.id}
                 className={`pd-tab ${tab === t.id ? 'active' : ''}`}
                 onClick={() => setTab(t.id)}
               >
+                <t.icon size={15} strokeWidth={tab === t.id ? 2.4 : 2.1} />
                 {t.label}
               </button>
             ))}

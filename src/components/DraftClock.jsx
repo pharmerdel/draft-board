@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import './DraftClock.css';
 
 // Shows time-of-day the draft started and running elapsed time
 export default function DraftClock({ startedAt }) {
@@ -26,13 +27,9 @@ export default function DraftClock({ startedAt }) {
     : `${m}:${String(s).padStart(2, '0')}`;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
-      <span style={{ fontSize: '0.62rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-        Started {startTime}
-      </span>
-      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#aaa', fontVariantNumeric: 'tabular-nums' }}>
-        {elapsedStr}
-      </span>
+    <div className="draft-clock">
+      <span className="draft-clock-label">Started {startTime}</span>
+      <span className="draft-clock-value">{elapsedStr}</span>
     </div>
   );
 }

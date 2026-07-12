@@ -9,13 +9,16 @@
 
 .cancel-nom-btn {
   float: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   background: transparent;
   border: 1px solid #FECACA;
   color: #DC2626;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 8px;
   cursor: pointer;
   transition: background 0.15s;
   text-transform: none;
@@ -171,6 +174,10 @@
 .price-input::-webkit-inner-spin-button { display: none; }
 
 .sold-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   background: #1B3A6B;
   color: #fff;
   border: none;
@@ -179,7 +186,8 @@
   font-weight: 800;
   padding: 0.55rem 1.25rem;
   cursor: pointer;
-  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   transition: background 0.15s;
 }
 
@@ -254,7 +262,7 @@
 
 .search-result-row {
   display: grid;
-  grid-template-columns: 44px 1fr 34px auto 20px 32px;
+  grid-template-columns: 44px 1fr 34px auto 24px 32px;
   gap: 0.5rem;
   align-items: center;
   padding: 0.45rem 0.6rem;
@@ -336,9 +344,7 @@
   background: #1B3A6B;
   border: none;
   color: #FFFFFF;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  font-weight: 400;
+  border-radius: 6px;
   width: 28px;
   height: 28px;
   display: flex;
@@ -363,6 +369,9 @@
 .add-player-btn {
   margin-top: 0.75rem;
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   background: transparent;
   border: 1px dashed #C8D0DE;
   color: #9CA3AF;

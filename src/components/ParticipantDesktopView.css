@@ -49,13 +49,24 @@
 .pd-stat-pill.yellow { background: #FEF3C7; color: #92400E; }
 
 .pd-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.8rem;
-  font-weight: 600;
-  color: #FEF3C7;
-  background: #D97706;
-  border: 1px solid #F59E0B;
+  font-weight: 800;
+  color: #D1FAE5;
+  background: rgba(5,150,105,0.18);
+  border: 1px solid rgba(16,185,129,0.32);
   border-radius: 99px;
-  padding: 2px 10px;
+  padding: 3px 10px;
+}
+
+.pd-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
 }
 
 /* ── Columns ── */
@@ -259,6 +270,8 @@
 
 .pd-tabs {
   display: flex;
+  gap: 0.35rem;
+  padding: 0.45rem;
   border-bottom: 1px solid #E2E6EE;
   background: #FFFFFF;
   flex-shrink: 0;
@@ -266,20 +279,24 @@
 
 .pd-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 7px;
   color: #9CA3AF;
   font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.65rem;
+  padding: 0.45rem 0.5rem;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, background 0.15s;
 }
 
 .pd-tab.active {
   color: #1B3A6B;
-  border-bottom-color: #1B3A6B;
+  background: #F0F4FA;
 }
 
 .pd-tab-content {
@@ -379,7 +396,7 @@
   border-radius: 10px;
   padding: 0.65rem 0.75rem;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s, box-shadow 0.15s;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -387,7 +404,9 @@
 
 .pd-team-grid-card:hover {
   border-color: #1B3A6B;
-  background: #F0F4FA;
+  background: #F8FAFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.06);
 }
 
 .pd-team-grid-card.mine {

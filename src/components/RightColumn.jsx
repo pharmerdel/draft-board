@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import MyTeamPanel from './MyTeamPanel';
+import { ClipboardList, History, RotateCcw } from 'lucide-react';
 import './RightColumn.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
@@ -30,12 +30,14 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
           className={`right-tab ${tab === 'log' ? 'active' : ''}`}
           onClick={() => setTab('log')}
         >
+          <History size={15} strokeWidth={2.2} />
           Draft Log
         </button>
         <button
           className={`right-tab ${tab === 'players' ? 'active' : ''}`}
           onClick={() => setTab('players')}
         >
+          <ClipboardList size={15} strokeWidth={2.2} />
           Players
         </button>
       </div>
@@ -46,10 +48,15 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
           <div className="log-undo-row">
             <span className="log-count">{logEntries.length} picks</span>
             {!confirmUndo
-              ? <button className="undo-btn" onClick={() => setConfirmUndo(true)} disabled={logEntries.length === 0}>↩ Undo last</button>
+              ? (
+                <button className="undo-btn" onClick={() => setConfirmUndo(true)} disabled={logEntries.length === 0}>
+                  <RotateCcw size={14} strokeWidth={2.2} />
+                  Undo last
+                </button>
+              )
               : (
                 <span className="undo-confirm-row">
-                  <span style={{ color: '#fca5a5', fontSize: '0.85rem' }}>Undo last pick?</span>
+                  <span className="undo-confirm-text">Undo last pick?</span>
                   <button className="undo-confirm-yes" onClick={() => { onUndo(); setConfirmUndo(false); }}>Yes</button>
                   <button className="undo-confirm-no" onClick={() => setConfirmUndo(false)}>No</button>
                 </span>

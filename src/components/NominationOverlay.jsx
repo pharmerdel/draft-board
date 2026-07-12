@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AlertTriangle, Check, MousePointer2, X } from 'lucide-react';
 import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
 import './NominationOverlay.css';
 
@@ -128,15 +129,15 @@ export default function NominationOverlay({
               <p className="no-sell-heading">Winning Bid</p>
               <p className="no-sell-directive">
                 {winTeamId
-                  ? <span className="no-sell-selected">✓ {winningTeam?.name} selected</span>
-                  : '← Select the winning team from the grid'
+                  ? <span className="no-sell-selected"><Check size={15} strokeWidth={2.4} /> {winningTeam?.name} selected</span>
+                  : <span className="no-sell-prompt"><MousePointer2 size={15} strokeWidth={2.1} /> Select the winning team from the grid</span>
                 }
               </p>
               {exceedsBudget && (
-                <p className="no-bid-warning error">⚠ Exceeds budget (${winningTeam.budgetRemaining} left)</p>
+                <p className="no-bid-warning error"><AlertTriangle size={15} strokeWidth={2.2} /> Exceeds budget (${winningTeam.budgetRemaining} left)</p>
               )}
               {!exceedsBudget && exceedsMax && (
-                <p className="no-bid-warning">⚠ Exceeds max bid (${winningTeamMax})</p>
+                <p className="no-bid-warning"><AlertTriangle size={15} strokeWidth={2.2} /> Exceeds max bid (${winningTeamMax})</p>
               )}
               <div className="no-price-row">
                 <div className="no-price-wrap">
@@ -157,12 +158,13 @@ export default function NominationOverlay({
                   onClick={handleSell}
                   disabled={!winTeamId || priceNum < 1 || selling}
                 >
-                  {selling ? 'Saving…' : '✓ SOLD'}
+                  {selling ? 'Saving...' : <><Check size={18} strokeWidth={2.5} /> Sold</>}
                 </button>
               </div>
             </div>
             <button className="no-cancel-btn" onClick={onCancelNomination}>
-              ✕ Cancel Nomination
+              <X size={15} strokeWidth={2.2} />
+              Cancel Nomination
             </button>
           </>
         )}

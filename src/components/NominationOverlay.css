@@ -1,7 +1,7 @@
 .no-overlay {
   position: fixed;
   inset: 0;
-  top: 43px; /* below topbar */
+  top: 58px; /* below commissioner topbar */
   background: #F8F9FC;
   display: grid;
   grid-template-columns: 340px 1fr;
@@ -373,6 +373,13 @@
   font-style: italic;
 }
 
+.no-sell-prompt,
+.no-sell-selected {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .no-sell-selected {
   color: #059669;
   font-weight: 700;
@@ -380,14 +387,23 @@
 }
 
 .no-bid-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.78rem;
   font-weight: 700;
   color: #D97706;
   margin: 0;
+  padding: 0.35rem 0.5rem;
+  border-radius: 7px;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
 }
 
 .no-bid-warning.error {
   color: #DC2626;
+  background: #FEF2F2;
+  border-color: #FECACA;
 }
 
 .no-price-row {
@@ -426,6 +442,10 @@
 .no-price-input::-webkit-inner-spin-button { display: none; }
 
 .no-sold-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   background: #1B3A6B;
   color: #fff;
   border: none;
@@ -436,6 +456,7 @@
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;
+  text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 
@@ -443,18 +464,24 @@
 .no-sold-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .no-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   background: transparent;
-  border: none;
+  border: 1px solid #FECACA;
   color: #DC2626;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  padding: 0;
+  padding: 0.35rem 0.55rem;
+  border-radius: 7px;
   align-self: flex-start;
-  transition: opacity 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 }
 
-.no-cancel-btn:hover { opacity: 0.7; }
+.no-cancel-btn:hover {
+  background: #FEF2F2;
+}
 
 /* ── Right panel: team grid ── */
 .no-teams-grid {
@@ -483,7 +510,8 @@
 
 .no-team-card.clickable:hover {
   border-color: #1B3A6B;
-  background: #F0F4FA;
+  background: #F8FAFF;
+  box-shadow: 0 4px 14px rgba(17, 24, 39, 0.07);
 }
 
 .no-team-card.dimmed {
@@ -498,6 +526,12 @@
 .no-team-card.winner {
   border: 3px solid #1B3A6B;
   background: #1B3A6B;
+}
+
+.no-team-card.winner.clickable:hover {
+  border-color: #1B3A6B;
+  background: #1B3A6B;
+  box-shadow: 0 6px 18px rgba(27, 58, 107, 0.22);
 }
 
 .no-team-card.winner .no-team-name,

@@ -3,7 +3,7 @@
 .sa-info-screen {
   position: fixed;
   inset: 0;
-  top: 43px; /* below topbar */
+  top: 58px; /* below commissioner topbar */
   z-index: 300;
 }
 

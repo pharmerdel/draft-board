@@ -7,27 +7,33 @@
 
 .right-tabs {
   display: flex;
-  border-bottom: 1px solid #E2E6EE;
+  gap: 0.35rem;
   flex-shrink: 0;
   background: #FFFFFF;
+  border-bottom: 1px solid #E2E6EE;
+  padding: 0.45rem;
 }
 
 .right-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 7px;
   color: #9CA3AF;
   font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.65rem;
+  padding: 0.45rem 0.5rem;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, background 0.15s;
 }
 
 .right-tab.active {
   color: #1B3A6B;
-  border-bottom-color: #1B3A6B;
+  background: #F0F4FA;
 }
 
 .right-content {
@@ -53,6 +59,9 @@
 }
 
 .undo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   background: transparent;
   border: 1px solid #E2E6EE;
   color: #6B7280;
@@ -75,6 +84,12 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.undo-confirm-text {
+  color: #DC2626;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .undo-confirm-yes {
@@ -115,7 +130,7 @@
 .log-entry {
   background: #FFFFFF;
   border: 1px solid #E2E6EE;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.5rem 0.65rem;
   display: flex;
   flex-direction: column;
@@ -194,7 +209,7 @@
   gap: 0.4rem;
   align-items: center;
   padding: 0.35rem 0.5rem;
-  border-radius: 5px;
+  border-radius: 7px;
   background: #FFFFFF;
   font-size: 0.82rem;
   border: 1px solid transparent;

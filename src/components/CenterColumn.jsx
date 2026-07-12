@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
-import { Info } from 'lucide-react';
+import { Check, Info, Plus, X } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import './CenterColumn.css';
 
@@ -104,7 +104,8 @@ export default function CenterColumn({
         <h2 className="col-heading">
           On the Block
           <button className="cancel-nom-btn" onClick={onCancelNomination}>
-            ✕ Cancel Nomination
+            <X size={14} strokeWidth={2.2} />
+            Cancel Nomination
           </button>
         </h2>
 
@@ -166,7 +167,7 @@ export default function CenterColumn({
               onClick={handleSell}
               disabled={!winTeamId || !price || selling}
             >
-              {selling ? 'Saving…' : '✓ SOLD'}
+              {selling ? 'Saving...' : <><Check size={17} strokeWidth={2.4} /> Sold</>}
             </button>
           </div>
         </div>
@@ -249,7 +250,9 @@ export default function CenterColumn({
               <Info size={16} strokeWidth={2.1} />
             </button>
             {player.status === 'available' && (
-              <button className="nominate-btn">+</button>
+              <button className="nominate-btn" aria-label={`Nominate ${player.name}`}>
+                <Plus size={18} strokeWidth={2.4} />
+              </button>
             )}
           </div>
         ))}
@@ -263,7 +266,8 @@ export default function CenterColumn({
       {/* ── Add Player ── */}
       {!showAddForm ? (
         <button className="add-player-btn" onClick={() => setShowAddForm(true)}>
-          ＋ Add Player
+          <Plus size={15} strokeWidth={2.2} />
+          Add Player
         </button>
       ) : (
         <div className="add-player-form">

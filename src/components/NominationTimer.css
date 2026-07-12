@@ -105,6 +105,9 @@
 .nom-timer-off-btn:hover { background: rgba(220,38,38,0.2); }
 
 .nom-timer-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   background: #DC2626;
   color: #fff;
   border: none;
