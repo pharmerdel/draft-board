@@ -101,13 +101,16 @@ export default function CenterColumn({
 
     return (
       <div className="center-col">
-        <h2 className="col-heading">
-          On the Block
+        <div className="center-work-header active">
+          <div>
+            <span className="center-work-kicker">Current Auction</span>
+            <h2>On the Block</h2>
+          </div>
           <button className="cancel-nom-btn" onClick={onCancelNomination}>
             <X size={14} strokeWidth={2.2} />
-            Cancel Nomination
+            Cancel
           </button>
-        </h2>
+        </div>
 
         <div className="on-the-block">
           {/* Headshot / silhouette */}
@@ -178,12 +181,15 @@ export default function CenterColumn({
   // ── SEARCH / NOMINATION ───────────────────────────────────────────────────
   return (
     <div className="center-col">
-      <h2 className="col-heading">
-        Nominate a Player
+      <div className="center-work-header">
+        <div>
+          <span className="center-work-kicker">Nomination Queue</span>
+          <h2>Nominate a Player</h2>
+        </div>
         {nominatingTeam && (
-          <span className="nom-turn-label"> — {nominatingTeam.name}'s pick</span>
+          <span className="center-turn-pill">{nominatingTeam.name}'s pick</span>
         )}
-      </h2>
+      </div>
 
       <div className="search-bar">
         <input
@@ -216,6 +222,18 @@ export default function CenterColumn({
         </label>
       </div>
 
+      <div className="search-results-table">
+        <div className="search-results-header" aria-hidden="true">
+          <span>RK</span>
+          <span>POS</span>
+          <span>PLAYER</span>
+          <span>TEAM</span>
+          <span>VALUE</span>
+          <span>INFO</span>
+          <span>NOM</span>
+        </div>
+      </div>
+
       <div className="search-results">
         {results.slice(0, 50).map(player => (
           <div
@@ -223,6 +241,7 @@ export default function CenterColumn({
             className={`search-result-row ${player.status === 'sold' ? 'sold' : ''}`}
             onClick={() => player.status === 'available' && onNominate(player.id)}
           >
+            <span className="result-rank">{player.overallRank}</span>
             <span className={`result-pos pos-${player.position}`}>
               {player.position}{player.positionalRank}
             </span>
@@ -241,6 +260,9 @@ export default function CenterColumn({
             {player.projectedValue && player.status !== 'sold' && (
               <span className="result-value">${player.projectedValue}</span>
             )}
+            {!player.projectedValue && player.status !== 'sold' && (
+              <span className="result-value muted">--</span>
+            )}
             <button
               className="info-btn"
               onClick={e => { e.stopPropagation(); setCardPlayer(player); }}
@@ -250,7 +272,11 @@ export default function CenterColumn({
               <Info size={16} strokeWidth={2.1} />
             </button>
             {player.status === 'available' && (
-              <button className="nominate-btn" aria-label={`Nominate ${player.name}`}>
+              <button
+                className="nominate-btn"
+                onClick={e => { e.stopPropagation(); onNominate(player.id); }}
+                aria-label={`Nominate ${player.name}`}
+              >
                 <Plus size={18} strokeWidth={2.4} />
               </button>
             )}

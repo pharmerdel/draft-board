@@ -50,15 +50,15 @@ export default function TeamsColumn({ teams, draft, nominatingTeamId, selectedTe
               </div>
 
               <div className="team-card-stats">
-                <div className="stat">
+                <div className="stat stat-budget">
                   <span className="stat-label">Budget</span>
                   <span className="stat-value budget">${team.budgetRemaining ?? 200}</span>
                 </div>
-                <div className="stat">
+                <div className="stat stat-roster">
                   <span className="stat-label">Roster</span>
                   <span className="stat-value">{filled}/{TOTAL_DRAFT_SLOTS}</span>
                 </div>
-                <div className="stat">
+                <div className="stat stat-max">
                   <span className="stat-label">Max Bid</span>
                   <span className="stat-value max-bid">${max}</span>
                 </div>

@@ -391,6 +391,8 @@ body[data-theme='dark'] .no-winner-stat,
 body[data-theme='dark'] .sell-controls,
 body[data-theme='dark'] .no-sell,
 body[data-theme='dark'] .on-the-block,
+body[data-theme='dark'] .search-results,
+body[data-theme='dark'] .search-results-table,
 body[data-theme='dark'] .pd-block-card,
 body[data-theme='dark'] .my-player-row,
 body[data-theme='dark'] .watchlist-row,
@@ -407,6 +409,21 @@ body[data-theme='dark'] .log-entry,
 body[data-theme='dark'] .player-row {
   background: var(--dark-card);
   border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .search-results-header {
+  background: #142136;
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .stat-budget,
+body[data-theme='dark'] .stat-max {
+  background: #18243A;
+  border-color: #2D3D56;
+}
+
+body[data-theme='dark'] .stat-roster {
+  background: #213A5F;
 }
 
 body[data-theme='dark'] .sell-select,
@@ -460,9 +477,63 @@ body[data-theme='dark'] .right-tabs {
   border-color: var(--dark-border-soft);
 }
 
+body[data-theme='dark'] .right-system-status {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .system-pill {
+  background: var(--dark-field);
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .system-pill.ok {
+  color: var(--dark-green);
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.28);
+}
+
+body[data-theme='dark'] .system-pill.warn {
+  color: #FCA5A5;
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+body[data-theme='dark'] .system-pill.idle {
+  color: #93C5FD;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.26);
+}
+
 body[data-theme='dark'] .right-content,
 body[data-theme='dark'] .center-col {
   background: var(--dark-panel);
+}
+
+body[data-theme='dark'] .center-work-header {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+
+body[data-theme='dark'] .center-work-header.active {
+  border-color: #426A9C;
+  box-shadow: inset 3px 0 0 #78A6E8, 0 1px 2px rgba(0,0,0,0.18);
+}
+
+body[data-theme='dark'] .center-work-header h2 {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .center-work-kicker {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .center-turn-pill {
+  background: #233F68;
+  border-color: #426A9C;
+  color: #DBEAFF;
 }
 
 body[data-theme='dark'] .teams-col {
@@ -553,6 +624,7 @@ body[data-theme='dark'] .no-team-card.winner .no-stat {
 
 body[data-theme='dark'] .no-team-idx,
 body[data-theme='dark'] .no-slot-group-label,
+body[data-theme='dark'] .result-rank,
 body[data-theme='dark'] .pd-team-num,
 body[data-theme='dark'] .pd-team-roster,
 body[data-theme='dark'] .pd-team-owner,
@@ -642,6 +714,42 @@ body[data-theme='dark'] .pd-player-row.sorting,
 body[data-theme='dark'] .drag-overlay-row {
   background: #244267;
   border-color: #78A6E8;
+}
+
+body[data-theme='dark'] .search-result-row.sold {
+  background: #172236;
+}
+
+body[data-theme='dark'] .search-result-row {
+  border-top-color: #26354B;
+}
+
+body[data-theme='dark'] .result-value.muted {
+  color: #5F718B;
+}
+
+body[data-theme='dark'] .right-section-kicker,
+body[data-theme='dark'] .log-latest-label {
+  color: #93C5FD;
+}
+
+body[data-theme='dark'] .log-entry.latest {
+  border-color: #426A9C;
+  box-shadow: inset 3px 0 0 #78A6E8, 0 1px 2px rgba(0,0,0,0.22);
+}
+
+body[data-theme='dark'] .log-delta {
+  background: #223047;
+}
+
+body[data-theme='dark'] .log-delta.over {
+  color: #FCA5A5;
+  background: rgba(248, 113, 113, 0.12);
+}
+
+body[data-theme='dark'] .log-delta.under {
+  color: var(--dark-green);
+  background: rgba(52, 211, 153, 0.12);
 }
 
 body[data-theme='dark'] .info-btn:hover,

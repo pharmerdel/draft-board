@@ -11,6 +11,7 @@ import ParticipantDesktopView from '../components/ParticipantDesktopView';
 import ResetButton from '../components/ResetButton';
 import { generateDraftCsv, downloadCsv } from '../utils/exportCsv';
 import { saveBackup, downloadBackup } from '../utils/backup';
+import { checkFantasyProsNewsHealth } from '../utils/fantasyProsNews';
 import DraftClock from '../components/DraftClock';
 import NominationTimer from '../components/NominationTimer';
 import TimerDisplay from '../components/TimerDisplay';
@@ -25,6 +26,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
   const [watchlist, setWatchlist]           = useState({});
   const [personalRanks, setPersonalRanks]   = useState({});
   const [soldData, setSoldData]             = useState(null); // { player, team, price, playerId }
+  const [syncConnected, setSyncConnected]   = useState(null);
+  const [newsHealth, setNewsHealth]         = useState('checking');
 
   // Live sync everything
   useEffect(() => {
@@ -33,8 +36,30 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
       onValue(ref(db, 'teams'),   s => setTeams(s.val() || {})),
       onValue(ref(db, 'players'), s => setPlayers(s.val() || {})),
       onValue(ref(db, 'log'),     s => setLog(s.val() || {})),
+      onValue(ref(db, '.info/connected'), s => setSyncConnected(s.val())),
     ];
     return () => unsubs.forEach(u => u());
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkNews() {
+      setNewsHealth('checking');
+      try {
+        await checkFantasyProsNewsHealth();
+        if (!cancelled) setNewsHealth('live');
+      } catch {
+        if (!cancelled) setNewsHealth('down');
+      }
+    }
+
+    checkNews();
+    const id = setInterval(checkNews, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
   }, []);
 
   // Sync watchlist + personal ranks for this participant
@@ -452,6 +477,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
               log={log}
               onUndo={undoLastSale}
               selectedTeamId={selectedTeamId}
+              syncConnected={syncConnected}
+              newsHealth={newsHealth}
             />
           </div>
 

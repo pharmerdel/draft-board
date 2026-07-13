@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { ClipboardList, History, RotateCcw } from 'lucide-react';
+import { Activity, ClipboardList, History, Newspaper, RotateCcw } from 'lucide-react';
 import './RightColumn.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
-export default function RightColumn({ players, teams, log, onUndo, selectedTeamId }) {
+export default function RightColumn({
+  players, teams, log, onUndo, selectedTeamId,
+  syncConnected, newsHealth,
+}) {
   const [tab, setTab]           = useState('log');
   // Note: no My Team tab — commissioner doesn't have a team
   const [posFilter, setPosFilter] = useState('ALL');
@@ -25,6 +28,17 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
 
   return (
     <div className="right-col">
+      <div className="right-system-status" aria-label="System status">
+        <span className={`system-pill ${syncConnected ? 'ok' : 'warn'}`}>
+          <Activity size={13} strokeWidth={2.3} />
+          Sync {syncConnected ? 'Live' : 'Offline'}
+        </span>
+        <span className={`system-pill ${newsHealth === 'live' ? 'ok' : newsHealth === 'checking' ? 'idle' : 'warn'}`}>
+          <Newspaper size={13} strokeWidth={2.3} />
+          News {newsHealth === 'live' ? 'Live' : newsHealth === 'checking' ? 'Checking' : 'Off'}
+        </span>
+      </div>
+
       <div className="right-tabs">
         <button
           className={`right-tab ${tab === 'log' ? 'active' : ''}`}
@@ -46,7 +60,10 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
       {tab === 'log' && (
         <div className="right-content">
           <div className="log-undo-row">
-            <span className="log-count">{logEntries.length} picks</span>
+            <div>
+              <span className="right-section-kicker">Recent Activity</span>
+              <span className="log-count">{logEntries.length} picks</span>
+            </div>
             {!confirmUndo
               ? (
                 <button className="undo-btn" onClick={() => setConfirmUndo(true)} disabled={logEntries.length === 0}>
@@ -68,10 +85,11 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
             {logEntries.length === 0 && (
               <p className="log-empty">No picks yet.</p>
             )}
-            {logEntries.map(([id, entry]) => {
+            {logEntries.map(([id, entry], index) => {
               const delta = entry.delta;
               return (
-                <div key={id} className="log-entry">
+                <div key={id} className={`log-entry ${index === 0 ? 'latest' : ''}`}>
+                  {index === 0 && <span className="log-latest-label">Latest</span>}
                   <div className="log-entry-top">
                     <span className={`log-pos pos-${entry.position}`}>{entry.position}</span>
                     <span className="log-player-name">{entry.playerName}</span>
@@ -79,12 +97,14 @@ export default function RightColumn({ players, teams, log, onUndo, selectedTeamI
                   </div>
                   <div className="log-entry-bottom">
                     <span className="log-team-name">{entry.teamName}</span>
-                    <span className="log-price">${entry.pricePaid}</span>
-                    {delta != null && (
-                      <span className={`log-delta ${delta > 0 ? 'over' : 'under'}`}>
-                        {delta > 0 ? `+$${delta} over` : `-$${Math.abs(delta)} under`}
-                      </span>
-                    )}
+                    <span className="log-price-wrap">
+                      <span className="log-price">${entry.pricePaid}</span>
+                      {delta != null && (
+                        <span className={`log-delta ${delta > 0 ? 'over' : 'under'}`}>
+                          {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
+                        </span>
+                      )}
+                    </span>
                   </div>
                 </div>
               );

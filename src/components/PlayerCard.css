@@ -181,10 +181,10 @@
 
 .pc-section-title {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 950;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #9CA3AF;
+  color: #7B8494;
 }
 
 .pc-section-header {
@@ -264,8 +264,9 @@
 }
 
 .pc-stat-label {
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   color: #9CA3AF;
+  font-weight: 850;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   text-align: center;
