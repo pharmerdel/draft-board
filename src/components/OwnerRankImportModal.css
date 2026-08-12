@@ -82,6 +82,73 @@
 .rank-import-modal > footer .rank-import-confirm { border-color: #1D4ED8; background: #1D4ED8; color: #FFFFFF; }
 .rank-import-modal > footer button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+body[data-theme='dark'] .rank-import-overlay { background: rgba(2, 6, 12, 0.74); }
+
+body[data-theme='dark'] .rank-import-modal {
+  background: var(--dark-panel);
+  color: var(--dark-text);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.58);
+}
+
+body[data-theme='dark'] .rank-import-modal > header,
+body[data-theme='dark'] .rank-import-modal > footer {
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .rank-import-modal > header p,
+body[data-theme='dark'] .rank-import-modal > header button,
+body[data-theme='dark'] .rank-import-intro,
+body[data-theme='dark'] .rank-import-file small,
+body[data-theme='dark'] .rank-import-summary span,
+body[data-theme='dark'] .rank-import-matches > div span,
+body[data-theme='dark'] .rank-import-matches > div small,
+body[data-theme='dark'] .rank-import-matches > p,
+body[data-theme='dark'] .rank-import-issues > p,
+body[data-theme='dark'] .rank-import-footnote {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .rank-import-body > code {
+  background: var(--dark-field);
+  color: #BFDBFE;
+}
+
+body[data-theme='dark'] .rank-import-downloads button,
+body[data-theme='dark'] .rank-import-modal > footer button {
+  border-color: var(--dark-border);
+  background: var(--dark-card);
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .rank-import-ai-note {
+  border-color: var(--dark-blue);
+  background: rgba(23, 56, 102, 0.62);
+  color: #DBEAFE;
+}
+
+body[data-theme='dark'] .rank-import-file {
+  border-color: #426A9C;
+  background: var(--dark-field);
+  color: var(--dark-blue);
+}
+
+body[data-theme='dark'] .rank-import-file strong { color: var(--dark-text); }
+
+body[data-theme='dark'] .rank-import-error {
+  background: rgba(127, 29, 29, 0.3);
+  color: #FCA5A5;
+}
+
+body[data-theme='dark'] .rank-import-summary article {
+  border-color: var(--dark-border);
+  background: var(--dark-card);
+}
+
+body[data-theme='dark'] .rank-import-matches > div { border-color: var(--dark-border-soft); }
+body[data-theme='dark'] .rank-import-issues > div { border-color: rgba(248, 113, 113, 0.3); }
+body[data-theme='dark'] .rank-import-issues > div span { color: #FCA5A5; }
+body[data-theme='dark'] .rank-import-modal > footer .rank-import-confirm { border-color: #3B82F6; background: #1F4E8C; color: #FFFFFF; }
+
 @media (max-width: 600px) {
   .rank-import-overlay { align-items: end; padding: 0; }
   .rank-import-modal { max-height: 94svh; border-radius: 16px 16px 0 0; }
