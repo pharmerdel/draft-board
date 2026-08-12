@@ -1,6 +1,17 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true
+    "draft": { ".read": true, ".write": true },
+    "teams": { ".read": true, ".write": true },
+    "players": { ".read": true, ".write": true },
+    "log": { ".read": true, ".write": true },
+    "watchlists": { ".read": true, ".write": true },
+    "personalRanks": { ".read": true, ".write": true },
+    "personalTiers": { ".read": true, ".write": true },
+    "playerCatalog": { ".read": true, ".write": true },
+    "catalogMetadata": { ".read": true, ".write": true },
+    "teamAccess": { ".read": true, ".write": false },
+    "teamAuthPrivate": { ".read": false, ".write": false },
+    "commissionerAccess": { ".read": true, ".write": false },
+    "commissionerAuthPrivate": { ".read": false, ".write": false }
   }
 }

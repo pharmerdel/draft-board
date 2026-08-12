@@ -68,12 +68,30 @@ watchlists/{teamId}/{stablePlayerId}
   watched: true
 
 teamAccess/{teamId}
+  state
+  claimedAt
+  updatedAt
+
+teamAuthPrivate/{teamId}
   pinHash
+  pinSalt
   activationCodeHash
   activationExpiresAt
   claimedAt
   failedAttempts
-  lockedUntil
+  lockUntil
+  accessVersion
+
+commissionerAccess
+  state
+  updatedAt
+
+commissionerAuthPrivate
+  pinHash
+  pinSalt
+  failedAttempts
+  lockUntil
+  accessVersion
 
 catalogMetadata
   source
@@ -82,7 +100,7 @@ catalogMetadata
   schemaVersion
 ```
 
-`teamAccess` must never be readable by browser clients. PIN and activation-code verification must occur in trusted backend code.
+`teamAccess` and `commissionerAccess` expose only non-secret UI state. `teamAuthPrivate` and `commissionerAuthPrivate` must never be readable by browser clients. PIN and activation-code verification occurs only in trusted backend code.
 
 ## Phase 0: Baseline and Safeguards
 
@@ -103,7 +121,7 @@ catalogMetadata
 - [x] Locate and review the deployed Realtime Database Security Rules. The deployed root rules currently allow all unauthenticated reads and writes.
 - [x] Record the current Firebase Authentication and billing-plan configuration. Authentication is not initialized; the project is on the Blaze plan.
 - [x] Export a complete pre-migration Firebase backup. The ignored local snapshot is recorded in `docs/firebase-baseline.md`.
-- [ ] Confirm Firebase Emulator Suite support for database, authentication, and functions testing. Auth and Functions pass; the Database emulator is blocked until Java is installed.
+- [x] Confirm Firebase Emulator Suite support for database, authentication, and functions testing. A checksum-verified temporary JDK was used to run all three emulators together successfully.
 
 ### Phase 0 acceptance criteria
 
@@ -146,6 +164,8 @@ catalogMetadata
 - [x] Draft setup can proceed without a commissioner CSV upload.
 
 ## Phase 2: Team PIN Authentication
+
+Implementation note (2026-08-12): the callable Functions, private/public access split, owner and commissioner login UI, persistent custom-token sessions, lockout, code generation, and PIN-reset controls are implemented on `codex/team-pin-authentication`. Unit tests, the production client build, and a full local Auth/Database/Functions emulator flow pass. The emulator test covered commissioner setup, activation-code generation, one-time owner activation, two simultaneous owner sessions, lockout, PIN reset, reactivation, and private-path denial. Development rules are deployed and verified. A focused emulator check did not reject an old refresh token after Admin SDK revocation; Phase 3 must enforce `accessVersion` in Database Rules so reset sessions are rejected independently of refresh-token behavior.
 
 ### Team activation
 

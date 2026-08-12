@@ -378,6 +378,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     onNominate: nominatePlayer,
     watchlist, onToggleWatch: toggleWatch,
     personalRanks, onSavePersonalRanks: savePersonalRanks,
+    onTeamClear,
   };
 
   return (

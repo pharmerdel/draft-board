@@ -19,6 +19,26 @@
   flex-shrink: 0;
 }
 
+.pd-switch-team {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.65rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #4B5563;
+  font-size: 0.76rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.pd-switch-team:hover {
+  border-color: #9CA3AF;
+  background: #F8FAFC;
+}
+
 .pd-league-name {
   font-size: 1rem;
   font-weight: 700;

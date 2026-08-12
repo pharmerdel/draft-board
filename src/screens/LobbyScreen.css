@@ -60,6 +60,31 @@
   border: 1px solid #A7F3D0;
 }
 
+.lobby-session-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.lobby-switch-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.65rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #4B5563;
+  font-size: 0.76rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.lobby-switch-team:hover {
+  border-color: #9CA3AF;
+  background: #F8FAFC;
+}
+
 .lobby-state-pill.live {
   color: #991B1B;
   background: #FEF2F2;
@@ -273,6 +298,284 @@
   border-radius: 999px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.team-access-badge {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #EEF2FF;
+  color: #4338CA;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.team-access-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.team-access-modal {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 1.5rem;
+  border: 1px solid #E2E6EE;
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 24px 70px rgba(17, 24, 39, 0.24);
+}
+
+.team-access-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #6B7280;
+  cursor: pointer;
+}
+
+.team-access-close:hover:not(:disabled) {
+  background: #F0F4FA;
+}
+
+.team-access-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 0.85rem;
+  border: 1px solid #C7D2FE;
+  border-radius: 10px;
+  background: #EEF2FF;
+  color: #3730A3;
+}
+
+.team-access-icon.commissioner {
+  border-color: #FDE68A;
+  background: #FFFBEB;
+  color: #92400E;
+}
+
+.team-access-kicker,
+.team-access-owner,
+.team-access-error,
+.team-access-help {
+  margin: 0;
+}
+
+.team-access-manager {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #E2E6EE;
+  border-radius: 10px;
+  background: #FFFFFF;
+  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.04);
+}
+
+.team-access-manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.team-access-manager-header > button,
+.team-access-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #374151;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.team-access-manager-header > button {
+  padding: 0.58rem 0.75rem;
+  background: #1B3A6B;
+  border-color: #1B3A6B;
+  color: #FFFFFF;
+}
+
+.team-access-manager-header > button:disabled,
+.team-access-reset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.team-access-manager-message {
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 7px;
+  background: #F0F4FA;
+  color: #4B5563;
+  font-size: 0.78rem;
+}
+
+.team-access-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.team-access-manager-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 105px 130px 78px;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: 42px;
+  padding: 0.42rem 0.55rem;
+  border-radius: 8px;
+  background: #F8FAFC;
+}
+
+.team-access-manager-team {
+  overflow: hidden;
+  color: #111827;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-access-state {
+  color: #6B7280;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.team-access-state.claimed { color: #047857; }
+.team-access-state.locked { color: #B91C1C; }
+.team-access-state.reset-required { color: #B45309; }
+
+.team-access-manager-row code {
+  color: #312E81;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.team-access-reset {
+  padding: 0.42rem 0.5rem;
+  font-size: 0.72rem;
+}
+
+.owner-waiting {
+  margin-top: 1rem;
+}
+
+.team-access-kicker {
+  color: #6B7280;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.team-access-modal h2 {
+  margin: 0.2rem 2rem 0 0;
+  color: #111827;
+  font-size: 1.45rem;
+}
+
+.team-access-owner {
+  margin-top: 0.15rem;
+  color: #6B7280;
+  font-size: 0.88rem;
+}
+
+.team-access-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+.team-access-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.team-access-field input {
+  width: 100%;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #111827;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.team-access-field input:focus {
+  outline: 3px solid rgba(99, 102, 241, 0.16);
+  border-color: #6366F1;
+}
+
+.team-access-error {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  background: #FEF2F2;
+  color: #991B1B;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.team-access-submit {
+  padding: 0.76rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: #1B3A6B;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.team-access-submit:hover:not(:disabled) {
+  background: #142D54;
+}
+
+.team-access-submit:disabled,
+.team-access-close:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.team-access-help {
+  margin-top: 0.85rem;
+  color: #9CA3AF;
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
 
 .team-select-arrow {
@@ -558,6 +861,11 @@
     gap: 0.85rem;
   }
 
+  .lobby-session-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .team-select-btn {
     min-height: 58px;
   }
@@ -572,5 +880,18 @@
 
   .confirm-buttons {
     flex-direction: column;
+  }
+
+  .team-access-manager-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .team-access-manager-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .team-access-manager-row code {
+    grid-column: 1;
   }
 }

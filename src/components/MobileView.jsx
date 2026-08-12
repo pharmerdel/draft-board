@@ -23,6 +23,7 @@ import {
   History,
   Hourglass,
   Info,
+  LogOut,
   Shield,
   Star,
   Target,
@@ -117,7 +118,7 @@ export default function MobileView({
   selectedTeamId, nominatingTeamId,
   onNominate, watchlist, onToggleWatch,
   personalRanks, onSavePersonalRanks,
-  themeToggle,
+  themeToggle, onTeamClear,
 }) {
   const [tab, setTab]               = useState('myteam');
   const [confirmPlayer, setConfirmPlayer]     = useState(null);
@@ -216,6 +217,9 @@ export default function MobileView({
 
   return (
     <div className="mobile-view">
+      <button className="mobile-switch-team" type="button" onClick={onTeamClear} aria-label="Sign out and switch team">
+        <LogOut size={15} />
+      </button>
 
       {/* ── On the Block strip ── */}
       <div className={`mobile-block-strip ${
