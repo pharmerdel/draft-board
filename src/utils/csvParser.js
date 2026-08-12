@@ -6,7 +6,7 @@
 const ALLOWED_POSITIONS = ['QB', 'RB', 'WR', 'TE'];
 
 export function parseFantasyProsCsv(csvText) {
-  const lines = csvText.trim().split('\n');
+  const lines = csvText.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
   if (lines.length < 2) throw new Error('CSV appears to be empty.');
 
   // Parse header to find column indices
@@ -14,6 +14,7 @@ export function parseFantasyProsCsv(csvText) {
   const col = (name) => header.findIndex(h => h.replace(/"/g, '').trim().toUpperCase() === name.toUpperCase());
 
   const rkIdx       = col('RK');
+  const tierIdx     = col('TIERS');
   const nameIdx     = col('PLAYER NAME');
   const teamIdx     = col('TEAM');
   const posIdx      = col('POS');
@@ -37,6 +38,7 @@ export function parseFantasyProsCsv(csvText) {
 
     const positionalRank = parseInt(rawPos.replace(/\D/g, ''), 10) || 0;
     const overallRank    = rkIdx !== -1 ? parseInt(clean(cols[rkIdx]), 10) || i : i;
+    const sharedTier     = tierIdx !== -1 ? parseInt(clean(cols[tierIdx]), 10) || null : null;
     const name           = clean(cols[nameIdx]);
     const nflTeam        = teamIdx !== -1 ? clean(cols[teamIdx]) : '';
 
@@ -47,9 +49,10 @@ export function parseFantasyProsCsv(csvText) {
       position,
       positionalRank,
       overallRank,
+      sharedTier,
       nflTeam,
       projectedValue: null,   // No auction values in rankings CSV — can be added later
-      sleeperPlayerId: null,  // Populated in Phase 4 when Sleeper integration is added
+      sleeperPlayerId: null,  // Populated when the catalog is enriched from Sleeper
       headshotUrl: null,
     });
   }
@@ -65,7 +68,7 @@ function clean(val) {
   return val.toString().replace(/^"|"$/g, '').trim();
 }
 
-function parseCsvLine(line) {
+export function parseCsvLine(line) {
   // Handles quoted fields with commas inside them
   const result = [];
   let cur = '';
@@ -73,7 +76,12 @@ function parseCsvLine(line) {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {
-      inQuotes = !inQuotes;
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
     } else if (ch === ',' && !inQuotes) {
       result.push(cur);
       cur = '';

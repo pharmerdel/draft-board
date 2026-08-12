@@ -116,34 +116,34 @@ catalogMetadata
 
 ### Import and identity
 
-- [ ] Preserve the current FantasyPros CSV parser as the basis of the import pipeline.
-- [ ] Parse shared FantasyPros tier data when the CSV contains it.
-- [ ] Enrich imported players with Sleeper data.
-- [ ] Use Sleeper player IDs as stable keys for matched players.
-- [ ] Create persistent fallback IDs for unmatched players.
-- [ ] Normalize names, suffixes, positions, and NFL team abbreviations before matching.
-- [ ] Detect ambiguous matches rather than silently choosing one.
-- [ ] Retain a mapping registry so corrected matches remain stable across future imports.
+- [x] Preserve the current FantasyPros CSV parser as the basis of the import pipeline.
+- [x] Parse shared FantasyPros tier data when the CSV contains it.
+- [x] Enrich imported players with Sleeper data.
+- [x] Use Sleeper player IDs as stable keys for matched players.
+- [x] Create persistent fallback IDs for unmatched players.
+- [x] Normalize names, suffixes, positions, and NFL team abbreviations before matching.
+- [x] Detect ambiguous matches rather than silently choosing one.
+- [x] Retain a mapping registry so corrected matches remain stable across future imports.
 
 ### Safe catalog refresh
 
-- [ ] Build an admin-only import/refresh command or interface.
-- [ ] Preview additions, changes, deactivations, ambiguous matches, and unmatched players before writing.
-- [ ] Merge shared ranking and enrichment changes into existing player records.
-- [ ] Never replace or delete personal rankings, tiers, or watchlists during refresh.
-- [ ] Mark missing players inactive or unavailable instead of immediately deleting them.
-- [ ] Record catalog source date, import time, and schema version.
-- [ ] Produce an import summary suitable for commissioner review.
-- [ ] Remove the FantasyPros upload requirement from draft-day setup.
-- [ ] Retain an intentional admin path for later preseason CSV refreshes.
+- [x] Build an admin-only import/refresh command or interface. The initial implementation is a locally authenticated Firebase CLI workflow.
+- [x] Preview additions, changes, deactivations, ambiguous matches, and unmatched players before writing.
+- [x] Merge shared ranking and enrichment changes into existing player records.
+- [x] Never replace or delete personal rankings, tiers, or watchlists during refresh.
+- [x] Mark missing players inactive or unavailable instead of immediately deleting them.
+- [x] Record catalog source date, import time, and schema version.
+- [x] Produce an import summary suitable for commissioner review.
+- [x] Remove the FantasyPros upload requirement from draft-day setup.
+- [x] Retain an intentional admin path for later preseason CSV refreshes.
 
 ### Phase 1 acceptance criteria
 
-- [ ] Importing the same CSV twice produces the same player IDs.
-- [ ] Importing a newer CSV updates shared rankings without losing owner data.
-- [ ] Unmatched and ambiguous players are visible for manual review.
-- [ ] Shared FantasyPros tiers and private owner tiers remain distinct.
-- [ ] Draft setup can proceed without a commissioner CSV upload.
+- [x] Importing the same CSV twice produces the same player IDs.
+- [x] Importing a newer CSV updates shared rankings without losing owner data.
+- [x] Unmatched and ambiguous players are visible for manual review.
+- [x] Shared FantasyPros tiers and private owner tiers remain distinct.
+- [x] Draft setup can proceed without a commissioner CSV upload.
 
 ## Phase 2: Team PIN Authentication
 
@@ -417,6 +417,10 @@ Add dated entries here when a phase begins, a decision changes, or a material mi
 - 2026-08-12: Initial implementation plan created from agreed product and architecture decisions.
 - 2026-08-12: Phase 0 started. Existing access-gate work accepted as the working baseline; feature branch and Node toolchain declaration added; current Firebase schema and configuration gaps documented.
 - 2026-08-12: Production database rules confirmed fully public. A valid ignored production snapshot was exported, and matching versioned rules plus local emulator configuration were added.
+- 2026-08-12: The first read-only 2026 catalog dry run filtered the supplied FantasyPros rankings to QB/RB/WR/TE and matched 774 of 776 eligible players to stable Sleeper IDs. Tommy Myers and Sederrick Cunningham remain on deterministic fallback IDs pending a future Sleeper match; no Firebase writes were performed.
+- 2026-08-12: The production `playerCatalog` was established with 776 active records plus versioned `catalogMetadata`. A full pre-import backup was verified before the isolated update, and a repeat comparison reported 776 unchanged records.
+- 2026-08-12: Commissioner setup now loads active players from the durable production catalog and creates the live draft snapshot with stable player IDs; the draft-day CSV upload was removed.
+- 2026-08-12: End-to-end development smoke testing passed for catalog-backed setup, 12-team lobby creation, draft start, nomination, $25 sale, undo, and reset. Reset preserved all 776 durable catalog records. The development database and its expired pre-test rules were restored afterward.
 - 2026-08-12: Authentication and Functions emulator smoke tests passed. Realtime Database emulator startup is blocked by the missing local Java runtime.
 - 2026-08-12: Firebase Console inspection confirmed Authentication has not been initialized and the production project is on the Blaze plan.
 - 2026-08-12: Production access-gate smoke test passed with a temporary SHA-256 password: rejection, successful unlock, dark theme, Firebase-backed lobby load, and refresh persistence all verified.

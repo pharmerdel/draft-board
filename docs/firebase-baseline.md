@@ -77,6 +77,28 @@ players/{playerId}
   soldTo
   soldPrice
 
+playerCatalog/{stablePlayerId}
+  name
+  position
+  positionalRank
+  overallRank
+  sharedTier
+  nflTeam
+  sleeperPlayerId
+  headshotUrl
+  catalogMatchStatus
+  catalogStatus: active | inactive
+  catalogCreatedAt
+  catalogUpdatedAt
+
+catalogMetadata
+  schemaVersion
+  sourceFileName
+  sourceSha256
+  sleeperSourceUrl
+  importedAt
+  summary
+
 log/{logId}
   type: sold | undo
   timestamp
@@ -94,7 +116,7 @@ watchlists/{teamId}/{playerId}
 personalRanks/{teamId}/{playerId}: number
 ```
 
-The planned `personalTiers`, authentication/access, catalog metadata, backup metadata, and audit structures do not exist yet.
+The planned `personalTiers`, authentication/access, backup metadata, and audit structures do not exist yet. The stable `playerCatalog` and `catalogMetadata` structures were established on 2026-08-12.
 
 ## Current Read Paths
 

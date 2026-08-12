@@ -10,6 +10,7 @@ import { hasLeagueAccess } from './utils/accessGateStorage';
 import './App.css';
 
 export default function App() {
+  const setupPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'setup';
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
@@ -98,6 +99,16 @@ export default function App() {
 
   // Route to the right screen based on draft status + selected team
   const themeToggle = <ThemeToggle theme={theme} onToggle={toggleTheme} />;
+
+  // Read-only navigation aid for local setup-screen verification while a live draft exists.
+  if (setupPreview) {
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <SetupScreen />
+      </>
+    );
+  }
 
   if (!draftStatus || draftStatus === 'setup') {
     return (
