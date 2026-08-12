@@ -1,17 +1,110 @@
 {
   "rules": {
-    "draft": { ".read": true, ".write": true },
-    "teams": { ".read": true, ".write": true },
-    "players": { ".read": true, ".write": true },
-    "log": { ".read": true, ".write": true },
-    "watchlists": { ".read": true, ".write": true },
-    "personalRanks": { ".read": true, ".write": true },
-    "personalTiers": { ".read": true, ".write": true },
-    "playerCatalog": { ".read": true, ".write": true },
-    "catalogMetadata": { ".read": true, ".write": true },
-    "teamAccess": { ".read": true, ".write": false },
-    "teamAuthPrivate": { ".read": false, ".write": false },
-    "commissionerAccess": { ".read": true, ".write": false },
-    "commissionerAuthPrivate": { ".read": false, ".write": false }
+    ".read": false,
+    ".write": false,
+
+    "draft": {
+      ".read": true,
+      ".write": "auth != null && auth.token.role == 'commissioner' && auth.token.accessVersion == root.child('commissionerAuthPrivate').child('accessVersion').val()",
+      "currentNomination": {
+        ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId != null && auth.token.accessVersion == root.child('teamAuthPrivate').child(auth.token.teamId).child('accessVersion').val() && root.child('draft').child('status').val() == 'active' && root.child('draft').child('nominatingTeamId').val() == auth.token.teamId && !data.exists() && newData.exists()",
+        ".validate": "!newData.exists() || (newData.hasChildren(['playerId', 'nominatingTeamId', 'startedAt']) && newData.child('playerId').isString() && newData.child('nominatingTeamId').val() == auth.token.teamId && newData.child('startedAt').isNumber() && newData.child('startedAt').val() >= now - 60000 && newData.child('startedAt').val() <= now + 5000 && root.child('players').child(newData.child('playerId').val()).child('status').val() == 'available')"
+      },
+      "timerStartedAt": {
+        ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId != null && auth.token.accessVersion == root.child('teamAuthPrivate').child(auth.token.teamId).child('accessVersion').val() && root.child('draft').child('status').val() == 'active' && root.child('draft').child('nominatingTeamId').val() == auth.token.teamId && newData.val() == null"
+      }
+    },
+
+    "teams": {
+      ".read": true,
+      "$teamId": {
+        ".write": "auth != null && auth.token.role == 'commissioner' && auth.token.accessVersion == root.child('commissionerAuthPrivate').child('accessVersion').val()",
+        "connected": {
+          ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+          ".validate": "newData.isBoolean()"
+        },
+        "lastSeen": {
+          ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+          ".validate": "newData.val() == null || (newData.isNumber() && newData.val() <= now + 5000)"
+        }
+      }
+    },
+
+    "players": {
+      ".read": true,
+      ".write": "auth != null && auth.token.role == 'commissioner' && auth.token.accessVersion == root.child('commissionerAuthPrivate').child('accessVersion').val()",
+      "$playerId": {
+        "status": {
+          ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId != null && auth.token.accessVersion == root.child('teamAuthPrivate').child(auth.token.teamId).child('accessVersion').val() && data.val() == 'available' && newData.val() == 'nominated' && root.child('draft').child('status').val() == 'active' && root.child('draft').child('nominatingTeamId').val() == auth.token.teamId && root.child('draft').child('currentNomination').child('playerId').val() == $playerId && root.child('draft').child('currentNomination').child('nominatingTeamId').val() == auth.token.teamId",
+          ".validate": "newData.val() == 'available' || newData.val() == 'nominated' || newData.val() == 'sold'"
+        }
+      }
+    },
+
+    "log": {
+      ".read": true,
+      ".write": "auth != null && auth.token.role == 'commissioner' && auth.token.accessVersion == root.child('commissionerAuthPrivate').child('accessVersion').val()"
+    },
+
+    "watchlists": {
+      "$teamId": {
+        ".read": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        "$playerId": {
+          ".validate": "!newData.exists() || (root.child('players').child($playerId).exists() && newData.hasChildren(['watched']))",
+          "watched": {
+            ".validate": "newData.val() == true"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+
+    "personalRanks": {
+      "$teamId": {
+        ".read": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        "$playerId": {
+          ".validate": "!newData.exists() || (root.child('players').child($playerId).exists() && newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000 && newData.val() % 1 == 0)"
+        }
+      }
+    },
+
+    "personalTiers": {
+      "$teamId": {
+        ".read": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        "$playerId": {
+          ".validate": "!newData.exists() || (root.child('players').child($playerId).exists() && ((newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 == 0) || newData.val() == 'avoid'))"
+        }
+      }
+    },
+
+    "playerCatalog": {
+      ".read": true,
+      ".write": false
+    },
+    "catalogMetadata": {
+      ".read": true,
+      ".write": false
+    },
+    "teamAccess": {
+      ".read": true,
+      ".write": false
+    },
+    "teamAuthPrivate": {
+      ".read": false,
+      ".write": false
+    },
+    "commissionerAccess": {
+      ".read": true,
+      ".write": false
+    },
+    "commissionerAuthPrivate": {
+      ".read": false,
+      ".write": false
+    }
   }
 }

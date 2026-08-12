@@ -139,6 +139,14 @@ export default function App() {
   }
 
   if (!draftStatus || draftStatus === 'setup') {
+    if (selectedTeamId !== 'commissioner') {
+      return (
+        <>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+          <LobbyScreen selectedTeamId={null} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
+        </>
+      );
+    }
     return (
       <>
         <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
