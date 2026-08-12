@@ -8,7 +8,7 @@ import { db } from '../firebase';
 import { buildDraftDayLobbyUpdates, sortTeamsForDisplay } from '../utils/draftLifecycle';
 import './PreseasonScreen.css';
 
-export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeToggle }) {
+export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeToggle, preview = false }) {
   const [draft, setDraft] = useState({});
   const [teams, setTeams] = useState({});
   const [players, setPlayers] = useState({});
@@ -40,7 +40,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
   }, []);
 
   useEffect(() => {
-    if (isCommissioner || !selectedTeamId) return undefined;
+    if (preview || isCommissioner || !selectedTeamId) return undefined;
     const unsubscribers = [
       onValue(ref(db, `personalRanks/${selectedTeamId}`), snapshot => setPersonalRanks(snapshot.val() || {})),
       onValue(ref(db, `watchlists/${selectedTeamId}`), snapshot => setWatchlist(snapshot.val() || {})),
@@ -53,7 +53,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
       window.removeEventListener('beforeunload', markDisconnected);
       markDisconnected();
     };
-  }, [isCommissioner, selectedTeamId]);
+  }, [isCommissioner, preview, selectedTeamId]);
 
   async function openDraftDayLobby() {
     if (!window.confirm('Open the pre-draft lobby? Nomination order will remain unset until you randomize it there.')) return;
@@ -86,11 +86,28 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
 
   function savePersonalRanks(ranks) {
     if (!selectedTeamId || isCommissioner) return;
+    if (preview) {
+      setPersonalRanks(ranks);
+      setSavedAt(new Date());
+      setSaveState('saved');
+      return;
+    }
     return savePreference(() => update(ref(db, `personalRanks/${selectedTeamId}`), ranks));
   }
 
   function toggleWatch(playerId) {
     if (!selectedTeamId || isCommissioner) return;
+    if (preview) {
+      setWatchlist(current => {
+        const next = { ...current };
+        if (next[playerId]) delete next[playerId];
+        else next[playerId] = { watched: true };
+        return next;
+      });
+      setSavedAt(new Date());
+      setSaveState('saved');
+      return;
+    }
     const playerRef = ref(db, `watchlists/${selectedTeamId}/${playerId}`);
     return savePreference(() => watchlist[playerId]
       ? set(playerRef, null)
@@ -107,7 +124,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
         </div>
         <div className="preseason-header-actions">
           {themeToggle}
-          <button type="button" onClick={onTeamClear}><LogOut size={15} /> {isCommissioner ? 'Sign out' : 'Switch team'}</button>
+          {!preview && <button type="button" onClick={onTeamClear}><LogOut size={15} /> {isCommissioner ? 'Sign out' : 'Switch team'}</button>}
         </div>
       </header>
 
@@ -133,10 +150,10 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
             <div>
               <p className="preseason-kicker">Private preparation</p>
               <h2>Your player workspace</h2>
-              <p>Your rankings and starred players belong only to this team and will carry into draft day.</p>
+              <p>{preview ? 'Try rankings, search, player details, and starring here. Preview changes are not sent to Firebase.' : 'Your rankings and starred players belong only to this team and will carry into draft day.'}</p>
             </div>
-            <span className={`preseason-live ${syncConnected ? '' : 'offline'}`}>
-              <span /> {syncConnected ? 'Live sync' : 'Connecting…'}
+            <span className={`preseason-live ${preview || syncConnected ? '' : 'offline'}`}>
+              <span /> {preview ? 'Safe local preview' : syncConnected ? 'Live sync' : 'Connecting…'}
             </span>
           </section>
 

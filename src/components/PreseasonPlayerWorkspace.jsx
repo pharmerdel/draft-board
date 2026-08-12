@@ -15,8 +15,9 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Check, GripVertical, Info, Search, Star } from 'lucide-react';
+import { Check, FileUp, GripVertical, Info, Search, Star } from 'lucide-react';
 
+import OwnerRankImportModal from './OwnerRankImportModal';
 import PlayerCard from './PlayerCard';
 import {
   buildReorderedPersonalRanks,
@@ -107,6 +108,7 @@ export default function PreseasonPlayerWorkspace({
   const [search, setSearch] = useState('');
   const [activeDragId, setActiveDragId] = useState(null);
   const [cardPlayer, setCardPlayer] = useState(null);
+  const [showImport, setShowImport] = useState(false);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 175, tolerance: 6 } }),
@@ -167,6 +169,9 @@ export default function PreseasonPlayerWorkspace({
               ? 'Save needs attention'
               : <><Check size={14} /> {savedLabel}</>}
         </span>
+        <button className="ps-import-button" type="button" onClick={() => setShowImport(true)}>
+          <FileUp size={16} /> Import CSV
+        </button>
       </div>
 
       {saveError && (
@@ -245,6 +250,14 @@ export default function PreseasonPlayerWorkspace({
       )}
 
       {cardPlayer && <PlayerCard player={cardPlayer} onClose={() => setCardPlayer(null)} />}
+      {showImport && (
+        <OwnerRankImportModal
+          players={players}
+          personalRanks={personalRanks}
+          onClose={() => setShowImport(false)}
+          onImport={onSavePersonalRanks}
+        />
+      )}
     </section>
   );
 }

@@ -14,6 +14,7 @@ import './App.css';
 
 export default function App() {
   const setupPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'setup';
+  const preseasonOwnerPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'preseason-owner';
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
@@ -137,6 +138,10 @@ export default function App() {
         <SetupScreen />
       </>
     );
+  }
+
+  if (preseasonOwnerPreview) {
+    return <PreseasonScreen preview selectedTeamId="team_1" onTeamClear={() => {}} themeToggle={themeToggle} />;
   }
 
   if (!draftStatus || draftStatus === 'setup') {

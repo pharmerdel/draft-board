@@ -64,6 +64,20 @@
 .ps-save-state.saving { color: #92400E; }
 .ps-save-state.error { color: #B91C1C; }
 
+.ps-import-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  border: 1px solid #BFDBFE;
+  border-radius: 8px;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  font-weight: 800;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+}
+
 .ps-save-error {
   display: flex;
   align-items: center;
@@ -176,6 +190,7 @@
   .ps-view-tabs { width: 100%; }
   .ps-view-tabs button { flex: 1; justify-content: center; }
   .ps-save-state { align-self: center; }
+  .ps-import-button { justify-content: center; margin-left: 0; }
   .ps-controls { padding: 0.7rem; }
   .ps-search { box-sizing: border-box; max-width: none; width: 100%; }
   .ps-position-filters { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; }

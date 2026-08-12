@@ -262,6 +262,9 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 - [x] Add visible live/sync state.
 - [x] Add last-saved feedback for preference changes.
 - [x] Add calm retry/error states for failed writes.
+- [x] Allow owners to import a private rankings CSV with validation and confirmation.
+- [x] Provide downloadable owner-ranking headers and the current player catalog.
+- [x] Append omitted players in their existing order without changing stars or tiers.
 
 ### Phase 4 acceptance criteria
 
