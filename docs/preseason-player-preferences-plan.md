@@ -13,7 +13,7 @@ This document is the working implementation checklist. Items should be completed
 - Owners authenticate to a team with a PIN they choose after using a one-time team activation code.
 - Multiple devices may be signed into the same team.
 - Personal tiers are optional and position-specific.
-- The initial tier structure is Tier 1 through Tier 5 plus `Avoid`.
+- The tier structure supports Tier 1 through Tier 12 plus `Avoid`; owners can stop at any tier.
 - Personal tiers do not automatically change personal rank order.
 - Personal rankings, tiers, and watchlists remain editable during the live draft.
 - Nomination order does not exist during setup or preseason; the commissioner creates the first official order in the pre-draft lobby on draft day.
@@ -64,7 +64,7 @@ players/{stablePlayerId}
   updatedAt
 
 personalRanks/{teamId}/{stablePlayerId}: number
-personalTiers/{teamId}/{stablePlayerId}: 1 | 2 | 3 | 4 | 5 | "avoid"
+personalTiers/{teamId}/{QB|RB|WR|TE|FLEX}/{stablePlayerId}: 1-12 | "avoid"
 watchlists/{teamId}/{stablePlayerId}
   watched: true
 
@@ -279,29 +279,29 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 
 ### Tier data and behavior
 
-- [ ] Store private tiers independently for each team and player.
-- [ ] Keep tiers position-specific in the interface.
-- [ ] Treat Tier 1 as implicit when an owner first enables tiering for a position.
-- [ ] Support Tier 1 through Tier 5 plus `Avoid`.
-- [ ] Do not alter exact rank order merely because a tier changes.
-- [ ] Leave tier data absent for owners who do not use the feature.
+- [x] Store private tiers independently for each team and player.
+- [x] Keep tiers scope-specific in the interface: QB, RB, WR, TE, and FLEX (RB/WR/TE).
+- [x] Treat Tier 1 as implicit when an owner first enables tiering for a scope.
+- [x] Support optional Tier 1 through Tier 12 plus `Avoid`.
+- [x] Do not alter exact rank order merely because a tier changes.
+- [x] Leave tier data absent for owners who do not use the feature.
 
 ### Boundary-based tier mode
 
-- [ ] Add a clear `Tier Mode` entry point to a position-filtered list.
-- [ ] Allow one click/tap between adjacent players to begin the next tier.
-- [ ] Assign the affected contiguous group in one atomic database update.
+- [x] Add a clear `Tier Mode` entry point to a position-filtered list.
+- [x] Allow one click/tap beside a player to begin the next tier below them.
+- [x] Assign the affected contiguous group in one atomic database update.
 - [ ] Allow a boundary to be moved.
-- [ ] Allow a boundary to be removed.
+- [x] Allow a boundary to be removed.
 - [ ] Allow players to be dragged across tier boundaries.
-- [ ] Make boundary controls large and touch-friendly on mobile.
+- [x] Make boundary controls large and touch-friendly on mobile.
 - [ ] Clearly distinguish shared FantasyPros tiers from private personal tiers.
 
 ### Secondary bulk actions
 
 - [ ] Add contiguous range selection as a secondary workflow.
-- [ ] Allow a selected range to be assigned to Tier 1-5 or `Avoid`.
-- [ ] Add `Clear tiers for this position` without changing ranks.
+- [x] Allow guided boundaries to assign contiguous groups to Tier 1-12 or `Avoid`.
+- [x] Add `Clear tiers for this scope` without changing ranks.
 - [ ] Add `Clear all personal tiers` with confirmation.
 
 ### Normal list presentation
@@ -454,3 +454,4 @@ Add dated entries here when a phase begins, a decision changes, or a material mi
 - 2026-08-12: Phase 3 least-privilege Realtime Database Rules were implemented and passed seven emulator scenarios covering public reads, unauthenticated denial, owner-private bulk ranks/tiers/watchlists, cross-team denial, presence limits, authorized nominations, privilege-smuggling rejection, stale-session invalidation with preference preservation, commissioner operations, and private credential denial. Production deployment remains pending the client-first rollout.
 - 2026-08-12: Phase 4 lifecycle routing started. Setup now creates `preseason` without nomination-order data; owners and the commissioner receive distinct authenticated preseason routes; the commissioner can open an unordered draft-day lobby; and Start Draft remains disabled until the lobby randomizer creates a complete official order.
 - 2026-08-12: Production access-gate smoke test passed with a temporary SHA-256 password: rejection, successful unlock, dark theme, Firebase-backed lobby load, and refresh persistence all verified.
+- 2026-08-12: Phase 5 tier data foundation added. Private Tier 1-12 and Avoid updates now share team-scoped live synchronization across preseason and draft-day screens, support atomic multi-player writes and clearing, and remain independent from personal rank order.

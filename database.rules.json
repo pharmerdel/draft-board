@@ -76,8 +76,10 @@
       "$teamId": {
         ".read": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
         ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
-        "$playerId": {
-          ".validate": "!newData.exists() || (root.child('players').child($playerId).exists() && ((newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 == 0) || newData.val() == 'avoid'))"
+        "$scope": {
+          "$playerId": {
+            ".validate": "!newData.exists() || (($scope == 'QB' || $scope == 'RB' || $scope == 'WR' || $scope == 'TE' || $scope == 'FLEX') && root.child('players').child($playerId).exists() && (($scope == 'FLEX' && (root.child('players').child($playerId).child('position').val() == 'RB' || root.child('players').child($playerId).child('position').val() == 'WR' || root.child('players').child($playerId).child('position').val() == 'TE')) || root.child('players').child($playerId).child('position').val() == $scope) && ((newData.isNumber() && newData.val() >= 1 && newData.val() <= 12 && newData.val() % 1 == 0) || newData.val() == 'avoid'))"
+          }
         }
       }
     },

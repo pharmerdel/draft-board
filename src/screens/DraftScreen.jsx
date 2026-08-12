@@ -24,6 +24,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
   const [log, setLog]             = useState({});
   const [watchlist, setWatchlist]           = useState({});
   const [personalRanks, setPersonalRanks]   = useState({});
+  const [personalTiers, setPersonalTiers]   = useState({});
   const [soldData, setSoldData]             = useState(null); // { player, team, price, playerId }
   const [syncConnected, setSyncConnected]   = useState(null);
   const [newsHealth, setNewsHealth]         = useState('checking');
@@ -61,17 +62,23 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     };
   }, []);
 
-  // Sync watchlist + personal ranks for this participant
+  // Sync private owner preferences for this participant
   useEffect(() => {
     if (!selectedTeamId || selectedTeamId === 'commissioner') return;
     const unsub1 = onValue(ref(db, `watchlists/${selectedTeamId}`), s => setWatchlist(s.val() || {}));
     const unsub2 = onValue(ref(db, `personalRanks/${selectedTeamId}`), s => setPersonalRanks(s.val() || {}));
-    return () => { unsub1(); unsub2(); };
+    const unsub3 = onValue(ref(db, `personalTiers/${selectedTeamId}`), s => setPersonalTiers(s.val() || {}));
+    return () => { unsub1(); unsub2(); unsub3(); };
   }, [selectedTeamId]);
 
   async function savePersonalRanks(ranks) {
     if (!selectedTeamId) return;
     await update(ref(db, `personalRanks/${selectedTeamId}`), ranks);
+  }
+
+  async function savePersonalTiers(updates) {
+    if (!selectedTeamId || !updates) return;
+    await update(ref(db, `personalTiers/${selectedTeamId}`), updates);
   }
 
   const selectedTeamIsStale =
@@ -384,6 +391,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     onNominate: nominatePlayer,
     watchlist, onToggleWatch: toggleWatch,
     personalRanks, onSavePersonalRanks: savePersonalRanks,
+    personalTiers, onSavePersonalTiers: savePersonalTiers,
     onTeamClear,
   };
 

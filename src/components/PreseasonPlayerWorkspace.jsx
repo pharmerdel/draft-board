@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Check, FileUp, GripVertical, Info, Search, Star } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, FileUp, GripVertical, Info, Layers3, Search, Star, X } from 'lucide-react';
 
 import OwnerRankImportModal from './OwnerRankImportModal';
 import PlayerCard from './PlayerCard';
@@ -24,9 +24,39 @@ import {
   effectivePlayerRank,
   sortPlayersByPreference,
 } from '../utils/personalRankings';
+import {
+  buildAvoidCutoffUpdates,
+  buildInsertTierBoundaryUpdates,
+  buildMoveTierBoundaryUpdates,
+  buildPersonalTierUpdates,
+  buildRemoveTierBoundaryUpdates,
+  MAX_PERSONAL_TIER,
+  personalTierForPlayer,
+  playerMatchesTierScope,
+} from '../utils/personalTiers';
 import './PreseasonPlayerWorkspace.css';
 
-const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
+const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'FLEX'];
+
+function TierBoundary({ tier, canMoveUp, canMoveDown, onMoveUp, onMoveDown, onRemove }) {
+  return (
+    <div className={`ps-tier-heading ps-tier-boundary ${tier === 'avoid' ? 'avoid' : ''}`}>
+      <div className="ps-tier-boundary-label">
+        <span>{tier === 'avoid' ? 'Avoid cutoff' : `Tier ${tier} cutoff`}</span>
+        <small>Use arrows to adjust</small>
+      </div>
+      <div className="ps-tier-boundary-actions">
+        <button type="button" onClick={onMoveUp} disabled={!canMoveUp} aria-label={`Move ${tier === 'avoid' ? 'Avoid' : `Tier ${tier}`} boundary up one player`}>
+          <ChevronUp size={16} />
+        </button>
+        <button type="button" onClick={onMoveDown} disabled={!canMoveDown} aria-label={`Move ${tier === 'avoid' ? 'Avoid' : `Tier ${tier}`} boundary down one player`}>
+          <ChevronDown size={16} />
+        </button>
+        <button type="button" className="ps-tier-remove" onClick={onRemove}>Remove</button>
+      </div>
+    </div>
+  );
+}
 
 function injuryLabel(status) {
   if (!status) return null;
@@ -39,7 +69,7 @@ function injuryLabel(status) {
   return status.slice(0, 3).toUpperCase();
 }
 
-function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, active }) {
+function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, active, tierSelectable, onSelectTier }) {
   const {
     attributes,
     isSorting,
@@ -55,7 +85,7 @@ function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, ac
   };
 
   return (
-    <article ref={setNodeRef} style={style} className={`ps-player-row ${isSorting ? 'sorting' : ''}`}>
+    <article ref={setNodeRef} style={style} className={`ps-player-row ${isSorting ? 'sorting' : ''} ${tierSelectable ? 'tier-selectable' : ''}`}>
       {draggable ? (
         <button
           className="ps-drag-handle"
@@ -69,7 +99,12 @@ function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, ac
       ) : <span className="ps-drag-spacer" />}
       <span className="ps-rank">{rank}</span>
       <span className={`ps-position pos-${player.position}`}>{player.position}</span>
-      <button className="ps-player-identity" type="button" onClick={() => onOpen(player)}>
+      <button
+        className="ps-player-identity"
+        type="button"
+        onClick={() => tierSelectable ? onSelectTier() : onOpen(player)}
+        aria-label={tierSelectable ? `Choose ${player.name} as the tier boundary` : undefined}
+      >
         <span>
           {player.name}
           {player.injuryStatus && <small>{injuryLabel(player.injuryStatus)}</small>}
@@ -95,8 +130,10 @@ function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, ac
 export default function PreseasonPlayerWorkspace({
   players,
   personalRanks,
+  personalTiers,
   watchlist,
   onSavePersonalRanks,
+  onSavePersonalTiers,
   onToggleWatch,
   saveState,
   savedAt,
@@ -109,6 +146,8 @@ export default function PreseasonPlayerWorkspace({
   const [activeDragId, setActiveDragId] = useState(null);
   const [cardPlayer, setCardPlayer] = useState(null);
   const [showImport, setShowImport] = useState(false);
+  const [tierMode, setTierMode] = useState(false);
+  const [placingAvoid, setPlacingAvoid] = useState(false);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 175, tolerance: 6 } }),
@@ -119,7 +158,9 @@ export default function PreseasonPlayerWorkspace({
     [players, personalRanks],
   );
   const positionPlayers = useMemo(
-    () => rankedPlayers.filter(player => position === 'ALL' || player.position === position),
+    () => rankedPlayers.filter(player => (
+      position === 'ALL' || playerMatchesTierScope(player, position)
+    )),
     [position, rankedPlayers],
   );
   const viewPlayers = useMemo(
@@ -132,7 +173,17 @@ export default function PreseasonPlayerWorkspace({
   }), [viewPlayers]);
   const isSearching = search.trim().length > 0;
   const visiblePlayers = isSearching ? fuse.search(search).map(result => result.item) : viewPlayers;
-  const canDrag = view === 'rankings' && !isSearching;
+  const canDrag = view === 'rankings' && !isSearching && !tierMode;
+  const tierPlayerIds = positionPlayers.map(player => player.id);
+  const tierAssignments = personalTiers?.[position] || {};
+  const hasTierAssignments = Object.keys(tierAssignments).length > 0;
+  const hasAvoidCutoff = tierPlayerIds.some(playerId => personalTierForPlayer(personalTiers, position, playerId) === 'avoid');
+  const highestNumberedTier = tierPlayerIds.reduce((highest, playerId) => {
+    const tier = personalTierForPlayer(personalTiers, position, playerId);
+    return typeof tier === 'number' ? Math.max(highest, tier) : highest;
+  }, 1);
+  const showTierHeadings = position !== 'ALL' && view === 'rankings' && !isSearching
+    && (tierMode || hasTierAssignments);
 
   function handleDragEnd({ active, over }) {
     setActiveDragId(null);
@@ -147,6 +198,53 @@ export default function PreseasonPlayerWorkspace({
     if (updates) onSavePersonalRanks(updates);
   }
 
+  function enterTierMode() {
+    setView('rankings');
+    setSearch('');
+    setPlacingAvoid(false);
+    setTierMode(true);
+  }
+
+  function leaveTierMode() {
+    setTierMode(false);
+    setPlacingAvoid(false);
+  }
+
+  function insertTierBoundary(beforeIndex) {
+    const updates = buildInsertTierBoundaryUpdates({ personalTiers, scope: position, playerIds: tierPlayerIds, beforeIndex });
+    if (updates) onSavePersonalTiers(updates);
+  }
+
+  function removeTierBoundary(beforeIndex) {
+    const updates = buildRemoveTierBoundaryUpdates({ personalTiers, scope: position, playerIds: tierPlayerIds, beforeIndex });
+    if (updates) onSavePersonalTiers(updates);
+  }
+
+  function moveTierBoundary(fromBeforeIndex, toBeforeIndex) {
+    const updates = buildMoveTierBoundaryUpdates({
+      personalTiers,
+      scope: position,
+      playerIds: tierPlayerIds,
+      fromBeforeIndex,
+      toBeforeIndex,
+    });
+    if (updates) onSavePersonalTiers(updates);
+  }
+
+  function placeAvoidCutoff(firstAvoidIndex) {
+    const updates = buildAvoidCutoffUpdates({ scope: position, playerIds: tierPlayerIds, beforeIndex: firstAvoidIndex });
+    if (updates) onSavePersonalTiers(updates);
+    setPlacingAvoid(false);
+  }
+
+  function clearPositionTiers() {
+    const assignedIds = Object.keys(tierAssignments);
+    if (!assignedIds.length) return;
+    if (!window.confirm(`Clear all ${position} tiers? Your player order will not change.`)) return;
+    onSavePersonalTiers(buildPersonalTierUpdates(position, assignedIds, null));
+    setPlacingAvoid(false);
+  }
+
   const savedLabel = savedAt
     ? `Saved ${savedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`
     : 'Changes save automatically';
@@ -158,7 +256,7 @@ export default function PreseasonPlayerWorkspace({
           <button type="button" className={view === 'rankings' ? 'active' : ''} onClick={() => setView('rankings')}>
             Rankings
           </button>
-          <button type="button" className={view === 'starred' ? 'active' : ''} onClick={() => setView('starred')}>
+          <button type="button" className={view === 'starred' ? 'active' : ''} onClick={() => { setView('starred'); leaveTierMode(); }}>
             <Star size={15} /> Starred <span>{Object.keys(watchlist).length}</span>
           </button>
         </div>
@@ -172,6 +270,16 @@ export default function PreseasonPlayerWorkspace({
         <button className="ps-import-button" type="button" onClick={() => setShowImport(true)}>
           <FileUp size={16} /> Import CSV
         </button>
+        {position !== 'ALL' && view === 'rankings' && !tierMode && hasTierAssignments && (
+          <button className="ps-tier-mode-button" type="button" onClick={enterTierMode}>
+            <Layers3 size={16} /> Edit tiers
+          </button>
+        )}
+        {tierMode && (
+          <button className="ps-tier-mode-button active" type="button" onClick={leaveTierMode}>
+            <X size={16} /> Done tiering
+          </button>
+        )}
       </div>
 
       {saveError && (
@@ -197,17 +305,59 @@ export default function PreseasonPlayerWorkspace({
               key={item}
               type="button"
               className={position === item ? 'active' : ''}
-              onClick={() => setPosition(item)}
+              onClick={() => {
+                setPosition(item);
+                leaveTierMode();
+              }}
             >
-              {item}
+              {item === 'FLEX' ? <><span>FLEX</span><small>RB/WR/TE</small></> : item}
             </button>
           ))}
         </div>
       </div>
 
+      {tierMode && (
+        <div className="ps-tier-tools">
+          <div>
+            <strong>{position} tier builder</strong>
+            <span>
+              {placingAvoid
+                ? 'Tap the first player you want placed in Avoid.'
+                : highestNumberedTier >= MAX_PERSONAL_TIER
+                  ? `All ${MAX_PERSONAL_TIER} numbered tiers are available. Set an Avoid cutoff or finish editing.`
+                  : hasTierAssignments
+                    ? `Use a divider's arrows to adjust its cutoff, or tap the last Tier ${highestNumberedTier} player to create the next tier.`
+                  : 'Start at the top: tap the last player you want in Tier 1. We will place the first divider beneath that player.'}
+            </span>
+          </div>
+          <button
+            type="button"
+            className={placingAvoid ? 'active avoid' : ''}
+            onClick={() => setPlacingAvoid(current => !current)}
+            disabled={hasAvoidCutoff}
+          >
+            {hasAvoidCutoff ? 'Avoid cutoff set' : placingAvoid ? 'Cancel Avoid' : 'Set Avoid cutoff'}
+          </button>
+          <button type="button" onClick={clearPositionTiers} disabled={!Object.keys(tierAssignments).length}>
+            Clear {position} tiers
+          </button>
+        </div>
+      )}
+
+      {!tierMode && position !== 'ALL' && view === 'rankings' && !isSearching && !hasTierAssignments && (
+        <div className="ps-tier-intro">
+          <Layers3 size={19} />
+          <div>
+            <strong>Tiers are optional</strong>
+            <span>They group this list without changing your player order. Select the last player in each tier to create a divider, then use its arrow buttons to fine-tune the cutoff.</span>
+          </div>
+          <button type="button" onClick={enterTierMode}>Create {position} tiers</button>
+        </div>
+      )}
+
       <div className="ps-list-note">
         <span>{visiblePlayers.length} {view === 'starred' ? 'starred' : position === 'ALL' ? 'players' : position + 's'}</span>
-        <span>{canDrag ? 'Drag players into your preferred order.' : isSearching ? 'Clear search to reorder players.' : 'Star players from the Rankings view.'}</span>
+        <span>{tierMode ? 'Tap a player name to add the next boundary, or use a divider’s arrows to adjust it. Player order will not change.' : canDrag ? 'Drag players into your preferred order.' : isSearching ? 'Clear search to reorder players.' : 'Star players from the Rankings view.'}</span>
       </div>
 
       {visiblePlayers.length === 0 ? (
@@ -226,18 +376,49 @@ export default function PreseasonPlayerWorkspace({
         >
           <SortableContext items={visiblePlayers.map(player => player.id)} strategy={verticalListSortingStrategy}>
             <div className="ps-player-list">
-              {visiblePlayers.map(player => (
-                <PlayerRow
-                  key={player.id}
-                  player={player}
-                  rank={effectivePlayerRank(player.id, players, personalRanks)}
-                  watched={Boolean(watchlist[player.id])}
-                  draggable={canDrag}
-                  onToggleWatch={onToggleWatch}
-                  onOpen={setCardPlayer}
-                  active={activeDragId === player.id}
-                />
-              ))}
+              {visiblePlayers.map((player, index) => {
+                const tier = showTierHeadings ? (personalTierForPlayer(personalTiers, position, player.id) || 1) : null;
+                const previousTier = index > 0
+                  ? (personalTierForPlayer(personalTiers, position, visiblePlayers[index - 1].id) || 1)
+                  : null;
+                const nextTier = index < visiblePlayers.length - 1
+                  ? (personalTierForPlayer(personalTiers, position, visiblePlayers[index + 1].id) || 1)
+                  : null;
+                const startsTier = showTierHeadings && (index === 0 || tier !== previousTier);
+                const canStartNextTier = tierMode && !placingAvoid && highestNumberedTier < MAX_PERSONAL_TIER
+                  && index < visiblePlayers.length - 1
+                  && tier === highestNumberedTier && nextTier === highestNumberedTier;
+                const canPlaceAvoid = tierMode && placingAvoid && index > 0 && tier !== 'avoid';
+                const tierSelectable = canStartNextTier || canPlaceAvoid;
+
+                return (
+                  <div className="ps-tier-row-group" key={player.id}>
+                    {startsTier && (
+                      tierMode && index > 0
+                        ? <TierBoundary
+                            tier={tier}
+                            canMoveUp={index > 1 && personalTierForPlayer(personalTiers, position, visiblePlayers[index - 2].id) === previousTier}
+                            canMoveDown={index < visiblePlayers.length - 1 && nextTier === tier}
+                            onMoveUp={() => moveTierBoundary(index, index - 1)}
+                            onMoveDown={() => moveTierBoundary(index, index + 1)}
+                            onRemove={() => removeTierBoundary(index)}
+                          />
+                        : <div className={`ps-tier-heading ${tier === 'avoid' ? 'avoid' : ''}`}><span>{tier === 'avoid' ? 'Avoid' : `Tier ${tier}`}</span></div>
+                    )}
+                    <PlayerRow
+                      player={player}
+                      rank={effectivePlayerRank(player.id, players, personalRanks)}
+                      watched={Boolean(watchlist[player.id])}
+                      draggable={canDrag}
+                      onToggleWatch={onToggleWatch}
+                      onOpen={setCardPlayer}
+                      active={activeDragId === player.id}
+                      tierSelectable={tierSelectable}
+                      onSelectTier={() => canPlaceAvoid ? placeAvoidCutoff(index) : insertTierBoundary(index + 1)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </SortableContext>
           <DragOverlay>

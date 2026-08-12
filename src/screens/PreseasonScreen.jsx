@@ -6,6 +6,7 @@ import PreseasonPlayerWorkspace from '../components/PreseasonPlayerWorkspace';
 import TeamAccessManager from '../components/TeamAccessManager';
 import { db } from '../firebase';
 import { buildDraftDayLobbyUpdates, sortTeamsForDisplay } from '../utils/draftLifecycle';
+import { applyPersonalTierUpdates } from '../utils/personalTiers';
 import './PreseasonScreen.css';
 
 export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeToggle, preview = false }) {
@@ -14,6 +15,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
   const [players, setPlayers] = useState({});
   const [teamAccess, setTeamAccess] = useState({});
   const [personalRanks, setPersonalRanks] = useState({});
+  const [personalTiers, setPersonalTiers] = useState({});
   const [watchlist, setWatchlist] = useState({});
   const [syncConnected, setSyncConnected] = useState(null);
   const [openingLobby, setOpeningLobby] = useState(false);
@@ -43,6 +45,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
     if (preview || isCommissioner || !selectedTeamId) return undefined;
     const unsubscribers = [
       onValue(ref(db, `personalRanks/${selectedTeamId}`), snapshot => setPersonalRanks(snapshot.val() || {})),
+      onValue(ref(db, `personalTiers/${selectedTeamId}`), snapshot => setPersonalTiers(snapshot.val() || {})),
       onValue(ref(db, `watchlists/${selectedTeamId}`), snapshot => setWatchlist(snapshot.val() || {})),
     ];
     update(ref(db, `teams/${selectedTeamId}`), { connected: true, lastSeen: serverTimestamp() });
@@ -93,6 +96,17 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
       return;
     }
     return savePreference(() => update(ref(db, `personalRanks/${selectedTeamId}`), ranks));
+  }
+
+  function savePersonalTiers(updates) {
+    if (!selectedTeamId || isCommissioner || !updates) return;
+    if (preview) {
+      setPersonalTiers(current => applyPersonalTierUpdates(current, updates));
+      setSavedAt(new Date());
+      setSaveState('saved');
+      return;
+    }
+    return savePreference(() => update(ref(db, `personalTiers/${selectedTeamId}`), updates));
   }
 
   function toggleWatch(playerId) {
@@ -178,8 +192,10 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
           <PreseasonPlayerWorkspace
             players={players}
             personalRanks={personalRanks}
+            personalTiers={personalTiers}
             watchlist={watchlist}
             onSavePersonalRanks={savePersonalRanks}
+            onSavePersonalTiers={savePersonalTiers}
             onToggleWatch={toggleWatch}
             saveState={saveState}
             savedAt={savedAt}

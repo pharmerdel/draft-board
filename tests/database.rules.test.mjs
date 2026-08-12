@@ -86,15 +86,22 @@ test('an owner can manage only their own valid rankings, tiers, and watchlist', 
   const database = ownerOne();
 
   await assertSucceeds(update(ref(database, 'personalRanks/team_1'), { player_1: 1, player_2: 2 }));
-  await assertSucceeds(update(ref(database, 'personalTiers/team_1'), { player_1: 2, player_2: 'avoid' }));
-  await assertSucceeds(set(ref(database, 'personalTiers/team_1/player_1'), 2));
+  await assertSucceeds(update(ref(database, 'personalTiers/team_1'), {
+    'RB/player_1': 2,
+    'FLEX/player_1': 3,
+    'FLEX/player_2': 'avoid',
+  }));
+  await assertSucceeds(set(ref(database, 'personalTiers/team_1/RB/player_1'), 2));
+  await assertSucceeds(set(ref(database, 'personalTiers/team_1/RB/player_1'), 12));
   await assertSucceeds(set(ref(database, 'watchlists/team_1/player_1'), { watched: true }));
   await assertSucceeds(get(ref(database, 'personalRanks/team_1')));
 
   await assertFails(set(ref(database, 'personalRanks/team_2/player_1'), 1));
   await assertFails(get(ref(database, 'personalRanks/team_2')));
   await assertFails(set(ref(database, 'personalRanks/team_1/player_1'), 1.5));
-  await assertFails(set(ref(database, 'personalTiers/team_1/player_1'), 6));
+  await assertFails(set(ref(database, 'personalTiers/team_1/RB/player_1'), 13));
+  await assertFails(set(ref(database, 'personalTiers/team_1/ALL/player_1'), 1));
+  await assertFails(set(ref(database, 'personalTiers/team_1/QB/player_1'), 1));
   await assertFails(set(ref(database, 'watchlists/team_1/player_1'), { watched: true, shared: true }));
 });
 
