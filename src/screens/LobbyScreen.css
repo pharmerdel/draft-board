@@ -496,7 +496,7 @@
 
 .team-access-manager-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 105px 130px 78px;
+  grid-template-columns: minmax(0, 1fr) 105px 130px 96px;
   gap: 0.6rem;
   align-items: center;
   min-height: 42px;
@@ -535,6 +535,12 @@
 .team-access-reset {
   padding: 0.42rem 0.5rem;
   font-size: 0.72rem;
+}
+
+.team-access-generate {
+  border-color: #93C5FD;
+  background: #EFF6FF;
+  color: #1D4ED8;
 }
 
 .owner-waiting {

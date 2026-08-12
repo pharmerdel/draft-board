@@ -33,6 +33,26 @@ export default function TeamAccessManager({ teams, teamAccess, showNominationRan
     }
   }
 
+  async function handleGenerateTeam(teamId, teamName) {
+    setWorkingTeamId(teamId);
+    setMessage('');
+    try {
+      const result = await generateTeamActivationCodes([teamId]);
+      const entry = result.activationCodes.find(code => code.teamId === teamId);
+      if (!entry) {
+        setMessage(`${teamName} already has a PIN. Use Reset if the owner needs a new activation code.`);
+        return;
+      }
+      setCodes(current => ({ ...current, [teamId]: entry.activationCode }));
+      setMessage(`A one-time activation code was created for ${teamName}.`);
+    } catch (error) {
+      console.error('Unable to generate team activation code:', error);
+      setMessage(`The activation code for ${teamName} could not be generated. Try again.`);
+    } finally {
+      setWorkingTeamId(null);
+    }
+  }
+
   async function handleReset(teamId, teamName) {
     if (!window.confirm(`Reset the PIN for ${teamName}? Existing sessions will be revoked and the owner will need a new activation code.`)) return;
     setWorkingTeamId(teamId);
@@ -105,15 +125,27 @@ export default function TeamAccessManager({ teams, teamAccess, showNominationRan
               <span className="team-access-manager-team">{team.name}</span>
               <span className={`team-access-state ${state}`}>{state.replace('-', ' ')}</span>
               <code>{codes[teamId] || '—'}</code>
-              <button
-                type="button"
-                className="team-access-reset"
-                onClick={() => handleReset(teamId, team.name)}
-                disabled={workingTeamId === teamId || state === 'unclaimed'}
-                title={state === 'unclaimed' ? 'Generate an activation code first' : 'Reset owner PIN'}
-              >
-                <RotateCcw size={14} /> Reset
-              </button>
+              {state === 'unclaimed' ? (
+                <button
+                  type="button"
+                  className="team-access-reset team-access-generate"
+                  onClick={() => handleGenerateTeam(teamId, team.name)}
+                  disabled={workingTeamId === teamId || generating}
+                  title={`Generate an activation code for ${team.name}`}
+                >
+                  <KeyRound size={14} /> {workingTeamId === teamId ? 'Working…' : 'Generate'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="team-access-reset"
+                  onClick={() => handleReset(teamId, team.name)}
+                  disabled={workingTeamId === teamId}
+                  title="Reset owner PIN"
+                >
+                  <RotateCcw size={14} /> {workingTeamId === teamId ? 'Working…' : 'Reset'}
+                </button>
+              )}
             </div>
           );
         })}
