@@ -5,6 +5,7 @@ import { auth, db } from './firebase';
 import SetupScreen from './screens/SetupScreen';
 import LobbyScreen from './screens/LobbyScreen';
 import DraftScreen from './screens/DraftScreen';
+import PreseasonScreen from './screens/PreseasonScreen';
 import AccessGate from './components/AccessGate';
 import ThemeToggle from './components/ThemeToggle';
 import { hasLeagueAccess } from './utils/accessGateStorage';
@@ -13,6 +14,7 @@ import './App.css';
 
 export default function App() {
   const setupPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'setup';
+  const preseasonOwnerPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'preseason-owner';
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
@@ -138,6 +140,10 @@ export default function App() {
     );
   }
 
+  if (preseasonOwnerPreview) {
+    return <PreseasonScreen preview selectedTeamId="team_1" onTeamClear={() => {}} themeToggle={themeToggle} />;
+  }
+
   if (!draftStatus || draftStatus === 'setup') {
     if (selectedTeamId !== 'commissioner') {
       return (
@@ -162,6 +168,18 @@ export default function App() {
         <LobbyScreen selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
       </>
     );
+  }
+
+  if (draftStatus === 'preseason') {
+    if (!selectedTeamId) {
+      return (
+        <>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+          <LobbyScreen phase="preseason" selectedTeamId={null} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
+        </>
+      );
+    }
+    return <PreseasonScreen selectedTeamId={selectedTeamId} onTeamClear={handleTeamClear} themeToggle={themeToggle} />;
   }
 
   if (draftStatus === 'active' || draftStatus === 'paused') {

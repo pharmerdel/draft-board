@@ -1,0 +1,212 @@
+.preseason-screen {
+  min-height: 100vh;
+  padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+  background: #EEF2F7;
+}
+
+.preseason-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: 1180px;
+  margin: 0 auto 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #D8E0EB;
+}
+
+.preseason-kicker {
+  color: #64748B;
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.preseason-header h1 {
+  margin-top: 0.25rem;
+  color: #142D54;
+  font-size: clamp(1.7rem, 4vw, 2.45rem);
+}
+
+.preseason-header p:last-child {
+  margin-top: 0.3rem;
+  color: #64748B;
+}
+
+.preseason-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.preseason-header-actions > button,
+.preseason-admin-hero > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #334155;
+  font-weight: 750;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+}
+
+.preseason-admin-hero,
+.preseason-owner-shell,
+.preseason-screen > .team-access-manager {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.preseason-admin-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #BFDBFE;
+  border-radius: 12px;
+  background: #EFF6FF;
+}
+
+.preseason-admin-hero > div {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.preseason-icon {
+  display: inline-flex;
+  padding: 0.65rem;
+  border-radius: 10px;
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.preseason-admin-hero h2,
+.preseason-owner-intro h2,
+.preseason-next-panel h3 {
+  color: #172033;
+}
+
+.preseason-admin-hero p,
+.preseason-owner-intro p,
+.preseason-next-panel p {
+  margin-top: 0.25rem;
+  color: #64748B;
+  line-height: 1.5;
+}
+
+.preseason-admin-hero > button {
+  flex-shrink: 0;
+  border-color: #1D4ED8;
+  background: #1D4ED8;
+  color: #FFFFFF;
+}
+
+.preseason-admin-hero > button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.preseason-owner-intro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  background: #FFFFFF;
+}
+
+.preseason-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #047857;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.preseason-live span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+}
+
+.preseason-live.offline {
+  color: #92400E;
+}
+
+.preseason-live.offline span {
+  background: #F59E0B;
+}
+
+.preseason-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.preseason-summary-grid article {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.65rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: #1D4ED8;
+}
+
+.preseason-summary-grid strong {
+  color: #172033;
+  font-size: 1.3rem;
+}
+
+.preseason-summary-grid span {
+  grid-column: 2;
+  color: #64748B;
+  font-size: 0.8rem;
+}
+
+.preseason-next-panel {
+  margin-top: 0.8rem;
+  padding: 1.4rem;
+  border: 1px dashed #94A3B8;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 700px) {
+  .preseason-screen {
+    min-height: 100svh;
+    overflow-y: auto;
+  }
+
+  .preseason-header,
+  .preseason-admin-hero,
+  .preseason-owner-intro {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .preseason-header-actions {
+    justify-content: space-between;
+  }
+
+  .preseason-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -4,18 +4,17 @@ import { Dices, KeyRound, RotateCcw } from 'lucide-react';
 
 import { db } from '../firebase';
 import { generateTeamActivationCodes, resetTeamPin } from '../utils/teamAuth';
+import { sortTeamsForDisplay } from '../utils/draftLifecycle';
 import { secureShuffle } from '../utils/secureShuffle';
 
-export default function TeamAccessManager({ teams, teamAccess }) {
+export default function TeamAccessManager({ teams, teamAccess, showNominationRandomizer = true }) {
   const [codes, setCodes] = useState({});
   const [workingTeamId, setWorkingTeamId] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [randomizing, setRandomizing] = useState(false);
   const [message, setMessage] = useState('');
 
-  const teamEntries = Object.entries(teams)
-    .filter(([, team]) => team?.name)
-    .sort((a, b) => (a[1].nominationOrder || 999) - (b[1].nominationOrder || 999));
+  const teamEntries = sortTeamsForDisplay(teams, showNominationRandomizer);
 
   async function handleGenerate() {
     setGenerating(true);
@@ -86,15 +85,17 @@ export default function TeamAccessManager({ teams, teamAccess }) {
           <KeyRound size={15} /> {generating ? 'Generating…' : 'Generate missing codes'}
         </button>
       </div>
-      <div className="nomination-randomizer">
-        <div>
-          <span className="nomination-randomizer-title">Draft-day nomination order</span>
-          <span className="nomination-randomizer-help">Uses secure browser randomness and updates every connected screen at once.</span>
+      {showNominationRandomizer && (
+        <div className="nomination-randomizer">
+          <div>
+            <span className="nomination-randomizer-title">Draft-day nomination order</span>
+            <span className="nomination-randomizer-help">Uses secure browser randomness and creates the official order for every connected screen.</span>
+          </div>
+          <button type="button" onClick={handleRandomizeOrder} disabled={randomizing}>
+            <Dices size={16} /> {randomizing ? 'Randomizing…' : 'Randomize order'}
+          </button>
         </div>
-        <button type="button" onClick={handleRandomizeOrder} disabled={randomizing}>
-          <Dices size={16} /> {randomizing ? 'Randomizing…' : 'Randomize order'}
-        </button>
-      </div>
+      )}
       {message && <p className="team-access-manager-message">{message}</p>}
       <div className="team-access-manager-list">
         {teamEntries.map(([teamId, team]) => {
