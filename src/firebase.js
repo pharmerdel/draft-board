@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
+import { getFunctions } from 'firebase/functions';
 
 const defaultFirebaseConfig = {
   apiKey: 'AIzaSyAjq2vu46yDB8ipYdlflRdPoWU_mwDhRyA',
@@ -23,3 +25,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
+export const auth = getAuth(app);
+export const functions = getFunctions(app, 'us-central1');

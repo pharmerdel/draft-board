@@ -16,7 +16,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowRight, ClipboardList, GripVertical, History, Hourglass, Info, Shield, Star, UserRound } from 'lucide-react';
+import { ArrowRight, ClipboardList, GripVertical, History, Hourglass, Info, LogOut, Shield, Star, UserRound } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import TeamDetailModal from './TeamDetailModal';
@@ -106,7 +106,7 @@ export default function ParticipantDesktopView({
   selectedTeamId, nominatingTeamId,
   onNominate, watchlist, onToggleWatch,
   personalRanks, onSavePersonalRanks,
-  themeToggle,
+  themeToggle, onTeamClear,
 }) {
   const [tab, setTab]               = useState('myteam');
   const [cardPlayer, setCardPlayer]   = useState(null);
@@ -233,6 +233,9 @@ export default function ParticipantDesktopView({
           <span className="pd-status-dot" />
           Live
         </span>
+        <button className="pd-switch-team" type="button" onClick={onTeamClear} title="Sign out and choose another team">
+          <LogOut size={14} /> Switch team
+        </button>
         {themeToggle}
       </div>
 

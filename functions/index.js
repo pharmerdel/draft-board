@@ -1,6 +1,15 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { fetchFantasyProsPlayerNews } from './fantasyProsNews.js';
 
+export {
+  activateTeam,
+  activateCommissioner,
+  createTeamActivationCodes,
+  loginCommissioner,
+  loginTeam,
+  resetTeamPin,
+} from './teamAuth.js';
+
 const DEFAULT_MAX_AGE_DAYS = 30;
 const MAX_ALLOWED_AGE_DAYS = 365;
 

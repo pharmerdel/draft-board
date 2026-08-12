@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+import { getIdTokenResult, onAuthStateChanged } from 'firebase/auth';
 import { ref, onValue } from 'firebase/database';
-import { db } from './firebase';
+import { auth, db } from './firebase';
 import SetupScreen from './screens/SetupScreen';
 import LobbyScreen from './screens/LobbyScreen';
 import DraftScreen from './screens/DraftScreen';
 import AccessGate from './components/AccessGate';
 import ThemeToggle from './components/ThemeToggle';
 import { hasLeagueAccess } from './utils/accessGateStorage';
+import { signOutTeam } from './utils/teamAuth';
 import './App.css';
 
 export default function App() {
@@ -19,17 +21,15 @@ export default function App() {
     () => localStorage.getItem('ff_theme') || 'light'
   );
 
-  // Lifted to state so selecting a team in LobbyScreen immediately re-routes
-  const [selectedTeamId, setSelectedTeamId] = useState(
-    () => localStorage.getItem('ff_selected_team')
-  );
+  const [authReady, setAuthReady] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
 
   function handleTeamSelect(teamId) {
-    localStorage.setItem('ff_selected_team', teamId);
     setSelectedTeamId(teamId);
   }
 
-  function handleTeamClear() {
+  async function handleTeamClear() {
+    await signOutTeam();
     localStorage.removeItem('ff_selected_team');
     setSelectedTeamId(null);
   }
@@ -46,6 +46,34 @@ export default function App() {
     document.body.dataset.theme = theme;
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async user => {
+      if (!user) {
+        setSelectedTeamId(null);
+        setAuthReady(true);
+        return;
+      }
+
+      try {
+        const token = await getIdTokenResult(user);
+        if (token.claims.role === 'owner' && typeof token.claims.teamId === 'string') {
+          localStorage.removeItem('ff_selected_team');
+          setSelectedTeamId(token.claims.teamId);
+        } else if (token.claims.role === 'commissioner') {
+          setSelectedTeamId('commissioner');
+        } else {
+          await signOutTeam();
+        }
+      } catch (error) {
+        console.error('Unable to restore team session:', error);
+        setSelectedTeamId(null);
+      } finally {
+        setAuthReady(true);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (!accessGranted) return undefined;
@@ -74,7 +102,7 @@ export default function App() {
     );
   }
 
-  if (loading) {
+  if (loading || !authReady) {
     return (
       <>
         <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
@@ -123,7 +151,7 @@ export default function App() {
     return (
       <>
         <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
-        <LobbyScreen selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} />
+        <LobbyScreen selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
       </>
     );
   }
@@ -133,7 +161,7 @@ export default function App() {
       return (
         <>
           <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
-          <LobbyScreen rejoin selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} />
+          <LobbyScreen rejoin selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
         </>
       );
     }

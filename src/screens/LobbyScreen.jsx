@@ -3,19 +3,27 @@ import { ref, onValue, update } from 'firebase/database';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowRight,
+  LogOut,
   MonitorUp,
   Play,
   QrCode,
   UsersRound,
 } from 'lucide-react';
 import { db } from '../firebase';
+import CommissionerAccessModal from '../components/CommissionerAccessModal';
+import TeamAccessModal from '../components/TeamAccessModal';
+import TeamAccessManager from '../components/TeamAccessManager';
 import './LobbyScreen.css';
 
 const TEAM_COUNT = 12;
 
-export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSelect }) {
+export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSelect, onTeamClear }) {
   const [teams, setTeams] = useState({});
   const [draft, setDraft] = useState({});
+  const [teamAccess, setTeamAccess] = useState({});
+  const [authTeamId, setAuthTeamId] = useState(null);
+  const [commissionerAccess, setCommissionerAccess] = useState({});
+  const [showCommissionerAccess, setShowCommissionerAccess] = useState(false);
   const [starting, setStarting] = useState(false);
   const [confirmingStart, setConfirmingStart] = useState(false);
 
@@ -34,6 +42,16 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
   // Live sync draft info
   useEffect(() => {
     const unsub = onValue(ref(db, 'draft'), snap => setDraft(snap.val() || {}));
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'teamAccess'), snap => setTeamAccess(snap.val() || {}));
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'commissionerAccess'), snap => setCommissionerAccess(snap.val() || {}));
     return () => unsub();
   }, []);
 
@@ -65,8 +83,27 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
 
   // ── TEAM SELECTION VIEW (lobby or mid-draft rejoin) ──────────────────────
   if (!selectedTeamId) {
+    const authTeam = authTeamId ? teams[authTeamId] : null;
+    const accessState = authTeamId ? (teamAccess[authTeamId]?.state || 'unclaimed') : 'unclaimed';
+
     return (
       <div className="lobby-screen">
+        {authTeamId && (
+          <TeamAccessModal
+            teamId={authTeamId}
+            team={authTeam}
+            accessState={accessState}
+            onClose={() => setAuthTeamId(null)}
+            onAuthenticated={onTeamSelect}
+          />
+        )}
+        {showCommissionerAccess && (
+          <CommissionerAccessModal
+            accessState={commissionerAccess.state || 'unclaimed'}
+            onClose={() => setShowCommissionerAccess(false)}
+            onAuthenticated={onTeamSelect}
+          />
+        )}
         <div className="lobby-hero">
           <div>
             <p className="lobby-kicker">Draft Room</p>
@@ -84,7 +121,7 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
         <div className="entry-layout">
           <button
             className="commissioner-access"
-            onClick={() => onTeamSelect('commissioner')}
+            onClick={() => setShowCommissionerAccess(true)}
           >
             <span className="commissioner-icon">
               <MonitorUp size={22} strokeWidth={2.2} />
@@ -118,7 +155,7 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
                       <span className="team-select-order">{team.nominationOrder || '-'}</span>
                       <button
                         className={`team-select-btn ${isActive ? 'active' : ''}`}
-                        onClick={() => onTeamSelect(teamId)}
+                        onClick={() => setAuthTeamId(teamId)}
                       >
                         <span className="team-select-copy">
                           <span className="team-select-name">{team.name}</span>
@@ -127,6 +164,11 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
                         {isActive && (
                           <span className="team-select-badge">
                             {rejoin ? 'Rejoin' : 'Joined'}
+                          </span>
+                        )}
+                        {!isActive && (
+                          <span className="team-access-badge">
+                            {['unclaimed', 'reset-required'].includes(teamAccess[teamId]?.state || 'unclaimed') ? 'Set PIN' : 'PIN'}
                           </span>
                         )}
                         <ArrowRight className="team-select-arrow" size={16} strokeWidth={2.2} />
@@ -171,9 +213,14 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
             Joined as <strong>{myTeam?.name || selectedTeamId}</strong>
           </p>
         </div>
-        <div className="lobby-state-pill lobby">
-          <span className="lobby-state-dot" />
-          {connectedCount}/{TEAM_COUNT} connected
+        <div className="lobby-session-actions">
+          <div className="lobby-state-pill lobby">
+            <span className="lobby-state-dot" />
+            {connectedCount}/{TEAM_COUNT} connected
+          </div>
+          <button className="lobby-switch-team" type="button" onClick={onTeamClear}>
+            <LogOut size={15} /> Switch team
+          </button>
         </div>
       </div>
 
@@ -218,17 +265,26 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
               ))}
           </div>
 
-          <button
-            className="start-draft-btn"
-            onClick={() => setConfirmingStart(true)}
-            disabled={starting}
-          >
-            <Play size={18} fill="currentColor" strokeWidth={2.2} />
-            {starting ? 'Starting...' : 'Start Draft'}
-          </button>
-          <p className="start-hint">Everyone will move to the draft board simultaneously.</p>
+          {selectedTeamId === 'commissioner' ? (
+            <>
+              <button
+                className="start-draft-btn"
+                onClick={() => setConfirmingStart(true)}
+                disabled={starting}
+              >
+                <Play size={18} fill="currentColor" strokeWidth={2.2} />
+                {starting ? 'Starting...' : 'Start Draft'}
+              </button>
+              <p className="start-hint">Everyone will move to the draft board simultaneously.</p>
+            </>
+          ) : (
+            <p className="start-hint owner-waiting">The commissioner will start the draft when everyone is ready.</p>
+          )}
         </div>
       </div>
+      {selectedTeamId === 'commissioner' && (
+        <TeamAccessManager teams={teams} teamAccess={teamAccess} />
+      )}
     </div>
   );
 }
