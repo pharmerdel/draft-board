@@ -4,13 +4,16 @@ import { db } from './firebase';
 import SetupScreen from './screens/SetupScreen';
 import LobbyScreen from './screens/LobbyScreen';
 import DraftScreen from './screens/DraftScreen';
+import AccessGate from './components/AccessGate';
 import ThemeToggle from './components/ThemeToggle';
+import { hasLeagueAccess } from './utils/accessGateStorage';
 import './App.css';
 
 export default function App() {
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
+  const [accessGranted, setAccessGranted] = useState(() => hasLeagueAccess());
   const [theme, setTheme] = useState(
     () => localStorage.getItem('ff_theme') || 'light'
   );
@@ -44,6 +47,8 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
+    if (!accessGranted) return undefined;
+
     const unsub = onValue(
       ref(db, 'draft/status'),
       (snapshot) => {
@@ -57,7 +62,16 @@ export default function App() {
       }
     );
     return () => unsub();
-  }, []);
+  }, [accessGranted]);
+
+  if (!accessGranted) {
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <AccessGate onUnlock={() => setAccessGranted(true)} />
+      </>
+    );
+  }
 
   if (loading) {
     return (

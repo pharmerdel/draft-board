@@ -13,6 +13,9 @@ function maxBid(team) {
 }
 
 export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, selectedTeamId, nominatingTeamId, currentNomination, onNominate, showWatchlist = true }) {
+  const [confirmPlayer, setConfirmPlayer] = useState(null); // { id, name }
+  const [showDraftedWatch, setShowDraftedWatch] = useState(false);
+
   if (!team) {
     return (
       <div className="my-team-panel">
@@ -20,9 +23,6 @@ export default function MyTeamPanel({ team, players, watchlist, onToggleWatch, s
       </div>
     );
   }
-
-  const [confirmPlayer, setConfirmPlayer]     = useState(null); // { id, name }
-  const [showDraftedWatch, setShowDraftedWatch] = useState(false);
 
   const isMyTurn = nominatingTeamId === selectedTeamId && !currentNomination;
 

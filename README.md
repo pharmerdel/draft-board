@@ -1,16 +1,32 @@
-# React + Vite
+# Draft Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Private fantasy football auction draft utility for one league.
 
-Currently, two official plugins are available:
+## Local Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Node.js 20.19 or newer is required. If you use `nvm`, run `nvm use` before installing dependencies.
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## League Access Gate
 
-## Expanding the ESLint configuration
+The app shows a password screen before connecting to Firebase. This is a lightweight front-door gate to keep casual strangers out of the hosted draft board without requiring owner logins.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Set one of these Vite environment variables before production deploy:
+
+```bash
+VITE_LEAGUE_PASSWORD=your-league-password
+```
+
+Or use the stronger option and store only a SHA-256 hash in the built app:
+
+```bash
+VITE_LEAGUE_PASSWORD_SHA256=your-password-sha256-hash
+```
+
+When neither variable is set, local/dev builds fall back to `draftday` for convenience. Do not rely on that fallback for production.
+
+Owners only need to enter the password once per browser/device unless they clear site data.

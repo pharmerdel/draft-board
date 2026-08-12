@@ -36,6 +36,8 @@ jobs:
       - name: Build
         env:
           VITE_NEWS_API_BASE_URL: https://ff-draft-board.web.app
+          VITE_LEAGUE_PASSWORD: ${{ secrets.VITE_LEAGUE_PASSWORD }}
+          VITE_LEAGUE_PASSWORD_SHA256: ${{ secrets.VITE_LEAGUE_PASSWORD_SHA256 }}
         run: npm run build:github
 
       - name: Upload Pages artifact
