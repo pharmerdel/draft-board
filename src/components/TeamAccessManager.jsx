@@ -1,12 +1,16 @@
 import { useState } from 'react';
-import { KeyRound, RotateCcw } from 'lucide-react';
+import { ref, update } from 'firebase/database';
+import { Dices, KeyRound, RotateCcw } from 'lucide-react';
 
+import { db } from '../firebase';
 import { generateTeamActivationCodes, resetTeamPin } from '../utils/teamAuth';
+import { secureShuffle } from '../utils/secureShuffle';
 
 export default function TeamAccessManager({ teams, teamAccess }) {
   const [codes, setCodes] = useState({});
   const [workingTeamId, setWorkingTeamId] = useState(null);
   const [generating, setGenerating] = useState(false);
+  const [randomizing, setRandomizing] = useState(false);
   const [message, setMessage] = useState('');
 
   const teamEntries = Object.entries(teams)
@@ -46,6 +50,30 @@ export default function TeamAccessManager({ teams, teamAccess }) {
     }
   }
 
+  async function handleRandomizeOrder() {
+    if (!window.confirm('Randomize the nomination order now? This replaces the current order for every team.')) return;
+    setRandomizing(true);
+    setMessage('');
+    try {
+      const randomizedIds = secureShuffle(teamEntries.map(([teamId]) => teamId));
+      const updates = {
+        'draft/nominationOrderIds': randomizedIds,
+        'draft/nominationIndex': 0,
+        'draft/nominationOrderRandomizedAt': Date.now(),
+      };
+      randomizedIds.forEach((teamId, index) => {
+        updates[`teams/${teamId}/nominationOrder`] = index + 1;
+      });
+      await update(ref(db), updates);
+      setMessage('Nomination order randomized. The updated order is visible in the Owners list above.');
+    } catch (error) {
+      console.error('Unable to randomize nomination order:', error);
+      setMessage(error.message || 'The nomination order could not be randomized. Try again.');
+    } finally {
+      setRandomizing(false);
+    }
+  }
+
   return (
     <section className="team-access-manager">
       <div className="team-access-manager-header">
@@ -55,6 +83,15 @@ export default function TeamAccessManager({ teams, teamAccess }) {
         </div>
         <button type="button" onClick={handleGenerate} disabled={generating}>
           <KeyRound size={15} /> {generating ? 'Generating…' : 'Generate missing codes'}
+        </button>
+      </div>
+      <div className="nomination-randomizer">
+        <div>
+          <span className="nomination-randomizer-title">Draft-day nomination order</span>
+          <span className="nomination-randomizer-help">Uses secure browser randomness and updates every connected screen at once.</span>
+        </div>
+        <button type="button" onClick={handleRandomizeOrder} disabled={randomizing}>
+          <Dices size={16} /> {randomizing ? 'Randomizing…' : 'Randomize order'}
         </button>
       </div>
       {message && <p className="team-access-manager-message">{message}</p>}

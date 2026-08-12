@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { get, onValue, ref, set, update } from 'firebase/database';
 import { db } from '../firebase';
+import { DEFAULT_LEAGUE_NAME, DEFAULT_TEAMS } from '../config/leagueDefaults';
 import { parseBackupFile } from '../utils/backup';
 import { buildDraftPlayers, summarizeDraftPlayers } from '../utils/draftPlayers';
 import './SetupScreen.css';
 
 const TEAM_COUNT = 12;
 const POSITION_ORDER = ['QB', 'RB', 'WR', 'TE'];
-const emptyTeam = () => ({ teamName: '', ownerName: '', nominationOrder: '' });
 
 export default function SetupScreen() {
-  const [leagueName, setLeagueName] = useState('');
-  const [teams, setTeams] = useState(Array.from({ length: TEAM_COUNT }, emptyTeam));
+  const [leagueName, setLeagueName] = useState(DEFAULT_LEAGUE_NAME);
+  const [teams, setTeams] = useState(() => DEFAULT_TEAMS.map(team => ({ ...team })));
   const [catalogPlayers, setCatalogPlayers] = useState(null);
   const [catalogMetadata, setCatalogMetadata] = useState(null);
   const [catalogLoading, setCatalogLoading] = useState(true);
@@ -211,8 +211,14 @@ export default function SetupScreen() {
       </div>
 
       <div className="setup-section">
+        <div className="setup-teams-heading">
+          <div>
+            <span className="setup-label">League Teams</span>
+            <p className="setup-field-hint">The numbered order is temporary. The commissioner can securely randomize it in the lobby on draft day.</p>
+          </div>
+        </div>
         <div className="teams-grid-header">
-          <span>#</span><span>Team Name</span><span>Owner Name</span><span>Nom. Order</span>
+          <span>#</span><span>Team Name</span><span>Owner Name</span><span>Temp. Order</span>
         </div>
 
         {teams.map((team, index) => (

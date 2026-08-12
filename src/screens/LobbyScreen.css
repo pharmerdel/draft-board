@@ -434,6 +434,56 @@
   font-size: 0.78rem;
 }
 
+.nomination-randomizer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid #BFDBFE;
+  border-radius: 9px;
+  background: #EFF6FF;
+}
+
+.nomination-randomizer > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+}
+
+.nomination-randomizer-title {
+  color: #1E3A8A;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.nomination-randomizer-help {
+  color: #64748B;
+  font-size: 0.75rem;
+}
+
+.nomination-randomizer > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+  flex-shrink: 0;
+  padding: 0.58rem 0.72rem;
+  border: 1px solid #1D4ED8;
+  border-radius: 8px;
+  background: #1D4ED8;
+  color: #FFFFFF;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nomination-randomizer > button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
 .team-access-manager-list {
   display: flex;
   flex-direction: column;
@@ -883,6 +933,11 @@
   }
 
   .team-access-manager-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nomination-randomizer {
     align-items: stretch;
     flex-direction: column;
   }
