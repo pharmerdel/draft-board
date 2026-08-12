@@ -1,137 +1,159 @@
-import { useState } from 'react';
-import { ref, set } from 'firebase/database';
+import { useEffect, useState } from 'react';
+import { get, onValue, ref, set, update } from 'firebase/database';
 import { db } from '../firebase';
-import { parseFantasyProsCsv } from '../utils/csvParser';
 import { parseBackupFile } from '../utils/backup';
-import { enrichPlayersWithHeadshots } from '../utils/sleeperApi';
+import { buildDraftPlayers, summarizeDraftPlayers } from '../utils/draftPlayers';
 import './SetupScreen.css';
 
 const TEAM_COUNT = 12;
+const POSITION_ORDER = ['QB', 'RB', 'WR', 'TE'];
 const emptyTeam = () => ({ teamName: '', ownerName: '', nominationOrder: '' });
 
 export default function SetupScreen() {
   const [leagueName, setLeagueName] = useState('');
   const [teams, setTeams] = useState(Array.from({ length: TEAM_COUNT }, emptyTeam));
-  const [csvFile, setCsvFile] = useState(null);
-  const [csvPreview, setCsvPreview] = useState(null);
+  const [catalogPlayers, setCatalogPlayers] = useState(null);
+  const [catalogMetadata, setCatalogMetadata] = useState(null);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState('');
+  const [catalogReloadKey, setCatalogReloadKey] = useState(0);
   const [saving, setSaving] = useState(false);
   const [savingStatus, setSavingStatus] = useState('');
   const [errors, setErrors] = useState([]);
   const [restoring, setRestoring] = useState(false);
   const [restoreSuccess, setRestoreSuccess] = useState(false);
 
-  const usedOrders = teams.map(t => t.nominationOrder).filter(Boolean);
+  const usedOrders = teams.map(team => team.nominationOrder).filter(Boolean);
+  const catalogSummary = summarizeDraftPlayers(catalogPlayers);
 
-  function updateTeam(index, field, value) {
-    setTeams(prev => prev.map((t, i) => i === index ? { ...t, [field]: value } : t));
+  useEffect(() => {
+    const unsubscribeCatalog = onValue(
+      ref(db, 'playerCatalog'),
+      snapshot => {
+        const activePlayers = buildDraftPlayers(snapshot.val() || {});
+        if (Object.keys(activePlayers).length === 0) {
+          setCatalogPlayers(null);
+          setCatalogError('No active players are available in the shared catalog.');
+        } else {
+          setCatalogPlayers(activePlayers);
+          setCatalogError('');
+        }
+        setCatalogLoading(false);
+      },
+      error => {
+        console.error('Failed to load player catalog:', error);
+        setCatalogPlayers(null);
+        setCatalogMetadata(null);
+        setCatalogError(error.message || 'The shared player catalog could not be loaded.');
+        setCatalogLoading(false);
+      },
+    );
+    const unsubscribeMetadata = onValue(
+      ref(db, 'catalogMetadata'),
+      snapshot => setCatalogMetadata(snapshot.val() || null),
+      error => console.warn('Failed to load catalog metadata:', error),
+    );
+    return () => {
+      unsubscribeCatalog();
+      unsubscribeMetadata();
+    };
+  }, [catalogReloadKey]);
+
+  function retryCatalog() {
+    setCatalogLoading(true);
+    setCatalogError('');
+    setCatalogReloadKey(current => current + 1);
   }
 
-  function handleCsvChange(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    setCsvFile(file);
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const players = parseFantasyProsCsv(ev.target.result);
-        const positions = players.reduce((acc, p) => {
-          acc[p.position] = (acc[p.position] || 0) + 1;
-          return acc;
-        }, {});
-        setCsvPreview({ count: players.length, positions });
-      } catch (err) {
-        setCsvPreview(null);
-        setErrors([`CSV parse error: ${err.message}`]);
-      }
-    };
-    reader.readAsText(file);
+  function updateTeam(index, field, value) {
+    setTeams(previous => previous.map((team, teamIndex) => (
+      teamIndex === index ? { ...team, [field]: value } : team
+    )));
   }
 
   function validate() {
-    const errs = [];
-    if (!leagueName.trim()) errs.push('League name is required.');
-    if (!csvFile) errs.push('Please upload a FantasyPros rankings CSV.');
-
-    teams.forEach((t, i) => {
-      if (!t.teamName.trim()) errs.push(`Team ${i + 1}: Team name is required.`);
-      if (!t.ownerName.trim()) errs.push(`Team ${i + 1}: Owner name is required.`);
-      if (!t.nominationOrder) errs.push(`Team ${i + 1}: Nomination order is required.`);
-    });
-
-    const orders = teams.map(t => t.nominationOrder).filter(Boolean);
-    const dupes = orders.filter((o, i) => orders.indexOf(o) !== i);
-    if (dupes.length > 0) {
-      errs.push(`Nomination order ${[...new Set(dupes)].join(', ')} is assigned to more than one team.`);
+    const validationErrors = [];
+    if (!leagueName.trim()) validationErrors.push('League name is required.');
+    if (!catalogPlayers || catalogSummary.count === 0) {
+      validationErrors.push('The shared player catalog must be loaded before launching the draft.');
     }
 
-    return errs;
+    teams.forEach((team, index) => {
+      if (!team.teamName.trim()) validationErrors.push(`Team ${index + 1}: Team name is required.`);
+      if (!team.ownerName.trim()) validationErrors.push(`Team ${index + 1}: Owner name is required.`);
+      if (!team.nominationOrder) validationErrors.push(`Team ${index + 1}: Nomination order is required.`);
+    });
+
+    const orders = teams.map(team => team.nominationOrder).filter(Boolean);
+    const duplicates = orders.filter((order, index) => orders.indexOf(order) !== index);
+    if (duplicates.length > 0) {
+      validationErrors.push(`Nomination order ${[...new Set(duplicates)].join(', ')} is assigned to more than one team.`);
+    }
+    return validationErrors;
   }
 
   async function handleLaunch() {
-    const errs = validate();
-    if (errs.length > 0) {
-      setErrors(errs);
+    const validationErrors = validate();
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     setSaving(true);
+    setSavingStatus('Preparing player catalog...');
     setErrors([]);
 
     try {
-      // Parse CSV into players object
-      const reader = new FileReader();
-      const csvText = await new Promise(res => {
-        reader.onload = e => res(e.target.result);
-        reader.readAsText(csvFile);
-      });
-      const rawPlayers = parseFantasyProsCsv(csvText);
+      // Re-read immediately before launch so setup always uses the latest catalog.
+      const [catalogSnapshot, metadataSnapshot] = await Promise.all([
+        get(ref(db, 'playerCatalog')),
+        get(ref(db, 'catalogMetadata')),
+      ]);
+      const playersData = buildDraftPlayers(catalogSnapshot.val() || {});
+      const latestCatalogMetadata = metadataSnapshot.val() || catalogMetadata;
+      if (Object.keys(playersData).length === 0) {
+        throw new Error('No active players are available in the shared catalog.');
+      }
 
-      // Enrich with Sleeper headshots — makes an API call to sleeper.app
-      // Matched players get a headshotUrl; unmatched silently use a silhouette
-      const { players: enrichedPlayers, matchCount, total } = await enrichPlayersWithHeadshots(rawPlayers);
-      console.log(`Sleeper headshots: ${matchCount}/${total} players matched`);
-
-      const playersData = {};
-      enrichedPlayers.forEach((p, i) => {
-        playersData[`player_${i + 1}`] = { ...p, status: 'available', soldTo: null, soldPrice: null };
-      });
-
-      // Build teams
       const teamsData = {};
-      teams.forEach((t, i) => {
-        teamsData[`team_${i + 1}`] = {
-          name: t.teamName.trim(),
-          ownerName: t.ownerName.trim(),
-          nominationOrder: parseInt(t.nominationOrder),
+      teams.forEach((team, index) => {
+        teamsData[`team_${index + 1}`] = {
+          name: team.teamName.trim(),
+          ownerName: team.ownerName.trim(),
+          nominationOrder: parseInt(team.nominationOrder, 10),
           budgetRemaining: 200,
           connected: false,
           lastSeen: null,
-          roster: {}
+          roster: {},
         };
       });
 
       const nominationOrderIds = Object.entries(teamsData)
-        .sort((a, b) => a[1].nominationOrder - b[1].nominationOrder)
+        .sort((left, right) => left[1].nominationOrder - right[1].nominationOrder)
         .map(([teamId]) => teamId);
 
-      await set(ref(db, 'players'), playersData);
-      await set(ref(db, 'teams'), teamsData);
-      await set(ref(db, 'draft'), {
-        leagueName: leagueName.trim(),
-        status: 'lobby',
-        nominationOrderIds,
-        nominationIndex: 0,
-        currentNomination: null,
-        createdAt: Date.now()
+      setSavingStatus('Creating draft lobby...');
+      await update(ref(db), {
+        players: playersData,
+        teams: teamsData,
+        draft: {
+          leagueName: leagueName.trim(),
+          status: 'lobby',
+          nominationOrderIds,
+          nominationIndex: 0,
+          currentNomination: null,
+          playerCatalogImportedAt: latestCatalogMetadata?.importedAt || null,
+          playerCatalogSourceSha256: latestCatalogMetadata?.sourceSha256 || null,
+          createdAt: Date.now(),
+        },
+        log: null,
       });
-      await set(ref(db, 'log'), null);
-
-    } catch (err) {
-      console.error(err);
-      setErrors(['Failed to save to Firebase. Check your connection and try again.']);
+    } catch (error) {
+      console.error(error);
+      setErrors([error.message || 'Failed to save to Firebase. Check your connection and try again.']);
       setSaving(false);
+      setSavingStatus('');
     }
   }
 
@@ -144,11 +166,10 @@ export default function SetupScreen() {
 
       {errors.length > 0 && (
         <div className="setup-errors">
-          {errors.map((e, i) => <p key={i}>⚠️ {e}</p>)}
+          {errors.map((error, index) => <p key={index}>⚠️ {error}</p>)}
         </div>
       )}
 
-      {/* League Name */}
       <div className="setup-section">
         <label className="setup-label" htmlFor="league-name">League Name</label>
         <input
@@ -157,79 +178,52 @@ export default function SetupScreen() {
           type="text"
           placeholder="e.g. The League"
           value={leagueName}
-          onChange={e => setLeagueName(e.target.value)}
+          onChange={event => setLeagueName(event.target.value)}
         />
       </div>
 
-      {/* CSV Upload */}
       <div className="setup-section">
-        <label className="setup-label">FantasyPros Rankings CSV</label>
-        <div className="csv-upload-area">
-          <input
-            id="csv-upload"
-            type="file"
-            accept=".csv"
-            onChange={handleCsvChange}
-            style={{ display: 'none' }}
-          />
-          <label htmlFor="csv-upload" className="csv-upload-btn">
-            {csvFile ? `📄 ${csvFile.name}` : '📂 Choose CSV file'}
-          </label>
-          {csvPreview && (
-            <div className="csv-preview">
-              <span className="csv-preview-count">✓ {csvPreview.count} players loaded</span>
-              <span className="csv-preview-breakdown">
-                {Object.entries(csvPreview.positions)
-                  .sort((a, b) => ['QB','RB','WR','TE'].indexOf(a[0]) - ['QB','RB','WR','TE'].indexOf(b[0]))
-                  .map(([pos, count]) => `${count} ${pos}`)
+        <span className="setup-label">Shared Player Catalog</span>
+        <div className={`catalog-status ${catalogError ? 'catalog-status-error' : ''}`}>
+          {catalogLoading && <span>Loading the preseason player database...</span>}
+          {!catalogLoading && catalogPlayers && (
+            <>
+              <span className="catalog-status-count">✓ {catalogSummary.count} active players ready</span>
+              <span className="catalog-status-breakdown">
+                {Object.entries(catalogSummary.positions)
+                  .sort((left, right) => POSITION_ORDER.indexOf(left[0]) - POSITION_ORDER.indexOf(right[0]))
+                  .map(([position, count]) => `${count} ${position}`)
                   .join(' · ')}
               </span>
-            </div>
+              {catalogMetadata?.sourceFileName && (
+                <span className="catalog-status-source">Source: {catalogMetadata.sourceFileName}</span>
+              )}
+            </>
+          )}
+          {!catalogLoading && catalogError && (
+            <>
+              <span>{catalogError}</span>
+              <button type="button" className="catalog-retry-btn" onClick={retryCatalog}>Retry</button>
+            </>
           )}
         </div>
-        <p className="setup-field-hint">Download from fantasypros.com → Rankings → Export CSV</p>
+        <p className="setup-field-hint">Rankings are loaded automatically from the established preseason catalog.</p>
       </div>
 
-      {/* Teams */}
       <div className="setup-section">
         <div className="teams-grid-header">
-          <span>#</span>
-          <span>Team Name</span>
-          <span>Owner Name</span>
-          <span>Nom. Order</span>
+          <span>#</span><span>Team Name</span><span>Owner Name</span><span>Nom. Order</span>
         </div>
 
-        {teams.map((team, i) => (
-          <div key={i} className="team-row">
-            <span className="team-num">{i + 1}</span>
-            <input
-              className="setup-input"
-              type="text"
-              placeholder="Team name"
-              value={team.teamName}
-              onChange={e => updateTeam(i, 'teamName', e.target.value)}
-            />
-            <input
-              className="setup-input"
-              type="text"
-              placeholder="Owner name"
-              value={team.ownerName}
-              onChange={e => updateTeam(i, 'ownerName', e.target.value)}
-            />
-            <select
-              className="setup-select"
-              value={team.nominationOrder}
-              onChange={e => updateTeam(i, 'nominationOrder', e.target.value)}
-            >
+        {teams.map((team, index) => (
+          <div key={index} className="team-row">
+            <span className="team-num">{index + 1}</span>
+            <input className="setup-input" type="text" placeholder="Team name" value={team.teamName} onChange={event => updateTeam(index, 'teamName', event.target.value)} />
+            <input className="setup-input" type="text" placeholder="Owner name" value={team.ownerName} onChange={event => updateTeam(index, 'ownerName', event.target.value)} />
+            <select className="setup-select" value={team.nominationOrder} onChange={event => updateTeam(index, 'nominationOrder', event.target.value)}>
               <option value="">—</option>
-              {Array.from({ length: TEAM_COUNT }, (_, n) => n + 1).map(n => (
-                <option
-                  key={n}
-                  value={n}
-                  disabled={usedOrders.includes(String(n)) && team.nominationOrder !== String(n)}
-                >
-                  {n}
-                </option>
+              {Array.from({ length: TEAM_COUNT }, (_, orderIndex) => orderIndex + 1).map(order => (
+                <option key={order} value={order} disabled={usedOrders.includes(String(order)) && team.nominationOrder !== String(order)}>{order}</option>
               ))}
             </select>
           </div>
@@ -237,20 +231,16 @@ export default function SetupScreen() {
       </div>
 
       <div className="setup-launch">
-        <button className="launch-btn" onClick={handleLaunch} disabled={saving}>
-          {saving ? 'Launching...' : '🚀 Launch Draft'}
+        <button className="launch-btn" onClick={handleLaunch} disabled={saving || catalogLoading || !catalogPlayers}>
+          {saving ? (savingStatus || 'Launching...') : '🚀 Launch Draft'}
         </button>
         <p className="launch-hint">This saves all team and player info and moves everyone to the pre-draft lobby.</p>
       </div>
 
-      {/* ── Restore from backup ── */}
       <div className="restore-section">
         <div className="restore-header">
           <span className="restore-title">🔄 Restore from Backup</span>
-          <span className="restore-subtitle">
-            Use this if the draft lost its data mid-way. Upload the backup JSON file
-            downloaded from the commissioner screen to pick up exactly where you left off.
-          </span>
+          <span className="restore-subtitle">Use this if the draft lost its data mid-way. Upload the backup JSON file downloaded from the commissioner screen to pick up exactly where you left off.</span>
         </div>
 
         {restoreSuccess ? (
@@ -262,28 +252,26 @@ export default function SetupScreen() {
               type="file"
               accept=".json"
               style={{ display: 'none' }}
-              onChange={async (e) => {
-                const file = e.target.files[0];
+              onChange={async event => {
+                const file = event.target.files[0];
                 if (!file) return;
                 setRestoring(true);
                 setErrors([]);
                 try {
                   const snapshot = await parseBackupFile(file);
-                  await set(ref(db, 'draft'),   snapshot.draft);
-                  await set(ref(db, 'teams'),   snapshot.teams);
+                  await set(ref(db, 'draft'), snapshot.draft);
+                  await set(ref(db, 'teams'), snapshot.teams);
                   await set(ref(db, 'players'), snapshot.players);
-                  await set(ref(db, 'log'),     snapshot.log || null);
+                  await set(ref(db, 'log'), snapshot.log || null);
                   setRestoreSuccess(true);
-                } catch (err) {
-                  setErrors([`Restore failed: ${err.message}`]);
+                } catch (error) {
+                  setErrors([`Restore failed: ${error.message}`]);
                 } finally {
                   setRestoring(false);
                 }
               }}
             />
-            <label htmlFor="restore-upload" className="restore-btn">
-              {restoring ? 'Restoring...' : '📂 Upload backup JSON'}
-            </label>
+            <label htmlFor="restore-upload" className="restore-btn">{restoring ? 'Restoring...' : '📂 Upload backup JSON'}</label>
           </>
         )}
       </div>

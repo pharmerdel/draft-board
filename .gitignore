@@ -21,6 +21,9 @@ dist-ssr
 # Local Firebase recovery snapshots may contain private league data
 backups/*.json
 
+# Generated catalog previews and Firebase update payloads
+reports/player-catalog/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

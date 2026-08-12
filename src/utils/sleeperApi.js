@@ -13,25 +13,12 @@
 
 const SLEEPER_PLAYERS_URL = 'https://api.sleeper.app/v1/players/nfl';
 const HEADSHOT_BASE       = 'https://sleepercdn.com/content/nfl/players';
-const SKILL_POSITIONS     = new Set(['QB', 'RB', 'WR', 'TE']);
+import { buildSleeperPlayerIndex, matchCatalogPlayer } from './playerIdentity';
 
 // ── Name normalization ────────────────────────────────────────────────────────
 // Both sources get the same treatment so they're comparable.
 // "D.K. Metcalf" → "dkmetcalf"
 // "Marcelus Jones Jr." → "marcelusjones"
-
-function normalizeName(name) {
-  return name
-    .toLowerCase()
-    .replace(/\./g, '')          // remove periods (D.K. → DK)
-    .replace(/'/g, '')           // remove apostrophes (D'Andre → DAndre)
-    .replace(/\s+jr\.?$/i, '')   // strip Jr suffix
-    .replace(/\s+sr\.?$/i, '')   // strip Sr suffix
-    .replace(/\s+ii$/i, '')      // strip II
-    .replace(/\s+iii$/i, '')     // strip III
-    .replace(/\s+iv$/i, '')      // strip IV
-    .replace(/\s+/g, '');        // remove all spaces
-}
 
 // ── Fetch and build lookup map ────────────────────────────────────────────────
 
@@ -47,45 +34,14 @@ export async function fetchSleeperPlayers() {
   // Parse the JSON response — turns the text into a JavaScript object
   const allPlayers = await response.json();
 
-  // Filter to active skill position players only (drops DST, K, coaches, etc.)
-  // This reduces ~3000+ entries down to ~500 relevant players
-  const skillPlayers = Object.entries(allPlayers).filter(([, p]) =>
-    SKILL_POSITIONS.has(p.position) &&
-    p.full_name &&
-    p.team // must have an active team
-  );
-
-  // Build two lookup maps for matching:
-  //   1. By normalized full name alone (most matches happen here)
-  //   2. By normalized full name + team (for disambiguation)
-  const byName     = new Map(); // normalized_name → player_id
-  const byNameTeam = new Map(); // normalized_name|TEAM → player_id
-
-  skillPlayers.forEach(([playerId, p]) => {
-    const norm = normalizeName(p.full_name);
-    const data = {
-      sleeperPlayerId: playerId,
-      espnId: p.espn_id ? String(p.espn_id) : null,
-      injuryStatus:   p.injury_status    || null,
-      injuryBodyPart: p.injury_body_part || null,
-      injuryNotes:    p.injury_notes     || null,
-    };
-    byName.set(norm, data);
-    byNameTeam.set(`${norm}|${p.team}`, data);
-  });
-
-  return { byName, byNameTeam };
+  return buildSleeperPlayerIndex(allPlayers);
 }
 
 // ── Match a single FantasyPros player to a Sleeper ID ────────────────────────
 
 // Returns a data object { sleeperPlayerId, espnId, injuryStatus, ... } or null
 export function matchPlayer(fpPlayer, lookupMaps) {
-  const { byName, byNameTeam } = lookupMaps;
-  const norm = normalizeName(fpPlayer.name);
-  const teamNorm = (fpPlayer.nflTeam || '').toUpperCase();
-
-  return byNameTeam.get(`${norm}|${teamNorm}`) || byName.get(norm) || null;
+  return matchCatalogPlayer(fpPlayer, lookupMaps).player;
 }
 
 // ── Build headshot URL from player ID ─────────────────────────────────────────
@@ -112,19 +68,18 @@ export async function enrichPlayersWithHeadshots(players) {
 
   const enriched = players.map(player => {
     const match = matchPlayer(player, lookupMaps);
-    if (match) {
-      matchCount++;
-      return {
-        ...player,
-        sleeperPlayerId: match.sleeperPlayerId,
-        headshotUrl:     headshotUrl(match.sleeperPlayerId),
-        espnId:          match.espnId,
-        injuryStatus:    match.injuryStatus,
-        injuryBodyPart:  match.injuryBodyPart,
-        injuryNotes:     match.injuryNotes,
-      };
-    }
-    return player; // no match — headshotUrl stays null, silhouette shows
+    if (!match) return player;
+
+    matchCount++;
+    return {
+      ...player,
+      sleeperPlayerId: match.sleeperPlayerId,
+      headshotUrl: headshotUrl(match.sleeperPlayerId),
+      espnId: match.espnId,
+      injuryStatus: match.injuryStatus,
+      injuryBodyPart: match.injuryBodyPart,
+      injuryNotes: match.injuryNotes,
+    };
   });
 
   return { players: enriched, matchCount, total: players.length };
