@@ -142,6 +142,7 @@ export default function SetupScreen() {
           status: 'lobby',
           nominationOrderIds,
           nominationIndex: 0,
+          nominatingTeamId: nominationOrderIds[0],
           currentNomination: null,
           playerCatalogImportedAt: latestCatalogMetadata?.importedAt || null,
           playerCatalogSourceSha256: latestCatalogMetadata?.sourceSha256 || null,

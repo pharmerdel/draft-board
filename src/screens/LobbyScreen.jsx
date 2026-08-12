@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ref, onValue, update } from 'firebase/database';
+import { ref, onValue, serverTimestamp, update } from 'firebase/database';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowRight,
@@ -72,9 +72,14 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
   async function handleConfirmStart() {
     setStarting(true);
     setConfirmingStart(false);
+    const initialNominator = draft.nominatingTeamId
+      || draft.nominationOrderIds?.[draft.nominationIndex || 0]
+      || teamEntries[0]?.[0]
+      || null;
     await update(ref(db, 'draft'), {
       status: 'active',
-      startedAt: Date.now(),
+      nominatingTeamId: initialNominator,
+      startedAt: serverTimestamp(),
       timerEnabled: false,
       timerDuration: 90,
       timerStartedAt: null,

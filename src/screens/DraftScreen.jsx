@@ -14,7 +14,6 @@ import { saveBackup, downloadBackup } from '../utils/backup';
 import { checkFantasyProsNewsHealth } from '../utils/fantasyProsNews';
 import DraftClock from '../components/DraftClock';
 import NominationTimer from '../components/NominationTimer';
-import TimerDisplay from '../components/TimerDisplay';
 import DraftSummaryScreen from './DraftSummaryScreen';
 import './DraftScreen.css';
 
@@ -83,7 +82,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
 
   // Mark this device connected
   useEffect(() => {
-    if (!selectedTeamId || selectedTeamIsStale) return;
+    if (!selectedTeamId || selectedTeamId === 'commissioner' || selectedTeamIsStale) return;
     update(ref(db, `teams/${selectedTeamId}`), { connected: true, lastSeen: Date.now() });
     const bye = () => update(ref(db, `teams/${selectedTeamId}`), { connected: false });
     window.addEventListener('beforeunload', bye);
@@ -131,7 +130,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
 
   // Find the next team that still has open roster slots, starting from nominationIndex.
   // This skips teams that have already filled all 13 spots.
-  const nominatingTeamId = (() => {
+  const computedNominatingTeamId = (() => {
     const ids = draft.nominationOrderIds || [];
     const n = ids.length;
     for (let i = 0; i < n * 2; i++) {
@@ -141,6 +140,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     }
     return null; // all teams full
   })();
+  const nominatingTeamId = draft.nominatingTeamId || computedNominatingTeamId;
   const currentNomination = draft.currentNomination;
   const nominatedPlayer = currentNomination ? players[currentNomination.playerId] : null;
 
@@ -189,8 +189,10 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
 
   async function skipNominator() {
     const nextIndex = (draft.nominationIndex + 1);
+    const nextNominatingTeamId = findNominatingTeamId(teams, draft.nominationOrderIds || [], nextIndex);
     await update(ref(db, 'draft'), {
       nominationIndex: nextIndex,
+      nominatingTeamId: nextNominatingTeamId,
       timerStartedAt: draft.timerEnabled ? Date.now() : null,
     });
   }
@@ -281,9 +283,11 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
 
     // Advance nomination order, clear block, start timer if enabled
     const nextIndex = (draft.nominationIndex + 1);
+    const nextNominatingTeamId = findNominatingTeamId(teams, draft.nominationOrderIds || [], nextIndex, winningTeamId);
     await update(ref(db, 'draft'), {
       currentNomination: null,
       nominationIndex: nextIndex,
+      nominatingTeamId: nextNominatingTeamId,
       timerStartedAt: draft.timerEnabled ? Date.now() : null,
     });
 
@@ -350,8 +354,10 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     });
 
     // Roll back nomination index
+    const previousIndex = Math.max(0, draft.nominationIndex - 1);
     await update(ref(db, 'draft'), {
-      nominationIndex: Math.max(0, draft.nominationIndex - 1),
+      nominationIndex: previousIndex,
+      nominatingTeamId: findNominatingTeamId(teams, draft.nominationOrderIds || [], previousIndex),
       currentNomination: null,
     });
 
@@ -509,6 +515,16 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
 const TOTAL_DRAFT_SLOTS = 13;
 const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
 const FLEX_ELIGIBLE = ['RB', 'WR', 'TE'];
+
+function findNominatingTeamId(teams, nominationOrderIds, startIndex, pendingRosterTeamId = null) {
+  const teamCount = nominationOrderIds.length;
+  for (let offset = 0; offset < teamCount; offset += 1) {
+    const teamId = nominationOrderIds[(startIndex + offset) % teamCount];
+    const rosterCount = Object.keys(teams[teamId]?.roster || {}).length + (teamId === pendingRosterTeamId ? 1 : 0);
+    if (rosterCount < TOTAL_DRAFT_SLOTS) return teamId;
+  }
+  return null;
+}
 
 function autoAssignSlot(position, roster) {
   const filled = Object.values(roster);

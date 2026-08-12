@@ -165,77 +165,78 @@ catalogMetadata
 
 ## Phase 2: Team PIN Authentication
 
-Implementation note (2026-08-12): the callable Functions, private/public access split, owner and commissioner login UI, persistent custom-token sessions, lockout, code generation, and PIN-reset controls are implemented on `codex/team-pin-authentication`. Unit tests, the production client build, and a full local Auth/Database/Functions emulator flow pass. The emulator test covered commissioner setup, activation-code generation, one-time owner activation, two simultaneous owner sessions, lockout, PIN reset, reactivation, and private-path denial. Development rules are deployed and verified. A focused emulator check did not reject an old refresh token after Admin SDK revocation; Phase 3 must enforce `accessVersion` in Database Rules so reset sessions are rejected independently of refresh-token behavior.
+Implementation note (2026-08-12): the callable Functions, private/public access split, owner and commissioner login UI, persistent custom-token sessions, lockout, code generation, and PIN-reset controls were merged in PR #3 and deployed to production. Unit tests, the production client build, and a full local Auth/Database/Functions emulator flow pass. The emulator test covered commissioner setup, activation-code generation, one-time owner activation, two simultaneous owner sessions, lockout, PIN reset, reactivation, and private-path denial. Production Firebase Authentication was initialized and the Functions service account was granted narrowly scoped token-signing permission; commissioner activation and returning PIN login then passed in production. A focused emulator check did not reject an old refresh token after Admin SDK revocation; Phase 3 must enforce `accessVersion` in Database Rules so reset sessions are rejected independently of refresh-token behavior.
 
 ### Team activation
 
-- [ ] Enable and configure Firebase Authentication for custom-token sign-in.
-- [ ] Add a trusted backend endpoint to generate one-time team activation codes.
-- [ ] Store only cryptographic hashes of activation codes and PINs.
-- [ ] Let an owner select a team and submit its activation code.
-- [ ] Let the owner choose and confirm a PIN after activation succeeds.
-- [ ] Invalidate the activation code after successful claim.
-- [ ] Add clear states for unclaimed, claimed, locked, and reset-required teams.
+- [x] Enable and configure Firebase Authentication for custom-token sign-in.
+- [x] Add a trusted backend endpoint to generate one-time team activation codes.
+- [x] Store only cryptographic hashes of activation codes and PINs.
+- [x] Let an owner select a team and submit its activation code.
+- [x] Let the owner choose and confirm a PIN after activation succeeds.
+- [x] Invalidate the activation code after successful claim.
+- [x] Add clear states for unclaimed, claimed, locked, and reset-required teams.
 
 ### Returning login and session handling
 
-- [ ] Add team selection plus PIN login for claimed teams.
-- [ ] Mint a Firebase custom token with trusted `teamId` and role claims.
-- [ ] Persist authenticated sessions across browser visits.
-- [ ] Allow simultaneous sessions on multiple devices.
-- [ ] Add sign-out and switch-team controls.
-- [ ] Add generic error messages that do not leak credential details.
-- [ ] Add server-side attempt throttling and temporary lockout.
-- [ ] Add commissioner-controlled PIN reset.
-- [ ] Revoke existing sessions when the commissioner requests a full access reset.
+- [x] Add team selection plus PIN login for claimed teams.
+- [x] Mint a Firebase custom token with trusted `teamId` and role claims.
+- [x] Persist authenticated sessions across browser visits.
+- [x] Allow simultaneous sessions on multiple devices.
+- [x] Add sign-out and switch-team controls.
+- [x] Add generic error messages that do not leak credential details.
+- [x] Add server-side attempt throttling and temporary lockout.
+- [x] Add commissioner-controlled PIN reset.
+- [x] Revoke Firebase refresh tokens when the commissioner performs a PIN reset.
 
 ### Commissioner identity
 
-- [ ] Add a separately authenticated commissioner role.
-- [ ] Ensure selecting `commissioner` in the UI is no longer sufficient for commissioner authority.
-- [ ] Restrict activation, reset, catalog, draft, and restore operations to the commissioner role.
+- [x] Add a separately authenticated commissioner role.
+- [x] Ensure selecting `commissioner` in the UI is no longer sufficient for commissioner authority.
+- [x] Restrict activation-code generation and PIN-reset callables to the commissioner role.
 
 ### Phase 2 acceptance criteria
 
-- [ ] An unclaimed owner can activate their assigned team and choose a PIN.
-- [ ] A returning owner can sign in on a new device with team plus PIN.
-- [ ] Two devices can use one team without invalidating each other.
-- [ ] Repeated incorrect attempts cause a temporary lockout.
-- [ ] Commissioner reset invalidates the old PIN and, when selected, existing sessions.
-- [ ] PINs, PIN hashes, and activation-code hashes are not exposed to browser reads or build artifacts.
+- [x] An unclaimed owner can activate their assigned team and choose a PIN.
+- [x] A returning owner can sign in on a new device with team plus PIN.
+- [x] Two devices can use one team without invalidating each other.
+- [x] Repeated incorrect attempts cause a temporary lockout.
+- [x] Commissioner reset invalidates the old PIN and preserves the team's rankings, tiers, and watchlist.
+- [x] PINs, PIN hashes, and activation-code hashes are not exposed to browser reads or build artifacts.
 
 ## Phase 3: Firebase Authorization Rules
 
 ### Team-scoped permissions
 
-- [ ] Permit authenticated owners to read the shared player catalog and league state.
-- [ ] Permit a team to write only its own personal rankings.
-- [ ] Permit a team to write only its own personal tiers.
-- [ ] Permit a team to write only its own watchlist.
-- [ ] Permit a team to update only its allowed presence fields.
-- [ ] Validate rank and tier value shapes in rules.
+- [x] Enforce each authenticated session's `accessVersion` against the team's current private auth record so a PIN reset immediately blocks stale sessions.
+- [x] Permit authenticated owners to read the shared player catalog and league state.
+- [x] Permit a team to write only its own personal rankings.
+- [x] Permit a team to write only its own personal tiers.
+- [x] Permit a team to write only its own watchlist.
+- [x] Permit a team to update only its allowed presence fields.
+- [x] Validate rank and tier value shapes in rules.
 
 ### Commissioner permissions
 
-- [ ] Restrict player-catalog writes to commissioner/admin code.
-- [ ] Restrict draft-state changes to the commissioner role, except explicitly authorized owner nominations.
-- [ ] Restrict team, roster, sale, undo, reset, and restore operations appropriately.
-- [ ] Prevent clients from assigning their own role or `teamId` claim.
+- [x] Restrict player-catalog writes to trusted admin code.
+- [x] Restrict draft-state changes to the commissioner role, except explicitly authorized owner nominations.
+- [x] Restrict team, roster, sale, undo, reset, and restore operations appropriately.
+- [x] Prevent clients from assigning their own role or `teamId` claim.
 
 ### Emulator tests
 
-- [ ] Test every allowed owner operation.
-- [ ] Test cross-team reads of private preferences if preferences are intended to remain private.
-- [ ] Test and reject every cross-team write path.
-- [ ] Test and reject unauthenticated writes.
-- [ ] Test and reject owner writes to commissioner-controlled data.
-- [ ] Test commissioner operations.
+- [x] Test every allowed owner operation.
+- [x] Test and reject cross-team reads of private preferences.
+- [x] Test and reject every cross-team write path.
+- [x] Test and reject unauthenticated writes.
+- [x] Test and reject owner writes to commissioner-controlled data.
+- [x] Test commissioner operations.
 
 ### Phase 3 acceptance criteria
 
-- [ ] Authorization is enforced when the UI is bypassed and the database is accessed directly.
-- [ ] Every protected path has an emulator test covering success and rejection.
-- [ ] Team-private preferences cannot be read or modified by other teams.
+- [x] Authorization is enforced when the UI is bypassed and the database is accessed directly.
+- [x] Every protected path has an emulator test covering success and rejection.
+- [x] Team-private preferences cannot be read or modified by other teams.
 
 ## Phase 4: Preseason Owner Workspace
 
@@ -441,6 +442,8 @@ Add dated entries here when a phase begins, a decision changes, or a material mi
 - 2026-08-12: The production `playerCatalog` was established with 776 active records plus versioned `catalogMetadata`. A full pre-import backup was verified before the isolated update, and a repeat comparison reported 776 unchanged records.
 - 2026-08-12: Commissioner setup now loads active players from the durable production catalog and creates the live draft snapshot with stable player IDs; the draft-day CSV upload was removed.
 - 2026-08-12: End-to-end development smoke testing passed for catalog-backed setup, 12-team lobby creation, draft start, nomination, $25 sale, undo, and reset. Reset preserved all 776 durable catalog records. The development database and its expired pre-test rules were restored afterward.
-- 2026-08-12: Authentication and Functions emulator smoke tests passed. Realtime Database emulator startup is blocked by the missing local Java runtime.
-- 2026-08-12: Firebase Console inspection confirmed Authentication has not been initialized and the production project is on the Blaze plan.
+- 2026-08-12: Authentication and Functions emulator smoke tests passed. Realtime Database emulator testing was subsequently completed with a checksum-verified temporary JDK; no system-wide Java installation was required.
+- 2026-08-12: Firebase Console inspection confirmed Authentication had not yet been initialized and the production project was on the Blaze plan.
+- 2026-08-12: Phase 2 was completed in production. Firebase Authentication was initialized, the Functions service identity received narrowly scoped token-signing permission, and commissioner setup plus returning PIN login passed on GitHub Pages.
+- 2026-08-12: Phase 3 least-privilege Realtime Database Rules were implemented and passed seven emulator scenarios covering public reads, unauthenticated denial, owner-private bulk ranks/tiers/watchlists, cross-team denial, presence limits, authorized nominations, privilege-smuggling rejection, stale-session invalidation with preference preservation, commissioner operations, and private credential denial. Production deployment remains pending the client-first rollout.
 - 2026-08-12: Production access-gate smoke test passed with a temporary SHA-256 password: rejection, successful unlock, dark theme, Firebase-backed lobby load, and refresh persistence all verified.

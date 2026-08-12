@@ -59,6 +59,7 @@ export default function TeamAccessManager({ teams, teamAccess }) {
       const updates = {
         'draft/nominationOrderIds': randomizedIds,
         'draft/nominationIndex': 0,
+        'draft/nominatingTeamId': randomizedIds[0],
         'draft/nominationOrderRandomizedAt': Date.now(),
       };
       randomizedIds.forEach((teamId, index) => {
