@@ -71,8 +71,19 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     return () => { unsub1(); unsub2(); unsub3(); };
   }, [selectedTeamId]);
 
-  async function savePersonalRanks(ranks) {
+  async function savePersonalRanks(ranks, tierUpdates = null) {
     if (!selectedTeamId) return;
+    if (tierUpdates) {
+      const combinedUpdates = {};
+      Object.entries(ranks).forEach(([playerId, rank]) => {
+        combinedUpdates[`personalRanks/${selectedTeamId}/${playerId}`] = rank;
+      });
+      Object.entries(tierUpdates).forEach(([path, tier]) => {
+        combinedUpdates[`personalTiers/${selectedTeamId}/${path}`] = tier;
+      });
+      await update(ref(db), combinedUpdates);
+      return;
+    }
     await update(ref(db, `personalRanks/${selectedTeamId}`), ranks);
   }
 

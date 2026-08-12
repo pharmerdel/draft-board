@@ -138,6 +138,18 @@ export function buildMoveTierBoundaryUpdates({ personalTiers, scope, playerIds, 
   return Object.keys(updates).length ? updates : null;
 }
 
+export function buildTierUpdateForMovedPlayer({ personalTiers, scope, activePlayerId, overPlayerId }) {
+  if (!isPersonalTierScope(scope)) return null;
+  if (!activePlayerId || !overPlayerId || activePlayerId === overPlayerId) return null;
+  if (Object.keys(personalTiers?.[scope] || {}).length === 0) return null;
+
+  const currentTier = personalTierForPlayer(personalTiers, scope, activePlayerId) || 1;
+  const destinationTier = personalTierForPlayer(personalTiers, scope, overPlayerId) || 1;
+  return currentTier === destinationTier
+    ? null
+    : { [`${scope}/${activePlayerId}`]: destinationTier };
+}
+
 export function buildAvoidCutoffUpdates({ scope, playerIds, beforeIndex }) {
   if (!Number.isInteger(beforeIndex) || beforeIndex <= 0 || beforeIndex >= playerIds.length) return null;
   return buildPersonalTierUpdates(scope, playerIds.slice(beforeIndex), 'avoid');

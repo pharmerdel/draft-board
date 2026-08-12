@@ -8,6 +8,7 @@ import {
   buildMoveTierBoundaryUpdates,
   buildPersonalTierUpdates,
   buildRemoveTierBoundaryUpdates,
+  buildTierUpdateForMovedPlayer,
   isPersonalTier,
   isPersonalTierScope,
   personalTierForPlayer,
@@ -88,6 +89,41 @@ test('a tier boundary cannot cross an adjacent boundary or empty a tier', () => 
   assert.equal(
     buildMoveTierBoundaryUpdates({ personalTiers, scope: 'WR', playerIds, fromBeforeIndex: 4, toBeforeIndex: 2 }),
     null,
+  );
+});
+
+test('reordering across a tier line changes only the moved player', () => {
+  const personalTiers = { RB: { a: 1, b: 1, c: 2, d: 2 } };
+  assert.deepEqual(
+    buildTierUpdateForMovedPlayer({
+      personalTiers,
+      scope: 'RB',
+      activePlayerId: 'a',
+      overPlayerId: 'c',
+    }),
+    { 'RB/a': 2 },
+  );
+});
+
+test('same-tier reordering needs no tier update and a player can move into Avoid', () => {
+  const personalTiers = { FLEX: { a: 1, b: 1, c: 'avoid', d: 'avoid' } };
+  assert.equal(
+    buildTierUpdateForMovedPlayer({
+      personalTiers,
+      scope: 'FLEX',
+      activePlayerId: 'a',
+      overPlayerId: 'b',
+    }),
+    null,
+  );
+  assert.deepEqual(
+    buildTierUpdateForMovedPlayer({
+      personalTiers,
+      scope: 'FLEX',
+      activePlayerId: 'b',
+      overPlayerId: 'c',
+    }),
+    { 'FLEX/b': 'avoid' },
   );
 });
 

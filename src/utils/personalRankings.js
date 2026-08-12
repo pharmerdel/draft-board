@@ -21,17 +21,20 @@ export function sortPlayersByPreference(players, personalRanks) {
     });
 }
 
-export function buildReorderedPersonalRanks({
+export function buildReorderedPersonalRankResult({
   players,
   personalRanks,
   activeId,
   overId,
   position = 'ALL',
 }) {
-  const allPlayers = sortPlayersByPreference(players, personalRanks);
+  const allPlayers = sortPlayersByPreference(players, personalRanks)
+    .filter(player => player.status !== 'sold');
   const visiblePlayers = position === 'ALL'
     ? allPlayers
-    : allPlayers.filter(player => player.position === position);
+    : allPlayers.filter(player => position === 'FLEX'
+      ? ['RB', 'WR', 'TE'].includes(player.position)
+      : player.position === position);
   const oldIndex = visiblePlayers.findIndex(player => player.id === activeId);
   const newIndex = visiblePlayers.findIndex(player => player.id === overId);
 
@@ -42,12 +45,24 @@ export function buildReorderedPersonalRanks({
   reordered.splice(newIndex, 0, movedPlayer);
 
   if (position === 'ALL') {
-    return Object.fromEntries(reordered.map((player, index) => [player.id, index + 1]));
+    return {
+      ranks: Object.fromEntries(reordered.map((player, index) => [player.id, index + 1])),
+      reorderedPlayerIds: reordered.map(player => player.id),
+    };
   }
 
   let positionIndex = 0;
   const completeOrder = allPlayers.map(player => (
-    player.position === position ? reordered[positionIndex++] : player
+    (position === 'FLEX' ? ['RB', 'WR', 'TE'].includes(player.position) : player.position === position)
+      ? reordered[positionIndex++]
+      : player
   ));
-  return Object.fromEntries(completeOrder.map((player, index) => [player.id, index + 1]));
+  return {
+    ranks: Object.fromEntries(completeOrder.map((player, index) => [player.id, index + 1])),
+    reorderedPlayerIds: reordered.map(player => player.id),
+  };
+}
+
+export function buildReorderedPersonalRanks(options) {
+  return buildReorderedPersonalRankResult(options)?.ranks || null;
 }

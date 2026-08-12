@@ -20,7 +20,7 @@ import { Check, ChevronDown, ChevronUp, FileUp, GripVertical, Info, Layers3, Sea
 import OwnerRankImportModal from './OwnerRankImportModal';
 import PlayerCard from './PlayerCard';
 import {
-  buildReorderedPersonalRanks,
+  buildReorderedPersonalRankResult,
   effectivePlayerRank,
   sortPlayersByPreference,
 } from '../utils/personalRankings';
@@ -30,6 +30,7 @@ import {
   buildMoveTierBoundaryUpdates,
   buildPersonalTierUpdates,
   buildRemoveTierBoundaryUpdates,
+  buildTierUpdateForMovedPlayer,
   MAX_PERSONAL_TIER,
   personalTierForPlayer,
   playerMatchesTierScope,
@@ -188,14 +189,24 @@ export default function PreseasonPlayerWorkspace({
   function handleDragEnd({ active, over }) {
     setActiveDragId(null);
     if (!over) return;
-    const updates = buildReorderedPersonalRanks({
+    const reorderResult = buildReorderedPersonalRankResult({
       players,
       personalRanks,
       activeId: active.id,
       overId: over.id,
       position,
     });
-    if (updates) onSavePersonalRanks(updates);
+    if (!reorderResult) return;
+
+    const tierUpdates = position !== 'ALL'
+      ? buildTierUpdateForMovedPlayer({
+          personalTiers,
+          scope: position,
+          activePlayerId: active.id,
+          overPlayerId: over.id,
+        })
+      : null;
+    onSavePersonalRanks(reorderResult.ranks, tierUpdates);
   }
 
   function enterTierMode() {

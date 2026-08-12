@@ -87,13 +87,26 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
     }
   }
 
-  function savePersonalRanks(ranks) {
+  function savePersonalRanks(ranks, tierUpdates = null) {
     if (!selectedTeamId || isCommissioner) return;
     if (preview) {
       setPersonalRanks(ranks);
+      if (tierUpdates) {
+        setPersonalTiers(current => applyPersonalTierUpdates(current, tierUpdates));
+      }
       setSavedAt(new Date());
       setSaveState('saved');
       return;
+    }
+    if (tierUpdates) {
+      const combinedUpdates = {};
+      Object.entries(ranks).forEach(([playerId, rank]) => {
+        combinedUpdates[`personalRanks/${selectedTeamId}/${playerId}`] = rank;
+      });
+      Object.entries(tierUpdates).forEach(([path, tier]) => {
+        combinedUpdates[`personalTiers/${selectedTeamId}/${path}`] = tier;
+      });
+      return savePreference(() => update(ref(db), combinedUpdates));
     }
     return savePreference(() => update(ref(db, `personalRanks/${selectedTeamId}`), ranks));
   }

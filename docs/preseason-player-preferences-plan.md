@@ -291,9 +291,9 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 - [x] Add a clear `Tier Mode` entry point to a position-filtered list.
 - [x] Allow one click/tap beside a player to begin the next tier below them.
 - [x] Assign the affected contiguous group in one atomic database update.
-- [ ] Allow a boundary to be moved.
+- [x] Allow a boundary to be moved precisely with up/down controls.
 - [x] Allow a boundary to be removed.
-- [ ] Allow players to be dragged across tier boundaries.
+- [x] Allow a dragged player to inherit the destination tier without changing any other player's tier.
 - [x] Make boundary controls large and touch-friendly on mobile.
 - [ ] Clearly distinguish shared FantasyPros tiers from private personal tiers.
 
@@ -306,8 +306,8 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 
 ### Normal list presentation
 
-- [ ] Show personal tier labels and boundaries when tiers exist.
-- [ ] Keep the ordinary ranked list unchanged when no personal tiers exist.
+- [x] Show personal tier labels and boundaries when tiers exist.
+- [x] Keep the ordinary ranked list unchanged when no personal tiers exist.
 - [ ] Show personal tier context in the player detail card.
 - [ ] Permit single-player tier changes from the player detail card.
 - [ ] Decide and document how newly imported players appear in an already-tiered position.
@@ -316,9 +316,9 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 
 - [ ] An owner can tier a sorted list of roughly 60 RBs with a small number of boundary actions.
 - [ ] Tier operations do not unexpectedly reorder players.
-- [ ] A player moved across a tier boundary receives the expected rank and tier.
-- [ ] Clearing tiers preserves rank order.
-- [ ] An owner who never uses tiers experiences no required steps or degraded behavior.
+- [x] A player moved across a tier boundary receives the expected rank and tier.
+- [x] Clearing tiers preserves rank order.
+- [x] An owner who never uses tiers experiences no required steps or degraded behavior.
 
 ## Phase 6: Backup, Recovery, and Auditability
 
