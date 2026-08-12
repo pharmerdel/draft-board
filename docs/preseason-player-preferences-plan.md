@@ -252,16 +252,16 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 
 ### Owner functionality
 
-- [ ] Reuse personal drag-and-drop ranking on desktop.
-- [ ] Reuse personal drag-and-drop ranking on mobile.
-- [ ] Reuse position filters and player search.
-- [ ] Reuse player details, statistics, projections, and news.
-- [ ] Reuse private watchlists.
-- [ ] Hide draft-only nomination, sale, timer, budget, and roster controls during preseason.
-- [ ] Add team identity, sign-out, and switch-team controls.
-- [ ] Add visible live/sync state.
-- [ ] Add last-saved feedback for preference changes.
-- [ ] Add calm retry/error states for failed writes.
+- [x] Reuse personal drag-and-drop ranking on desktop.
+- [x] Reuse personal drag-and-drop ranking on mobile.
+- [x] Reuse position filters and player search.
+- [x] Reuse player details, statistics, projections, and news.
+- [x] Reuse private watchlists.
+- [x] Hide draft-only nomination, sale, timer, budget, and roster controls during preseason.
+- [x] Add team identity, sign-out, and switch-team controls.
+- [x] Add visible live/sync state.
+- [x] Add last-saved feedback for preference changes.
+- [x] Add calm retry/error states for failed writes.
 
 ### Phase 4 acceptance criteria
 

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { onValue, ref, serverTimestamp, update } from 'firebase/database';
+import { useEffect, useRef, useState } from 'react';
+import { onValue, ref, serverTimestamp, set, update } from 'firebase/database';
 import { ArrowRight, ClipboardList, LogOut, ShieldCheck, Star, UsersRound } from 'lucide-react';
 
+import PreseasonPlayerWorkspace from '../components/PreseasonPlayerWorkspace';
 import TeamAccessManager from '../components/TeamAccessManager';
 import { db } from '../firebase';
 import { buildDraftDayLobbyUpdates, sortTeamsForDisplay } from '../utils/draftLifecycle';
@@ -16,6 +17,11 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
   const [watchlist, setWatchlist] = useState({});
   const [syncConnected, setSyncConnected] = useState(null);
   const [openingLobby, setOpeningLobby] = useState(false);
+  const [saveState, setSaveState] = useState('idle');
+  const [savedAt, setSavedAt] = useState(null);
+  const [saveError, setSaveError] = useState('');
+  const [retryAction, setRetryAction] = useState(null);
+  const saveAttempt = useRef(0);
 
   const isCommissioner = selectedTeamId === 'commissioner';
   const team = isCommissioner ? null : teams[selectedTeamId];
@@ -59,6 +65,38 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
     }
   }
 
+  async function savePreference(action) {
+    const attempt = ++saveAttempt.current;
+    setSaveState('saving');
+    setSaveError('');
+    try {
+      await action();
+      if (attempt !== saveAttempt.current) return;
+      setSavedAt(new Date());
+      setSaveState('saved');
+      setRetryAction(null);
+    } catch (error) {
+      console.error('Unable to save owner preference:', error);
+      if (attempt !== saveAttempt.current) return;
+      setSaveState('error');
+      setSaveError('That change did not save. Your previous preferences are still safe.');
+      setRetryAction(() => action);
+    }
+  }
+
+  function savePersonalRanks(ranks) {
+    if (!selectedTeamId || isCommissioner) return;
+    return savePreference(() => update(ref(db, `personalRanks/${selectedTeamId}`), ranks));
+  }
+
+  function toggleWatch(playerId) {
+    if (!selectedTeamId || isCommissioner) return;
+    const playerRef = ref(db, `watchlists/${selectedTeamId}/${playerId}`);
+    return savePreference(() => watchlist[playerId]
+      ? set(playerRef, null)
+      : set(playerRef, { watched: true }));
+  }
+
   return (
     <div className="preseason-screen">
       <header className="preseason-header">
@@ -69,7 +107,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
         </div>
         <div className="preseason-header-actions">
           {themeToggle}
-          <button type="button" onClick={onTeamClear}><LogOut size={15} /> Sign out</button>
+          <button type="button" onClick={onTeamClear}><LogOut size={15} /> {isCommissioner ? 'Sign out' : 'Switch team'}</button>
         </div>
       </header>
 
@@ -120,10 +158,17 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
             </article>
           </div>
 
-          <section className="preseason-next-panel">
-            <h3>Player ranking workspace</h3>
-            <p>The lifecycle and private team route are active. Search, ordering, player details, and watchlist controls are the next Phase 4 work item.</p>
-          </section>
+          <PreseasonPlayerWorkspace
+            players={players}
+            personalRanks={personalRanks}
+            watchlist={watchlist}
+            onSavePersonalRanks={savePersonalRanks}
+            onToggleWatch={toggleWatch}
+            saveState={saveState}
+            savedAt={savedAt}
+            saveError={saveError}
+            onRetry={() => retryAction && savePreference(retryAction)}
+          />
         </main>
       )}
     </div>
