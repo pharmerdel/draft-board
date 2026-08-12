@@ -16,6 +16,7 @@ This document is the working implementation checklist. Items should be completed
 - The initial tier structure is Tier 1 through Tier 5 plus `Avoid`.
 - Personal tiers do not automatically change personal rank order.
 - Personal rankings, tiers, and watchlists remain editable during the live draft.
+- Nomination order does not exist during setup or preseason; the commissioner creates the first official order in the pre-draft lobby on draft day.
 - Firebase Realtime Database remains the sole source of truth.
 - Owner devices are not competing authoritative data stores.
 - Backups consist of server-side snapshots, audit history, a commissioner recovery mirror, and manual exports.
@@ -242,11 +243,12 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 
 ### Routing and lifecycle
 
-- [ ] Add the `preseason` draft status.
-- [ ] Route authenticated owners into an owner workspace during preseason.
-- [ ] Route the commissioner into preseason administration controls.
-- [ ] Add a commissioner action to transition from preseason to the draft lobby.
-- [ ] Preserve owner preferences across lifecycle transitions.
+- [x] Add the `preseason` draft status.
+- [x] Route authenticated owners into an owner workspace during preseason.
+- [x] Route the commissioner into preseason administration controls.
+- [x] Add a commissioner action to transition from preseason to the draft lobby.
+- [x] Preserve owner preferences across lifecycle transitions.
+- [x] Keep nomination order absent through setup and preseason, and require draft-day randomization before the draft can start.
 
 ### Owner functionality
 
@@ -446,4 +448,5 @@ Add dated entries here when a phase begins, a decision changes, or a material mi
 - 2026-08-12: Firebase Console inspection confirmed Authentication had not yet been initialized and the production project was on the Blaze plan.
 - 2026-08-12: Phase 2 was completed in production. Firebase Authentication was initialized, the Functions service identity received narrowly scoped token-signing permission, and commissioner setup plus returning PIN login passed on GitHub Pages.
 - 2026-08-12: Phase 3 least-privilege Realtime Database Rules were implemented and passed seven emulator scenarios covering public reads, unauthenticated denial, owner-private bulk ranks/tiers/watchlists, cross-team denial, presence limits, authorized nominations, privilege-smuggling rejection, stale-session invalidation with preference preservation, commissioner operations, and private credential denial. Production deployment remains pending the client-first rollout.
+- 2026-08-12: Phase 4 lifecycle routing started. Setup now creates `preseason` without nomination-order data; owners and the commissioner receive distinct authenticated preseason routes; the commissioner can open an unordered draft-day lobby; and Start Draft remains disabled until the lobby randomizer creates a complete official order.
 - 2026-08-12: Production access-gate smoke test passed with a temporary SHA-256 password: rejection, successful unlock, dark theme, Firebase-backed lobby load, and refresh persistence all verified.

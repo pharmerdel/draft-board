@@ -5,6 +5,7 @@ import { auth, db } from './firebase';
 import SetupScreen from './screens/SetupScreen';
 import LobbyScreen from './screens/LobbyScreen';
 import DraftScreen from './screens/DraftScreen';
+import PreseasonScreen from './screens/PreseasonScreen';
 import AccessGate from './components/AccessGate';
 import ThemeToggle from './components/ThemeToggle';
 import { hasLeagueAccess } from './utils/accessGateStorage';
@@ -162,6 +163,18 @@ export default function App() {
         <LobbyScreen selectedTeamId={selectedTeamId} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
       </>
     );
+  }
+
+  if (draftStatus === 'preseason') {
+    if (!selectedTeamId) {
+      return (
+        <>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+          <LobbyScreen phase="preseason" selectedTeamId={null} onTeamSelect={handleTeamSelect} onTeamClear={handleTeamClear} />
+        </>
+      );
+    }
+    return <PreseasonScreen selectedTeamId={selectedTeamId} onTeamClear={handleTeamClear} themeToggle={themeToggle} />;
   }
 
   if (draftStatus === 'active' || draftStatus === 'paused') {

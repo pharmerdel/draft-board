@@ -222,6 +222,10 @@
   min-width: 0;
 }
 
+.team-select-card.without-order {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .team-select-order {
   width: 32px;
   min-height: 54px;

@@ -13,11 +13,12 @@ import { db } from '../firebase';
 import CommissionerAccessModal from '../components/CommissionerAccessModal';
 import TeamAccessModal from '../components/TeamAccessModal';
 import TeamAccessManager from '../components/TeamAccessManager';
+import { hasOfficialNominationOrder, sortTeamsForDisplay } from '../utils/draftLifecycle';
 import './LobbyScreen.css';
 
 const TEAM_COUNT = 12;
 
-export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSelect, onTeamClear }) {
+export default function LobbyScreen({ phase = 'lobby', rejoin = false, selectedTeamId, onTeamSelect, onTeamClear }) {
   const [teams, setTeams] = useState({});
   const [draft, setDraft] = useState({});
   const [teamAccess, setTeamAccess] = useState({});
@@ -28,10 +29,10 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
   const [confirmingStart, setConfirmingStart] = useState(false);
 
   const draftUrl = window.location.href;
-  const teamEntries = Object.entries(teams)
-    .filter(([, team]) => team?.name || team?.ownerName || team?.nominationOrder)
-    .sort((a, b) => (a[1].nominationOrder || 999) - (b[1].nominationOrder || 999));
+  const isPreseasonEntry = phase === 'preseason';
+  const teamEntries = sortTeamsForDisplay(teams, !isPreseasonEntry);
   const connectedCount = teamEntries.filter(([, t]) => t.connected).length;
+  const nominationOrderReady = hasOfficialNominationOrder(draft, teams);
 
   // Live sync teams
   useEffect(() => {
@@ -111,15 +112,19 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
         )}
         <div className="lobby-hero">
           <div>
-            <p className="lobby-kicker">Draft Room</p>
+            <p className="lobby-kicker">{isPreseasonEntry ? 'Preseason Workspace' : 'Draft Room'}</p>
             <h1>{draft.leagueName || 'FF Auction Draft'}</h1>
             <p className="lobby-subtitle">
-              {rejoin ? 'Choose your team to rejoin the live draft.' : 'Choose your team or open the commissioner board.'}
+              {rejoin
+                ? 'Choose your team to rejoin the live draft.'
+                : isPreseasonEntry
+                  ? 'Choose your team to prepare private rankings and watchlists.'
+                  : 'Choose your team or open the commissioner board.'}
             </p>
           </div>
           <div className={`lobby-state-pill ${rejoin ? 'live' : 'lobby'}`}>
             <span className="lobby-state-dot" />
-            {rejoin ? 'Draft in progress' : 'Lobby'}
+            {rejoin ? 'Draft in progress' : isPreseasonEntry ? 'Preseason' : 'Lobby'}
           </div>
         </div>
 
@@ -133,7 +138,9 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
             </span>
             <span className="commissioner-copy">
               <span className="commissioner-title">Commissioner Board</span>
-              <span className="commissioner-subtitle">Nominations, winning bids, undo, export</span>
+              <span className="commissioner-subtitle">
+                {isPreseasonEntry ? 'Owner access, PIN resets, and draft-day transition' : 'Nominations, winning bids, undo, export'}
+              </span>
             </span>
             <ArrowRight className="commissioner-arrow" size={18} strokeWidth={2.2} />
           </button>
@@ -156,8 +163,8 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
                   const isActive = team.connected;
 
                   return (
-                    <div key={teamId} className="team-select-card">
-                      <span className="team-select-order">{team.nominationOrder || '-'}</span>
+                    <div key={teamId} className={`team-select-card ${isPreseasonEntry ? 'without-order' : ''}`}>
+                      {!isPreseasonEntry && <span className="team-select-order">{team.nominationOrder || '—'}</span>}
                       <button
                         className={`team-select-btn ${isActive ? 'active' : ''}`}
                         onClick={() => setAuthTeamId(teamId)}
@@ -275,12 +282,16 @@ export default function LobbyScreen({ rejoin = false, selectedTeamId, onTeamSele
               <button
                 className="start-draft-btn"
                 onClick={() => setConfirmingStart(true)}
-                disabled={starting}
+                disabled={starting || !nominationOrderReady}
               >
                 <Play size={18} fill="currentColor" strokeWidth={2.2} />
                 {starting ? 'Starting...' : 'Start Draft'}
               </button>
-              <p className="start-hint">Everyone will move to the draft board simultaneously.</p>
+              <p className="start-hint">
+                {nominationOrderReady
+                  ? 'Everyone will move to the draft board simultaneously.'
+                  : 'Randomize the official nomination order below before starting the draft.'}
+              </p>
             </>
           ) : (
             <p className="start-hint owner-waiting">The commissioner will start the draft when everyone is ready.</p>

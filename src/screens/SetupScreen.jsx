@@ -4,9 +4,9 @@ import { db } from '../firebase';
 import { DEFAULT_LEAGUE_NAME, DEFAULT_TEAMS } from '../config/leagueDefaults';
 import { parseBackupFile } from '../utils/backup';
 import { buildDraftPlayers, summarizeDraftPlayers } from '../utils/draftPlayers';
+import { buildPreseasonDraft } from '../utils/draftLifecycle';
 import './SetupScreen.css';
 
-const TEAM_COUNT = 12;
 const POSITION_ORDER = ['QB', 'RB', 'WR', 'TE'];
 
 export default function SetupScreen() {
@@ -23,7 +23,6 @@ export default function SetupScreen() {
   const [restoring, setRestoring] = useState(false);
   const [restoreSuccess, setRestoreSuccess] = useState(false);
 
-  const usedOrders = teams.map(team => team.nominationOrder).filter(Boolean);
   const catalogSummary = summarizeDraftPlayers(catalogPlayers);
 
   useEffect(() => {
@@ -81,14 +80,7 @@ export default function SetupScreen() {
     teams.forEach((team, index) => {
       if (!team.teamName.trim()) validationErrors.push(`Team ${index + 1}: Team name is required.`);
       if (!team.ownerName.trim()) validationErrors.push(`Team ${index + 1}: Owner name is required.`);
-      if (!team.nominationOrder) validationErrors.push(`Team ${index + 1}: Nomination order is required.`);
     });
-
-    const orders = teams.map(team => team.nominationOrder).filter(Boolean);
-    const duplicates = orders.filter((order, index) => orders.indexOf(order) !== index);
-    if (duplicates.length > 0) {
-      validationErrors.push(`Nomination order ${[...new Set(duplicates)].join(', ')} is assigned to more than one team.`);
-    }
     return validationErrors;
   }
 
@@ -121,7 +113,6 @@ export default function SetupScreen() {
         teamsData[`team_${index + 1}`] = {
           name: team.teamName.trim(),
           ownerName: team.ownerName.trim(),
-          nominationOrder: parseInt(team.nominationOrder, 10),
           budgetRemaining: 200,
           connected: false,
           lastSeen: null,
@@ -129,25 +120,11 @@ export default function SetupScreen() {
         };
       });
 
-      const nominationOrderIds = Object.entries(teamsData)
-        .sort((left, right) => left[1].nominationOrder - right[1].nominationOrder)
-        .map(([teamId]) => teamId);
-
-      setSavingStatus('Creating draft lobby...');
+      setSavingStatus('Creating preseason workspace...');
       await update(ref(db), {
         players: playersData,
         teams: teamsData,
-        draft: {
-          leagueName: leagueName.trim(),
-          status: 'lobby',
-          nominationOrderIds,
-          nominationIndex: 0,
-          nominatingTeamId: nominationOrderIds[0],
-          currentNomination: null,
-          playerCatalogImportedAt: latestCatalogMetadata?.importedAt || null,
-          playerCatalogSourceSha256: latestCatalogMetadata?.sourceSha256 || null,
-          createdAt: Date.now(),
-        },
+        draft: buildPreseasonDraft({ leagueName, catalogMetadata: latestCatalogMetadata }),
         log: null,
       });
     } catch (error) {
@@ -215,11 +192,11 @@ export default function SetupScreen() {
         <div className="setup-teams-heading">
           <div>
             <span className="setup-label">League Teams</span>
-            <p className="setup-field-hint">The numbered order is temporary. The commissioner can securely randomize it in the lobby on draft day.</p>
+            <p className="setup-field-hint">Nomination order will be created in the pre-draft lobby on draft day.</p>
           </div>
         </div>
         <div className="teams-grid-header">
-          <span>#</span><span>Team Name</span><span>Owner Name</span><span>Temp. Order</span>
+          <span>#</span><span>Team Name</span><span>Owner Name</span>
         </div>
 
         {teams.map((team, index) => (
@@ -227,21 +204,15 @@ export default function SetupScreen() {
             <span className="team-num">{index + 1}</span>
             <input className="setup-input" type="text" placeholder="Team name" value={team.teamName} onChange={event => updateTeam(index, 'teamName', event.target.value)} />
             <input className="setup-input" type="text" placeholder="Owner name" value={team.ownerName} onChange={event => updateTeam(index, 'ownerName', event.target.value)} />
-            <select className="setup-select" value={team.nominationOrder} onChange={event => updateTeam(index, 'nominationOrder', event.target.value)}>
-              <option value="">—</option>
-              {Array.from({ length: TEAM_COUNT }, (_, orderIndex) => orderIndex + 1).map(order => (
-                <option key={order} value={order} disabled={usedOrders.includes(String(order)) && team.nominationOrder !== String(order)}>{order}</option>
-              ))}
-            </select>
           </div>
         ))}
       </div>
 
       <div className="setup-launch">
         <button className="launch-btn" onClick={handleLaunch} disabled={saving || catalogLoading || !catalogPlayers}>
-          {saving ? (savingStatus || 'Launching...') : '🚀 Launch Draft'}
+          {saving ? (savingStatus || 'Opening...') : 'Open Preseason Workspace'}
         </button>
-        <p className="launch-hint">This saves all team and player info and moves everyone to the pre-draft lobby.</p>
+        <p className="launch-hint">This saves league data and opens private owner preparation. Draft-day order remains unset.</p>
       </div>
 
       <div className="restore-section">

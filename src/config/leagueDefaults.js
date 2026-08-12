@@ -13,4 +13,4 @@ export const DEFAULT_TEAMS = [
   { teamName: 'Two Balls One Cup', ownerName: 'Ben McDaniel' },
   { teamName: 'Snakes on Reggie Wayne', ownerName: 'Joe Merkel' },
   { teamName: 'Finesse', ownerName: 'Morgan Honeycutt' },
-].map((team, index) => ({ ...team, nominationOrder: String(index + 1) }));
+];

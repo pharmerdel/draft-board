@@ -95,9 +95,18 @@ body[data-theme='dark'] .summary-screen {
   color: var(--dark-text-muted);
 }
 
+body[data-theme='dark'] .preseason-screen {
+  background: var(--dark-bg);
+  color: var(--dark-text-muted);
+}
+
 body[data-theme='dark'] .lobby-hero,
 body[data-theme='dark'] .setup-header,
 body[data-theme='dark'] .summary-header {
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .preseason-header {
   border-color: var(--dark-border-soft);
 }
 
@@ -113,6 +122,14 @@ body[data-theme='dark'] .confirm-modal h2 {
   color: var(--dark-text);
 }
 
+body[data-theme='dark'] .preseason-header h1,
+body[data-theme='dark'] .preseason-admin-hero h2,
+body[data-theme='dark'] .preseason-owner-intro h2,
+body[data-theme='dark'] .preseason-next-panel h3,
+body[data-theme='dark'] .preseason-summary-grid strong {
+  color: var(--dark-text);
+}
+
 body[data-theme='dark'] .lobby-kicker,
 body[data-theme='dark'] .lobby-subtitle,
 body[data-theme='dark'] .entry-section-subtitle,
@@ -122,6 +139,14 @@ body[data-theme='dark'] .lobby-team-owner,
 body[data-theme='dark'] .lobby-url-hint,
 body[data-theme='dark'] .start-hint,
 body[data-theme='dark'] .confirm-modal p {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .preseason-header p:last-child,
+body[data-theme='dark'] .preseason-admin-hero p,
+body[data-theme='dark'] .preseason-owner-intro p,
+body[data-theme='dark'] .preseason-next-panel p,
+body[data-theme='dark'] .preseason-summary-grid span {
   color: var(--dark-text-muted);
 }
 
@@ -135,6 +160,25 @@ body[data-theme='dark'] .review-card {
   background: var(--dark-panel);
   border-color: var(--dark-border-soft);
   box-shadow: 0 14px 36px rgba(0,0,0,0.22);
+}
+
+body[data-theme='dark'] .preseason-owner-intro,
+body[data-theme='dark'] .preseason-summary-grid article,
+body[data-theme='dark'] .preseason-next-panel,
+body[data-theme='dark'] .preseason-screen > .team-access-manager {
+  background: var(--dark-panel);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .preseason-admin-hero {
+  background: var(--dark-panel-2);
+  border-color: #36557F;
+}
+
+body[data-theme='dark'] .preseason-header-actions > button {
+  background: var(--dark-card);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
 }
 
 body[data-theme='dark'] .commissioner-access:hover,
