@@ -93,6 +93,7 @@ test('an owner can manage only their own valid rankings, tiers, and watchlist', 
   }));
   await assertSucceeds(set(ref(database, 'personalTiers/team_1/RB/player_1'), 2));
   await assertSucceeds(set(ref(database, 'personalTiers/team_1/RB/player_1'), 12));
+  await assertSucceeds(set(ref(database, 'playerNotes/team_1/player_1'), { text: 'High variance', updatedAt: Date.now() }));
   await assertSucceeds(set(ref(database, 'watchlists/team_1/player_1'), { watched: true }));
   await assertSucceeds(get(ref(database, 'personalRanks/team_1')));
 
@@ -102,6 +103,8 @@ test('an owner can manage only their own valid rankings, tiers, and watchlist', 
   await assertFails(set(ref(database, 'personalTiers/team_1/RB/player_1'), 13));
   await assertFails(set(ref(database, 'personalTiers/team_1/ALL/player_1'), 1));
   await assertFails(set(ref(database, 'personalTiers/team_1/QB/player_1'), 1));
+  await assertFails(set(ref(database, 'playerNotes/team_2/player_1'), { text: 'Private', updatedAt: Date.now() }));
+  await assertFails(set(ref(database, 'playerNotes/team_1/player_1'), { text: 'x'.repeat(301), updatedAt: Date.now() }));
   await assertFails(set(ref(database, 'watchlists/team_1/player_1'), { watched: true, shared: true }));
 });
 

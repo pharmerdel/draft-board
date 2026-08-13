@@ -331,6 +331,15 @@
 }
 
 .mobile-search-input:focus { border-color: #1B3A6B; }
+
+.mobile-live-player-workspace {
+  padding: 0.5rem;
+}
+
+.mobile-live-player-workspace .ps-workspace {
+  margin-top: 0;
+  box-shadow: none;
+}
 .mobile-search-input::placeholder { color: #9CA3AF; }
 
 .mobile-filters {

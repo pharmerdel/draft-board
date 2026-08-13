@@ -15,6 +15,7 @@ export default function OwnerRankImportModal({ players, personalRanks, onClose, 
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
   const [importing, setImporting] = useState(false);
+  const [includeNotes, setIncludeNotes] = useState(true);
 
   async function selectFile(event) {
     const file = event.target.files?.[0];
@@ -36,9 +37,15 @@ export default function OwnerRankImportModal({ players, personalRanks, onClose, 
   async function confirmImport() {
     if (!preview?.matched.length || importing) return;
     setImporting(true);
-    await onImport(preview.ranks);
-    setImporting(false);
-    onClose();
+    setError('');
+    try {
+      await onImport(preview.ranks, includeNotes ? preview.notes : null);
+      onClose();
+    } catch (importError) {
+      setError(importError.message || 'The rankings could not be saved. Nothing was changed.');
+    } finally {
+      setImporting(false);
+    }
   }
 
   return (
@@ -54,9 +61,9 @@ export default function OwnerRankImportModal({ players, personalRanks, onClose, 
 
         <div className="rank-import-body">
           <p className="rank-import-intro">
-            Required headers are <strong>Rank</strong> and <strong>Player</strong>. Include <strong>Position</strong> and <strong>Team</strong> for the safest matching.
+            Required headers are <strong>Rank</strong> and <strong>Player</strong>. Include <strong>Position</strong> and <strong>Team</strong> for the safest matching. <strong>Notes</strong> is optional.
           </p>
-          <code>Rank,Player,Position,Team</code>
+          <code>Rank,Player,Position,Team,Notes</code>
 
           <div className="rank-import-downloads">
             <button type="button" onClick={() => downloadCsv(generateOwnerRankTemplateCsv(), 'rankings-template.csv')}>
@@ -86,6 +93,13 @@ export default function OwnerRankImportModal({ players, personalRanks, onClose, 
                 <article><strong>{preview.issues.length}</strong><span>Need review</span></article>
                 <article><strong>{preview.appendedCount}</strong><span>Appended</span></article>
               </div>
+
+              {preview.hasNotesColumn && (
+                <label className="rank-import-notes-option">
+                  <input type="checkbox" checked={includeNotes} onChange={event => setIncludeNotes(event.target.checked)} />
+                  <span><strong>Import {preview.notesCount} player note{preview.notesCount === 1 ? '' : 's'}</strong><small>Blank Notes cells will not erase anything you already saved.</small></span>
+                </label>
+              )}
 
               {preview.matched.length > 0 && (
                 <div className="rank-import-matches">
@@ -117,7 +131,7 @@ export default function OwnerRankImportModal({ players, personalRanks, onClose, 
         <footer>
           <button type="button" onClick={onClose}>Cancel</button>
           <button className="rank-import-confirm" type="button" disabled={!preview?.matched.length || importing} onClick={confirmImport}>
-            <Upload size={16} /> {importing ? 'Importing…' : 'Use this order'}
+            <Upload size={16} /> {importing ? 'Importing…' : includeNotes && preview?.notesCount ? 'Import order & notes' : 'Use this order'}
           </button>
         </footer>
       </section>

@@ -23,6 +23,7 @@ import TeamDetailModal from './TeamDetailModal';
 import NominationQueue from './NominationQueue';
 import NominationSearch from './NominationSearch';
 import TimerDisplay from './TimerDisplay';
+import PreseasonPlayerWorkspace from './PreseasonPlayerWorkspace';
 import './ParticipantDesktopView.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
@@ -106,6 +107,8 @@ export default function ParticipantDesktopView({
   selectedTeamId, nominatingTeamId,
   onNominate, watchlist, onToggleWatch,
   personalRanks, onSavePersonalRanks,
+  personalTiers, onSavePersonalTiers,
+  playerNotes, onSavePlayerNote,
   themeToggle, onTeamClear,
 }) {
   const [tab, setTab]               = useState('myteam');
@@ -211,6 +214,8 @@ export default function ParticipantDesktopView({
 
   // Clear sold notification immediately when next nomination fires
   useEffect(() => {
+    // This notification mirrors an external draft event and must clear immediately.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (nominatedPlayer) setSoldNotif(null);
   }, [nominatedPlayer]);
 
@@ -327,7 +332,7 @@ export default function ParticipantDesktopView({
 
           <div className="pd-tab-content">
 
-            {tab === 'myteam' && <MyTeamPanel team={myTeam} players={players} watchlist={watchlist} onToggleWatch={onToggleWatch} selectedTeamId={selectedTeamId} nominatingTeamId={nominatingTeamId} currentNomination={currentNomination} onNominate={onNominate} />}
+            {tab === 'myteam' && <MyTeamPanel team={myTeam} />}
 
             {tab === 'allteams' && (
               <div className="pd-teams-grid">
@@ -376,6 +381,29 @@ export default function ParticipantDesktopView({
             )}
 
             {tab === 'players' && (
+              <div className="pd-live-player-workspace">
+                <PreseasonPlayerWorkspace
+                  players={players}
+                  personalRanks={personalRanks}
+                  personalTiers={personalTiers}
+                  playerNotes={playerNotes}
+                  watchlist={watchlist}
+                  onSavePersonalRanks={onSavePersonalRanks}
+                  onSavePersonalTiers={onSavePersonalTiers}
+                  onSavePlayerNote={onSavePlayerNote}
+                  onToggleWatch={onToggleWatch}
+                  canNominate={nominatingTeamId === selectedTeamId && !currentNomination}
+                  onNominate={onNominate}
+                  saveState="idle"
+                  savedAt={null}
+                  saveError=""
+                  onRetry={() => {}}
+                  allowImport={false}
+                />
+              </div>
+            )}
+
+            {tab === '__legacy-players' && (
               <div className="pd-players">
                 <input
                   className="pd-search-input"
@@ -403,7 +431,7 @@ export default function ParticipantDesktopView({
                 {isSearching ? (
                   // Search results — static, no drag
                   <div className="pd-player-list">
-                    {filteredPlayers.map((p, i) => (
+                    {filteredPlayers.map(p => (
                       <div key={p.id} className={`pd-player-row ${p.status === 'sold' ? 'sold' : ''}`}>
                         <span className="pd-drag-spacer" aria-hidden="true" />
                         <span className="pd-rank-num">{effectiveRank(p.id)}</span>

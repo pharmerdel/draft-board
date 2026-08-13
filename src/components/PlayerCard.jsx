@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { TriangleAlert, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Check, StickyNote, Target, TriangleAlert, X } from 'lucide-react';
 import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
 import { fetchFantasyProsPlayerNewsFromApi } from '../utils/fantasyProsNews';
+import { MAX_PLAYER_NOTE_LENGTH, normalizePlayerNote } from '../utils/playerNotes';
 import './PlayerCard.css';
 
 function injClass(status) {
@@ -21,14 +22,12 @@ function xSearchUrl(playerName) {
 }
 
 function usePlayerNews(playerName) {
-  const [news, setNews] = useState(undefined);
+  const [news, setNews] = useState(playerName ? undefined : []);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (!playerName) { setNews([]); setError(false); return; }
+    if (!playerName) return undefined;
     let cancelled = false;
-    setNews(undefined);
-    setError(false);
     fetchFantasyProsPlayerNewsFromApi(playerName, {
       fallbackToDirect: true,
       maxAgeDays: 30,
@@ -49,10 +48,45 @@ function usePlayerNews(playerName) {
   return { news, loading: news === undefined, error };
 }
 
-export default function PlayerCard({ player, onClose }) {
+export default function PlayerCard({ player, onClose, note = '', onSaveNote, focusNotes = false, canNominate = false, onNominate }) {
   const { stats, proj, loading } = usePlayerStats(player.sleeperPlayerId);
   const { news, loading: newsLoading, error: newsError } = usePlayerNews(player.name);
   const pos = player.position;
+  const [noteDraft, setNoteDraft] = useState(note);
+  const [noteState, setNoteState] = useState('idle');
+  const noteRef = useRef(null);
+  const saveNoteRef = useRef(onSaveNote);
+
+  useEffect(() => {
+    saveNoteRef.current = onSaveNote;
+  }, [onSaveNote]);
+
+  useEffect(() => {
+    if (focusNotes) noteRef.current?.focus();
+  }, [focusNotes]);
+
+  useEffect(() => {
+    if (!saveNoteRef.current || noteDraft === note) return undefined;
+    const timer = setTimeout(async () => {
+      try {
+        await saveNoteRef.current(normalizePlayerNote(noteDraft));
+        setNoteState('saved');
+      } catch {
+        setNoteState('error');
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [note, noteDraft]);
+
+  async function saveNoteImmediately() {
+    if (!saveNoteRef.current || noteDraft === note) return;
+    try {
+      await saveNoteRef.current(normalizePlayerNote(noteDraft));
+      setNoteState('saved');
+    } catch {
+      setNoteState('error');
+    }
+  }
 
   return (
     <div className="pc-overlay" onClick={onClose}>
@@ -88,6 +122,31 @@ export default function PlayerCard({ player, onClose }) {
         </div>
 
         <div className="pc-body">
+          {canNominate && onNominate && (
+            <button className="pc-nominate-button" type="button" onClick={onNominate}>
+              <Target size={18} /> Nominate {player.name}
+            </button>
+          )}
+          {onSaveNote && (
+            <div className="pc-section pc-notes-section">
+              <div className="pc-section-header">
+                <span className="pc-section-title"><StickyNote size={15} /> Private notes</span>
+                <span className={`pc-note-state ${noteState}`}>
+                  {noteState === 'saving' ? 'Saving…' : noteState === 'saved' ? <><Check size={13} /> Saved</> : noteState === 'error' ? 'Could not save' : 'Only your team can see this'}
+                </span>
+              </div>
+              <textarea
+                ref={noteRef}
+                value={noteDraft}
+                maxLength={MAX_PLAYER_NOTE_LENGTH}
+                placeholder="High variance, tough opening schedule, nomination target…"
+                onChange={event => { setNoteDraft(event.target.value); setNoteState('saving'); }}
+                onBlur={saveNoteImmediately}
+                aria-label={`Private notes for ${player.name}`}
+              />
+              <span className="pc-note-count">{noteDraft.length}/{MAX_PLAYER_NOTE_LENGTH}</span>
+            </div>
+          )}
           {loading
             ? <p className="pc-loading">Loading stats…</p>
             : <PlayerStatsBody stats={stats} proj={proj} pos={pos} />

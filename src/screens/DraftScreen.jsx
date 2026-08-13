@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ref, onValue, update, set, push, remove } from 'firebase/database';
+import { ref, onValue, update, set, push, remove, serverTimestamp } from 'firebase/database';
 import { Download, Flag, RotateCcw, Save } from 'lucide-react';
 import { db } from '../firebase';
 import TeamsColumn from '../components/TeamsColumn';
@@ -16,6 +16,7 @@ import DraftClock from '../components/DraftClock';
 import NominationTimer from '../components/NominationTimer';
 import DraftSummaryScreen from './DraftSummaryScreen';
 import './DraftScreen.css';
+import { normalizePlayerNote } from '../utils/playerNotes';
 
 export default function DraftScreen({ complete, selectedTeamId, onTeamClear, themeToggle }) {
   const [draft, setDraft]         = useState(null);
@@ -25,6 +26,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
   const [watchlist, setWatchlist]           = useState({});
   const [personalRanks, setPersonalRanks]   = useState({});
   const [personalTiers, setPersonalTiers]   = useState({});
+  const [playerNotes, setPlayerNotes]       = useState({});
   const [soldData, setSoldData]             = useState(null); // { player, team, price, playerId }
   const [syncConnected, setSyncConnected]   = useState(null);
   const [newsHealth, setNewsHealth]         = useState('checking');
@@ -68,7 +70,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     const unsub1 = onValue(ref(db, `watchlists/${selectedTeamId}`), s => setWatchlist(s.val() || {}));
     const unsub2 = onValue(ref(db, `personalRanks/${selectedTeamId}`), s => setPersonalRanks(s.val() || {}));
     const unsub3 = onValue(ref(db, `personalTiers/${selectedTeamId}`), s => setPersonalTiers(s.val() || {}));
-    return () => { unsub1(); unsub2(); unsub3(); };
+    const unsub4 = onValue(ref(db, `playerNotes/${selectedTeamId}`), s => setPlayerNotes(s.val() || {}));
+    return () => { unsub1(); unsub2(); unsub3(); unsub4(); };
   }, [selectedTeamId]);
 
   async function savePersonalRanks(ranks, tierUpdates = null) {
@@ -90,6 +93,14 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
   async function savePersonalTiers(updates) {
     if (!selectedTeamId || !updates) return;
     await update(ref(db, `personalTiers/${selectedTeamId}`), updates);
+  }
+
+  async function savePlayerNote(playerId, text) {
+    if (!selectedTeamId || !playerId) return;
+    const normalized = normalizePlayerNote(text);
+    const noteRef = ref(db, `playerNotes/${selectedTeamId}/${playerId}`);
+    if (normalized) await set(noteRef, { text: normalized, updatedAt: serverTimestamp() });
+    else await set(noteRef, null);
   }
 
   const selectedTeamIsStale =
@@ -403,6 +414,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
     watchlist, onToggleWatch: toggleWatch,
     personalRanks, onSavePersonalRanks: savePersonalRanks,
     personalTiers, onSavePersonalTiers: savePersonalTiers,
+    playerNotes, onSavePlayerNote: savePlayerNote,
     onTeamClear,
   };
 

@@ -7,6 +7,7 @@ import TeamAccessManager from '../components/TeamAccessManager';
 import { db } from '../firebase';
 import { buildDraftDayLobbyUpdates, sortTeamsForDisplay } from '../utils/draftLifecycle';
 import { applyPersonalTierUpdates } from '../utils/personalTiers';
+import { applyPlayerNoteUpdate, normalizePlayerNote } from '../utils/playerNotes';
 import './PreseasonScreen.css';
 
 export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeToggle, preview = false }) {
@@ -16,6 +17,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
   const [teamAccess, setTeamAccess] = useState({});
   const [personalRanks, setPersonalRanks] = useState({});
   const [personalTiers, setPersonalTiers] = useState({});
+  const [playerNotes, setPlayerNotes] = useState({});
   const [watchlist, setWatchlist] = useState({});
   const [syncConnected, setSyncConnected] = useState(null);
   const [openingLobby, setOpeningLobby] = useState(false);
@@ -46,6 +48,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
     const unsubscribers = [
       onValue(ref(db, `personalRanks/${selectedTeamId}`), snapshot => setPersonalRanks(snapshot.val() || {})),
       onValue(ref(db, `personalTiers/${selectedTeamId}`), snapshot => setPersonalTiers(snapshot.val() || {})),
+      onValue(ref(db, `playerNotes/${selectedTeamId}`), snapshot => setPlayerNotes(snapshot.val() || {})),
       onValue(ref(db, `watchlists/${selectedTeamId}`), snapshot => setWatchlist(snapshot.val() || {})),
     ];
     update(ref(db, `teams/${selectedTeamId}`), { connected: true, lastSeen: serverTimestamp() });
@@ -120,6 +123,46 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
       return;
     }
     return savePreference(() => update(ref(db, `personalTiers/${selectedTeamId}`), updates));
+  }
+
+  function savePlayerNote(playerId, text) {
+    if (!selectedTeamId || isCommissioner || !playerId) return;
+    const normalized = normalizePlayerNote(text);
+    if (preview) {
+      setPlayerNotes(current => applyPlayerNoteUpdate(current, playerId, normalized));
+      setSavedAt(new Date());
+      setSaveState('saved');
+      return;
+    }
+    const noteRef = ref(db, `playerNotes/${selectedTeamId}/${playerId}`);
+    return savePreference(() => normalized
+      ? set(noteRef, { text: normalized, updatedAt: serverTimestamp() })
+      : set(noteRef, null));
+  }
+
+  function importPreferences(ranks, notes = null) {
+    if (!selectedTeamId || isCommissioner) return;
+    if (preview) {
+      setPersonalRanks(ranks);
+      if (notes) {
+        setPlayerNotes(current => Object.entries(notes).reduce(
+          (next, [playerId, text]) => applyPlayerNoteUpdate(next, playerId, text),
+          current,
+        ));
+      }
+      setSavedAt(new Date());
+      setSaveState('saved');
+      return;
+    }
+
+    const combinedUpdates = { [`personalRanks/${selectedTeamId}`]: ranks };
+    Object.entries(notes || {}).forEach(([playerId, text]) => {
+      combinedUpdates[`playerNotes/${selectedTeamId}/${playerId}`] = {
+        text: normalizePlayerNote(text),
+        updatedAt: serverTimestamp(),
+      };
+    });
+    return savePreference(() => update(ref(db), combinedUpdates));
   }
 
   function toggleWatch(playerId) {
@@ -206,9 +249,12 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
             players={players}
             personalRanks={personalRanks}
             personalTiers={personalTiers}
+            playerNotes={playerNotes}
             watchlist={watchlist}
             onSavePersonalRanks={savePersonalRanks}
             onSavePersonalTiers={savePersonalTiers}
+            onSavePlayerNote={savePlayerNote}
+            onImportPreferences={importPreferences}
             onToggleWatch={toggleWatch}
             saveState={saveState}
             savedAt={savedAt}

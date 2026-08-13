@@ -273,7 +273,23 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 - [ ] Preferences synchronize between two devices signed into the same team.
 - [ ] Owners can leave and return without losing work.
 - [ ] The preseason workspace is usable on phone, tablet, and desktop.
-- [ ] Moving into lobby or active draft preserves and continues using preseason preferences.
+- [x] Moving into lobby or active draft preserves and continues using preseason preferences.
+
+### Private player notes
+
+- [x] Store a private note per team and player without exposing it to other owners or the commissioner.
+- [x] Show a truncated inline note on desktop and a compact `Notes` control on mobile.
+- [x] Edit the full note from the player-detail card with autosave and a 300-character limit.
+- [x] Keep notes editable and visible in the active-draft player workspace.
+- [x] Accept an optional `Notes` column in owner rankings CSV imports.
+- [x] Require explicit note-import opt-in and preserve existing notes for blank CSV cells.
+
+### Draft-day owner navigation
+
+- [x] Keep `My Team` limited to budget, roster totals, and roster slots, including when empty.
+- [x] Show inline nomination actions in the active-draft Players workspace only during that owner's open nomination turn.
+- [x] Show a prominent nomination action in player details during that same turn.
+- [x] Require confirmation before submitting an inline or player-card nomination.
 
 ## Phase 5: Optional Bulk Personal Tiers
 
@@ -285,6 +301,7 @@ Implementation note (2026-08-12): the callable Functions, private/public access 
 - [x] Support optional Tier 1 through Tier 12 plus `Avoid`.
 - [x] Do not alter exact rank order merely because a tier changes.
 - [x] Leave tier data absent for owners who do not use the feature.
+- [x] Reuse the same ranking, watchlist, tier creation, and tier editing workspace during the active draft on desktop and mobile.
 
 ### Boundary-based tier mode
 
@@ -455,3 +472,5 @@ Add dated entries here when a phase begins, a decision changes, or a material mi
 - 2026-08-12: Phase 4 lifecycle routing started. Setup now creates `preseason` without nomination-order data; owners and the commissioner receive distinct authenticated preseason routes; the commissioner can open an unordered draft-day lobby; and Start Draft remains disabled until the lobby randomizer creates a complete official order.
 - 2026-08-12: Production access-gate smoke test passed with a temporary SHA-256 password: rejection, successful unlock, dark theme, Firebase-backed lobby load, and refresh persistence all verified.
 - 2026-08-12: Phase 5 tier data foundation added. Private Tier 1-12 and Avoid updates now share team-scoped live synchronization across preseason and draft-day screens, support atomic multi-player writes and clearing, and remain independent from personal rank order.
+- 2026-08-12: Private player notes added across preseason and active-draft owner workspaces. Notes are owner-team scoped, capped at 300 characters, displayed responsively, and optionally imported from rankings CSVs without blank cells erasing existing work. A safe development-only draft-owner preview now supports local interaction testing without Firebase writes.
+- 2026-08-12: Draft-day owner navigation simplified. `My Team` now contains only the owner's budget and roster, while the shared Players workspace exposes confirmed inline and player-card nomination actions exclusively during that owner's open nomination turn.

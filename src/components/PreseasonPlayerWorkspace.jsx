@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Check, ChevronDown, ChevronUp, FileUp, GripVertical, Info, Layers3, Search, Star, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, FileUp, GripVertical, Info, Layers3, Search, Star, Target, X } from 'lucide-react';
 
 import OwnerRankImportModal from './OwnerRankImportModal';
 import PlayerCard from './PlayerCard';
@@ -35,6 +35,7 @@ import {
   personalTierForPlayer,
   playerMatchesTierScope,
 } from '../utils/personalTiers';
+import { playerNoteText } from '../utils/playerNotes';
 import './PreseasonPlayerWorkspace.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'FLEX'];
@@ -70,7 +71,7 @@ function injuryLabel(status) {
   return status.slice(0, 3).toUpperCase();
 }
 
-function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, active, tierSelectable, onSelectTier }) {
+function PlayerRow({ player, rank, watched, note, draggable, onToggleWatch, onOpen, onOpenNotes, active, tierSelectable, onSelectTier, canNominate, onNominate }) {
   const {
     attributes,
     isSorting,
@@ -86,7 +87,7 @@ function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, ac
   };
 
   return (
-    <article ref={setNodeRef} style={style} className={`ps-player-row ${isSorting ? 'sorting' : ''} ${tierSelectable ? 'tier-selectable' : ''}`}>
+    <article ref={setNodeRef} style={style} className={`ps-player-row ${isSorting ? 'sorting' : ''} ${tierSelectable ? 'tier-selectable' : ''} ${canNominate ? 'nomination-mode' : ''}`}>
       {draggable ? (
         <button
           className="ps-drag-handle"
@@ -112,7 +113,21 @@ function PlayerRow({ player, rank, watched, draggable, onToggleWatch, onOpen, ac
         </span>
         <small>{player.nflTeam || 'FA'} · FantasyPros #{player.overallRank || '—'}</small>
       </button>
-      {player.projectedValue != null && <span className="ps-value">${player.projectedValue}</span>}
+      <button
+        className={`ps-note-preview ${note ? 'has-note' : ''}`}
+        type="button"
+        onClick={() => onOpenNotes(player)}
+        title={note || `Add a private note for ${player.name}`}
+      >
+        <span>{note || '+ Add note'}</span>
+        <small>{note ? 'Notes' : 'Note'}</small>
+      </button>
+      <span className="ps-value">{player.projectedValue != null ? `$${player.projectedValue}` : ''}</span>
+      {canNominate && (
+        player.status === 'available'
+          ? <button className="ps-nominate-button" type="button" onClick={() => onNominate(player)}><Target size={14} /> Nominate</button>
+          : <span className="ps-nominate-spacer" />
+      )}
       <button className="ps-icon-button" type="button" onClick={() => onOpen(player)} aria-label={`Details for ${player.name}`}>
         <Info size={17} />
       </button>
@@ -132,23 +147,33 @@ export default function PreseasonPlayerWorkspace({
   players,
   personalRanks,
   personalTiers,
+  playerNotes = {},
   watchlist,
   onSavePersonalRanks,
   onSavePersonalTiers,
+  onSavePlayerNote,
+  onImportPreferences,
   onToggleWatch,
+  canNominate = false,
+  onNominate,
   saveState,
   savedAt,
   saveError,
   onRetry,
+  allowImport = true,
 }) {
   const [view, setView] = useState('rankings');
   const [position, setPosition] = useState('ALL');
   const [search, setSearch] = useState('');
   const [activeDragId, setActiveDragId] = useState(null);
   const [cardPlayer, setCardPlayer] = useState(null);
+  const [focusNotes, setFocusNotes] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [tierMode, setTierMode] = useState(false);
   const [placingAvoid, setPlacingAvoid] = useState(false);
+  const [nominationCandidate, setNominationCandidate] = useState(null);
+  const [nominatingPlayerId, setNominatingPlayerId] = useState(null);
+  const [nominationError, setNominationError] = useState('');
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 175, tolerance: 6 } }),
@@ -216,6 +241,22 @@ export default function PreseasonPlayerWorkspace({
     setTierMode(true);
   }
 
+  async function confirmNomination() {
+    if (!nominationCandidate || !onNominate || nominatingPlayerId) return;
+    setNominatingPlayerId(nominationCandidate.id);
+    setNominationError('');
+    try {
+      await onNominate(nominationCandidate.id);
+      setNominationCandidate(null);
+      setCardPlayer(null);
+    } catch (error) {
+      console.error('Unable to nominate player:', error);
+      setNominationError('That nomination did not go through. Please try again.');
+    } finally {
+      setNominatingPlayerId(null);
+    }
+  }
+
   function leaveTierMode() {
     setTierMode(false);
     setPlacingAvoid(false);
@@ -278,9 +319,11 @@ export default function PreseasonPlayerWorkspace({
               ? 'Save needs attention'
               : <><Check size={14} /> {savedLabel}</>}
         </span>
-        <button className="ps-import-button" type="button" onClick={() => setShowImport(true)}>
-          <FileUp size={16} /> Import CSV
-        </button>
+        {allowImport && (
+          <button className="ps-import-button" type="button" onClick={() => setShowImport(true)}>
+            <FileUp size={16} /> Import CSV
+          </button>
+        )}
         {position !== 'ALL' && view === 'rankings' && !tierMode && hasTierAssignments && (
           <button className="ps-tier-mode-button" type="button" onClick={enterTierMode}>
             <Layers3 size={16} /> Edit tiers
@@ -420,12 +463,16 @@ export default function PreseasonPlayerWorkspace({
                       player={player}
                       rank={effectivePlayerRank(player.id, players, personalRanks)}
                       watched={Boolean(watchlist[player.id])}
+                      note={playerNoteText(playerNotes, player.id)}
                       draggable={canDrag}
                       onToggleWatch={onToggleWatch}
-                      onOpen={setCardPlayer}
+                      onOpen={playerToOpen => { setFocusNotes(false); setCardPlayer(playerToOpen); }}
+                      onOpenNotes={playerToOpen => { setFocusNotes(true); setCardPlayer(playerToOpen); }}
                       active={activeDragId === player.id}
                       tierSelectable={tierSelectable}
                       onSelectTier={() => canPlaceAvoid ? placeAvoidCutoff(index) : insertTierBoundary(index + 1)}
+                      canNominate={canNominate}
+                      onNominate={setNominationCandidate}
                     />
                   </div>
                 );
@@ -441,13 +488,41 @@ export default function PreseasonPlayerWorkspace({
         </DndContext>
       )}
 
-      {cardPlayer && <PlayerCard player={cardPlayer} onClose={() => setCardPlayer(null)} />}
+      {cardPlayer && (
+        <PlayerCard
+          key={cardPlayer.id}
+          player={cardPlayer}
+          note={playerNoteText(playerNotes, cardPlayer.id)}
+          onSaveNote={onSavePlayerNote ? text => onSavePlayerNote(cardPlayer.id, text) : undefined}
+          focusNotes={focusNotes}
+          canNominate={canNominate && cardPlayer.status === 'available'}
+          onNominate={() => setNominationCandidate(cardPlayer)}
+          onClose={() => { setCardPlayer(null); setFocusNotes(false); }}
+        />
+      )}
+      {nominationCandidate && (
+        <div className="ps-nomination-overlay" role="presentation" onMouseDown={event => event.target === event.currentTarget && !nominatingPlayerId && setNominationCandidate(null)}>
+          <section className="ps-nomination-confirm" role="dialog" aria-modal="true" aria-labelledby="ps-nomination-title">
+            <span className="ps-nomination-icon"><Target size={24} /></span>
+            <p>Your nomination</p>
+            <h2 id="ps-nomination-title">Nominate {nominationCandidate.name}?</h2>
+            <span>{nominationCandidate.position} · {nominationCandidate.nflTeam || 'FA'}</span>
+            {nominationError && <div className="ps-nomination-error" role="alert">{nominationError}</div>}
+            <div className="ps-nomination-actions">
+              <button type="button" onClick={() => setNominationCandidate(null)} disabled={Boolean(nominatingPlayerId)}>Cancel</button>
+              <button className="confirm" type="button" onClick={confirmNomination} disabled={Boolean(nominatingPlayerId)}>
+                <Target size={16} /> {nominatingPlayerId ? 'Nominating…' : 'Confirm nomination'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
       {showImport && (
         <OwnerRankImportModal
           players={players}
           personalRanks={personalRanks}
           onClose={() => setShowImport(false)}
-          onImport={onSavePersonalRanks}
+          onImport={onImportPreferences || ((ranks) => onSavePersonalRanks(ranks))}
         />
       )}
     </section>

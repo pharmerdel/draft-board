@@ -32,9 +32,8 @@ import {
 import PlayerCard from './PlayerCard';
 import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
-import NominationQueue from './NominationQueue';
-import NominationSearch from './NominationSearch';
 import TimerDisplay from './TimerDisplay';
+import PreseasonPlayerWorkspace from './PreseasonPlayerWorkspace';
 import './MobileView.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
@@ -118,6 +117,8 @@ export default function MobileView({
   selectedTeamId, nominatingTeamId,
   onNominate, watchlist, onToggleWatch,
   personalRanks, onSavePersonalRanks,
+  personalTiers, onSavePersonalTiers,
+  playerNotes, onSavePlayerNote,
   themeToggle, onTeamClear,
 }) {
   const [tab, setTab]               = useState('myteam');
@@ -163,6 +164,8 @@ export default function MobileView({
 
   // Clear sold notification immediately when a new player is nominated
   useEffect(() => {
+    // This notification mirrors an external draft event and must clear immediately.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (nominatedPlayer) setSoldNotif(null);
   }, [nominatedPlayer]);
 
@@ -271,7 +274,7 @@ export default function MobileView({
           <>
             <span className="mobile-block-your-turn">
               <Target size={16} strokeWidth={2.2} />
-              It's your turn - nominate a player below
+              It's your turn — open Players to nominate
             </span>
             {themeToggle && <span className="mobile-theme-slot">{themeToggle}</span>}
           </>
@@ -296,20 +299,7 @@ export default function MobileView({
         {/* MY TEAM */}
         {tab === 'myteam' && (
           <div className="mobile-myteam-tab">
-            {/* Nomination search — shown when it's this user's turn and nothing is on the block */}
-            {nominatingTeamId === selectedTeamId && !nominatedPlayer && (
-              <div className="mobile-nom-search-wrap">
-                <NominationSearch players={players} onNominate={onNominate} />
-              </div>
-            )}
-            <MyTeamPanel team={myTeam} players={players} watchlist={watchlist} onToggleWatch={onToggleWatch} selectedTeamId={selectedTeamId} nominatingTeamId={nominatingTeamId} currentNomination={currentNomination} onNominate={onNominate} showWatchlist={false} />
-            <div className="mobile-queue-section">
-              <NominationQueue
-                draft={draft}
-                teams={teams}
-                selectedTeamId={selectedTeamId}
-              />
-            </div>
+            <MyTeamPanel team={myTeam} />
           </div>
         )}
 
@@ -345,6 +335,29 @@ export default function MobileView({
 
         {/* PLAYERS */}
         {tab === 'players' && (
+          <div className="mobile-live-player-workspace">
+            <PreseasonPlayerWorkspace
+              players={players}
+              personalRanks={personalRanks}
+              personalTiers={personalTiers}
+              playerNotes={playerNotes}
+              watchlist={watchlist}
+              onSavePersonalRanks={onSavePersonalRanks}
+              onSavePersonalTiers={onSavePersonalTiers}
+              onSavePlayerNote={onSavePlayerNote}
+              onToggleWatch={onToggleWatch}
+              canNominate={nominatingTeamId === selectedTeamId && !currentNomination}
+              onNominate={onNominate}
+              saveState="idle"
+              savedAt={null}
+              saveError=""
+              onRetry={() => {}}
+              allowImport={false}
+            />
+          </div>
+        )}
+
+        {tab === '__legacy-players' && (
           <div className="mobile-players">
             <input
               className="mobile-search-input"

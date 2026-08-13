@@ -1,6 +1,7 @@
 import { parseCsvLine } from './csvParser.js';
 import { normalizePlayerName, normalizePosition, normalizeTeam } from './playerIdentity.js';
 import { sortPlayersByPreference } from './personalRankings.js';
+import { MAX_PLAYER_NOTE_LENGTH, normalizePlayerNote } from './playerNotes.js';
 
 const SUPPORTED_POSITIONS = new Set(['QB', 'RB', 'WR', 'TE']);
 const REQUIRED_HEADERS = ['RANK', 'PLAYER'];
@@ -44,6 +45,8 @@ export function analyzeOwnerRankCsv(csvText, players, personalRanks = {}) {
 
   const matched = [];
   const issues = [];
+  const notes = {};
+  const hasNotesColumn = columns.NOTES != null;
   const usedRanks = new Set();
   const usedPlayerIds = new Set();
 
@@ -56,6 +59,7 @@ export function analyzeOwnerRankCsv(csvText, players, personalRanks = {}) {
     const position = columns.POSITION == null ? '' : normalizePosition(values[columns.POSITION]);
     const team = columns.TEAM == null ? '' : normalizeTeam(values[columns.TEAM]);
     const rank = Number(rankText);
+    const rawNote = hasNotesColumn ? clean(values[columns.NOTES]) : '';
 
     if (!Number.isInteger(rank) || rank < 1) {
       issues.push({ row, playerName, reason: 'Rank must be a positive whole number.' });
@@ -71,6 +75,10 @@ export function analyzeOwnerRankCsv(csvText, players, personalRanks = {}) {
     }
     if (usedRanks.has(rank)) {
       issues.push({ row, playerName, reason: `Rank ${rank} is duplicated.` });
+      continue;
+    }
+    if (rawNote.length > MAX_PLAYER_NOTE_LENGTH) {
+      issues.push({ row, playerName, reason: `Notes must be ${MAX_PLAYER_NOTE_LENGTH} characters or fewer.` });
       continue;
     }
 
@@ -92,7 +100,9 @@ export function analyzeOwnerRankCsv(csvText, players, personalRanks = {}) {
 
     usedRanks.add(rank);
     usedPlayerIds.add(player.id);
-    matched.push({ row, rank, playerId: player.id, player });
+    const note = normalizePlayerNote(rawNote);
+    if (note) notes[player.id] = note;
+    matched.push({ row, rank, playerId: player.id, player, note });
   }
 
   matched.sort((left, right) => left.rank - right.rank || left.row - right.row);
@@ -111,22 +121,26 @@ export function analyzeOwnerRankCsv(csvText, players, personalRanks = {}) {
     ranks,
     appendedCount: remainingPlayers.length,
     totalRows: matched.length + issues.length,
+    hasNotesColumn,
+    notes,
+    notesCount: Object.keys(notes).length,
   };
 }
 
 export function generateOwnerRankTemplateCsv() {
-  return 'Rank,Player,Position,Team\n';
+  return 'Rank,Player,Position,Team,Notes\n';
 }
 
 export function generateOwnerPlayerCatalogCsv(players) {
   const rows = sortPlayersByPreference(players, {});
   return [
-    'Rank,Player,Position,Team',
+    'Rank,Player,Position,Team,Notes',
     ...rows.map(player => [
       player.overallRank || '',
       player.name,
       player.position,
       player.nflTeam || '',
+      '',
     ].map(csvValue).join(',')),
   ].join('\n');
 }

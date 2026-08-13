@@ -84,6 +84,19 @@
       }
     },
 
+    "playerNotes": {
+      "$teamId": {
+        ".read": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+        "$playerId": {
+          ".validate": "!newData.exists() || (root.child('players').child($playerId).exists() && newData.hasChildren(['text', 'updatedAt']))",
+          "text": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300" },
+          "updatedAt": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+
     "playerCatalog": {
       ".read": true,
       ".write": false

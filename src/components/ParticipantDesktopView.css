@@ -325,6 +325,15 @@
   padding: 0.75rem;
 }
 
+.pd-live-player-workspace .ps-workspace {
+  margin-top: 0;
+  box-shadow: none;
+}
+
+.pd-live-player-workspace .ps-player-list {
+  max-height: none;
+}
+
 /* ── All Teams ── */
 .pd-all-teams {
   display: flex;

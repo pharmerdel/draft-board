@@ -59,6 +59,28 @@ test('generates the blank template and safely quoted player catalog', () => {
   const catalog = generateOwnerPlayerCatalogCsv({
     one: { name: 'Doe, John', position: 'QB', nflTeam: 'BUF', overallRank: 1 },
   });
-  assert.equal(generateOwnerRankTemplateCsv(), 'Rank,Player,Position,Team\n');
-  assert.match(catalog, /1,"Doe, John",QB,BUF/);
+  assert.equal(generateOwnerRankTemplateCsv(), 'Rank,Player,Position,Team,Notes\n');
+  assert.match(catalog, /1,"Doe, John",QB,BUF,$/m);
+});
+
+test('imports optional notes without treating blank note cells as deletions', () => {
+  const result = analyzeOwnerRankCsv([
+    'Rank,Player,Position,Team,Notes',
+    '1,Josh Allen,QB,BUF,Elite rushing floor',
+    "2,Ja'Marr Chase,WR,CIN,",
+  ].join('\n'), players);
+
+  assert.equal(result.hasNotesColumn, true);
+  assert.equal(result.notesCount, 1);
+  assert.deepEqual(result.notes, { allen: 'Elite rushing floor' });
+  assert.equal(result.matched[1].note, '');
+});
+
+test('rejects an overlong note row before importing it', () => {
+  const result = analyzeOwnerRankCsv(
+    `Rank,Player,Notes\n1,Josh Allen,${'x'.repeat(301)}`,
+    players,
+  );
+  assert.equal(result.matched.length, 0);
+  assert.match(result.issues[0].reason, /300 characters or fewer/);
 });

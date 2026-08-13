@@ -165,6 +165,25 @@
   gap: 1rem;
 }
 
+.pc-nominate-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid #1D4ED8;
+  border-radius: 9px;
+  background: #1D4ED8;
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(29, 78, 216, 0.2);
+}
+.pc-nominate-button:hover { background: #1E3A8A; }
+body[data-theme='dark'] .pc-nominate-button { border-color: #3B82F6; background: #1F4E8C; }
+
 .pc-loading {
   text-align: center;
   color: #9CA3AF;
@@ -339,6 +358,58 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.1rem;
+}
+
+.pc-notes-section {
+  position: relative;
+}
+
+.pc-notes-section .pc-section-title,
+.pc-note-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pc-note-state {
+  color: #7C6F99;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.pc-note-state.saved { color: #047857; }
+
+.pc-notes-section textarea {
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+  border: 1px solid #C4B5FD;
+  border-radius: 8px;
+  outline: none;
+  background: #FAF8FF;
+  color: #172033;
+  font: inherit;
+  line-height: 1.45;
+  padding: 0.7rem 0.75rem 1.25rem;
+}
+
+.pc-notes-section textarea:focus {
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.pc-note-count {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0.4rem;
+  color: #8B7AA8;
+  font-size: 0.64rem;
+}
+
+body[data-theme='dark'] .pc-notes-section textarea {
+  border-color: #5B4A80;
+  background: #171426;
+  color: var(--dark-text);
 }
 
 /* Mobile adjustments */

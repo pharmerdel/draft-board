@@ -6,6 +6,7 @@ import SetupScreen from './screens/SetupScreen';
 import LobbyScreen from './screens/LobbyScreen';
 import DraftScreen from './screens/DraftScreen';
 import PreseasonScreen from './screens/PreseasonScreen';
+import DraftOwnerPreview from './screens/DraftOwnerPreview';
 import AccessGate from './components/AccessGate';
 import ThemeToggle from './components/ThemeToggle';
 import { hasLeagueAccess } from './utils/accessGateStorage';
@@ -15,6 +16,7 @@ import './App.css';
 export default function App() {
   const setupPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'setup';
   const preseasonOwnerPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'preseason-owner';
+  const draftOwnerPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'draft-owner';
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
@@ -142,6 +144,10 @@ export default function App() {
 
   if (preseasonOwnerPreview) {
     return <PreseasonScreen preview selectedTeamId="team_1" onTeamClear={() => {}} themeToggle={themeToggle} />;
+  }
+
+  if (draftOwnerPreview) {
+    return <DraftOwnerPreview themeToggle={themeToggle} />;
   }
 
   if (!draftStatus || draftStatus === 'setup') {
