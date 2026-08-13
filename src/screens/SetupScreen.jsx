@@ -5,12 +5,12 @@ import { DEFAULT_LEAGUE_NAME, DEFAULT_TEAMS } from '../config/leagueDefaults';
 import { parseBackupFile } from '../utils/backup';
 import { buildDraftPlayers, summarizeDraftPlayers } from '../utils/draftPlayers';
 import { buildPreseasonDraft } from '../utils/draftLifecycle';
+import LeagueBadge from '../components/LeagueBadge';
 import './SetupScreen.css';
 
 const POSITION_ORDER = ['QB', 'RB', 'WR', 'TE'];
 
 export default function SetupScreen() {
-  const [leagueName, setLeagueName] = useState(DEFAULT_LEAGUE_NAME);
   const [teams, setTeams] = useState(() => DEFAULT_TEAMS.map(team => ({ ...team })));
   const [catalogPlayers, setCatalogPlayers] = useState(null);
   const [catalogMetadata, setCatalogMetadata] = useState(null);
@@ -72,7 +72,6 @@ export default function SetupScreen() {
 
   function validate() {
     const validationErrors = [];
-    if (!leagueName.trim()) validationErrors.push('League name is required.');
     if (!catalogPlayers || catalogSummary.count === 0) {
       validationErrors.push('The shared player catalog must be loaded before launching the draft.');
     }
@@ -124,7 +123,7 @@ export default function SetupScreen() {
       await update(ref(db), {
         players: playersData,
         teams: teamsData,
-        draft: buildPreseasonDraft({ leagueName, catalogMetadata: latestCatalogMetadata }),
+        draft: buildPreseasonDraft({ leagueName: DEFAULT_LEAGUE_NAME, catalogMetadata: latestCatalogMetadata }),
         log: null,
       });
     } catch (error) {
@@ -138,7 +137,7 @@ export default function SetupScreen() {
   return (
     <div className="setup-screen">
       <div className="setup-header">
-        <h1>🏈 FF Auction Draft Board</h1>
+        <LeagueBadge className="setup-league-badge" size="feature" />
         <p className="setup-subtitle">Commissioner Setup</p>
       </div>
 
@@ -147,18 +146,6 @@ export default function SetupScreen() {
           {errors.map((error, index) => <p key={index}>⚠️ {error}</p>)}
         </div>
       )}
-
-      <div className="setup-section">
-        <label className="setup-label" htmlFor="league-name">League Name</label>
-        <input
-          id="league-name"
-          className="setup-input"
-          type="text"
-          placeholder="e.g. The League"
-          value={leagueName}
-          onChange={event => setLeagueName(event.target.value)}
-        />
-      </div>
 
       <div className="setup-section">
         <span className="setup-label">Shared Player Catalog</span>

@@ -15,10 +15,8 @@
   gap: 0.5rem;
 }
 
-.summary-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #1B3A6B;
+.summary-league-badge {
+  margin-bottom: 0.15rem;
 }
 
 .summary-meta {

@@ -29,6 +29,10 @@
   font-size: clamp(1.7rem, 4vw, 2.45rem);
 }
 
+.preseason-league-badge {
+  margin-top: 0.35rem;
+}
+
 .preseason-header p:last-child {
   margin-top: 0.3rem;
   color: #64748B;

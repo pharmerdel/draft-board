@@ -3,6 +3,7 @@ import { ref, set, remove } from 'firebase/database';
 import { db } from '../firebase';
 import { generateDraftCsv, downloadCsv } from '../utils/exportCsv';
 import { exportDraftExcel } from '../utils/exportExcel';
+import LeagueBadge from '../components/LeagueBadge';
 import './DraftSummaryScreen.css';
 
 const NEWS_WORKER = 'https://draft-board-news.zachdelaney2012.workers.dev';
@@ -96,7 +97,7 @@ export default function DraftSummaryScreen({ draft, teams, players, log, isCommi
 
       {/* Header */}
       <div className="summary-header">
-        <h1 className="summary-title">{draft?.leagueName}</h1>
+        <LeagueBadge className="summary-league-badge" size="feature" />
         <p className="summary-meta">
           {draftDate && `${draftDate} · `}{totalPicks} picks
         </p>
@@ -157,7 +158,7 @@ export default function DraftSummaryScreen({ draft, teams, players, log, isCommi
 
       {/* Team grid */}
       <div className="summary-grid">
-        {nominationOrderIds.map((teamId, idx) => {
+        {nominationOrderIds.map(teamId => {
           const team = teams[teamId];
           if (!team) return null;
           const rosterEntries = Object.entries(team.roster || {});

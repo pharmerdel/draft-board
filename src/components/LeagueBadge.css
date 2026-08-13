@@ -1,0 +1,21 @@
+.league-badge {
+  display: block;
+  width: var(--league-badge-size);
+  height: var(--league-badge-size);
+  max-width: 100%;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.league-badge--compact { --league-badge-size: 38px; }
+.league-badge--topbar { --league-badge-size: 44px; }
+.league-badge--header  { --league-badge-size: 78px; }
+.league-badge--hero    { --league-badge-size: 96px; }
+.league-badge--lobby   { --league-badge-size: 148px; }
+.league-badge--feature { --league-badge-size: 112px; }
+
+@media (max-width: 640px) {
+  .league-badge--hero { --league-badge-size: 82px; }
+  .league-badge--lobby { --league-badge-size: 122px; }
+  .league-badge--feature { --league-badge-size: 96px; }
+}

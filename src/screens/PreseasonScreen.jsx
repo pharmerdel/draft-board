@@ -3,6 +3,7 @@ import { onValue, ref, serverTimestamp, set, update } from 'firebase/database';
 import { ArrowRight, ClipboardList, LogOut, ShieldCheck, Star, UsersRound } from 'lucide-react';
 
 import PreseasonPlayerWorkspace from '../components/PreseasonPlayerWorkspace';
+import LeagueBadge from '../components/LeagueBadge';
 import TeamAccessManager from '../components/TeamAccessManager';
 import { db } from '../firebase';
 import { buildDraftDayLobbyUpdates, sortTeamsForDisplay } from '../utils/draftLifecycle';
@@ -11,7 +12,6 @@ import { applyPlayerNoteUpdate, normalizePlayerNote } from '../utils/playerNotes
 import './PreseasonScreen.css';
 
 export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeToggle, preview = false }) {
-  const [draft, setDraft] = useState({});
   const [teams, setTeams] = useState({});
   const [players, setPlayers] = useState({});
   const [teamAccess, setTeamAccess] = useState({});
@@ -34,7 +34,6 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
 
   useEffect(() => {
     const unsubscribers = [
-      onValue(ref(db, 'draft'), snapshot => setDraft(snapshot.val() || {})),
       onValue(ref(db, 'teams'), snapshot => setTeams(snapshot.val() || {})),
       onValue(ref(db, 'players'), snapshot => setPlayers(snapshot.val() || {})),
       onValue(ref(db, 'teamAccess'), snapshot => setTeamAccess(snapshot.val() || {})),
@@ -189,7 +188,7 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
       <header className="preseason-header">
         <div>
           <p className="preseason-kicker">Preseason Workspace</p>
-          <h1>{draft.leagueName || 'Rx Degenerates'}</h1>
+          <LeagueBadge className="preseason-league-badge" size="header" />
           <p>{isCommissioner ? 'Commissioner administration' : `${team?.name || 'Team'} · ${team?.ownerName || 'Owner'}`}</p>
         </div>
         <div className="preseason-header-actions">

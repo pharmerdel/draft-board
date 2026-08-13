@@ -6,12 +6,20 @@
 
 .lobby-hero {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #E2E6EE;
+  text-align: center;
+}
+
+.lobby-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .lobby-kicker {
@@ -29,6 +37,10 @@
   font-weight: 850;
   color: #111827;
   line-height: 1.05;
+}
+
+.lobby-league-badge {
+  margin-top: 0.4rem;
 }
 
 .lobby-subtitle {
@@ -63,6 +75,7 @@
 .lobby-session-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.55rem;
 }
 
@@ -925,14 +938,14 @@
   }
 
   .lobby-hero {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
     gap: 0.85rem;
   }
 
   .lobby-session-actions {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .team-select-btn {

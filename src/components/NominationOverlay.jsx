@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Check, MousePointer2, X } from 'lucide-react';
+import LeagueBadge from './LeagueBadge';
 import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
 import './NominationOverlay.css';
 
@@ -19,7 +20,7 @@ export default function NominationOverlay({
   nominatedPlayer, currentNomination,
   teams, draft,
   onSell, onCancelNomination,
-  soldData, onSoldDone,
+  soldData, onSoldDone, holdSoldStamp = false,
 }) {
   const [winTeamId, setWinTeamId] = useState('');
   const [price, setPrice]         = useState('');
@@ -45,6 +46,8 @@ export default function NominationOverlay({
 
     setSoldPhase(1);
 
+    if (holdSoldStamp) return undefined;
+
     // Phase 1 → Phase 2 after 1.5s
     const t1 = setTimeout(() => {
       setSoldPhase(2);
@@ -63,7 +66,7 @@ export default function NominationOverlay({
     }, 1500);
 
     return () => clearTimeout(t1);
-  }, [soldData]);
+  }, [holdSoldStamp, soldData]);
 
   async function handleSell() {
     if (!winTeamId || priceNum < 1 || selling) return;
@@ -250,7 +253,12 @@ export default function NominationOverlay({
       }
 
       {/* ── SOLD stamp — phase 1 overlay ── */}
-      {soldPhase === 1 && <div className="no-sold-stamp">SOLD</div>}
+      {soldPhase === 1 && (
+        <>
+          <LeagueBadge className="no-sold-badge-watermark" size="feature" />
+          <div className="no-sold-stamp">SOLD</div>
+        </>
+      )}
 
     </div>
   );

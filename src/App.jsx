@@ -14,9 +14,15 @@ import { signOutTeam } from './utils/teamAuth';
 import './App.css';
 
 export default function App() {
-  const setupPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'setup';
-  const preseasonOwnerPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'preseason-owner';
-  const draftOwnerPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('view') === 'draft-owner';
+  const previewView = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('view') : null;
+  const setupPreview = previewView === 'setup';
+  const preseasonOwnerPreview = ['preseason', 'preseason-owner'].includes(previewView);
+  const preseasonSelectionPreview = previewView === 'preseason-selection';
+  const draftLobbyPreview = previewView === 'draft-lobby';
+  const waitingRoomPreview = previewView === 'waiting-room';
+  const draftCommissionerPreview = previewView === 'draft-commish';
+  const soldStampPreview = previewView === 'sold-stamp';
+  const draftOwnerPreview = previewView === 'draft-owner';
   const [draftStatus, setDraftStatus]     = useState(null);
   const [loading, setLoading]             = useState(true);
   const [firebaseError, setFirebaseError] = useState(false);
@@ -144,6 +150,41 @@ export default function App() {
 
   if (preseasonOwnerPreview) {
     return <PreseasonScreen preview selectedTeamId="team_1" onTeamClear={() => {}} themeToggle={themeToggle} />;
+  }
+
+  if (preseasonSelectionPreview) {
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <LobbyScreen preview phase="preseason" selectedTeamId={null} onTeamSelect={() => {}} onTeamClear={() => {}} />
+      </>
+    );
+  }
+
+  if (draftLobbyPreview) {
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <LobbyScreen preview selectedTeamId={null} onTeamSelect={() => {}} onTeamClear={() => {}} />
+      </>
+    );
+  }
+
+  if (waitingRoomPreview) {
+    return (
+      <>
+        <ThemeToggle theme={theme} onToggle={toggleTheme} className="corner" />
+        <LobbyScreen preview selectedTeamId="commissioner" onTeamSelect={() => {}} onTeamClear={() => {}} />
+      </>
+    );
+  }
+
+  if (draftCommissionerPreview) {
+    return <DraftScreen preview selectedTeamId="commissioner" onTeamClear={() => {}} themeToggle={themeToggle} />;
+  }
+
+  if (soldStampPreview) {
+    return <DraftScreen preview soldStampPreview selectedTeamId="commissioner" onTeamClear={() => {}} themeToggle={themeToggle} />;
   }
 
   if (draftOwnerPreview) {

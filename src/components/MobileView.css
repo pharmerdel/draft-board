@@ -10,6 +10,13 @@
   overscroll-behavior: none;
 }
 
+.mobile-league-badge {
+  position: fixed;
+  top: 0.45rem;
+  left: 0.55rem;
+  z-index: 45;
+}
+
 .mobile-switch-team {
   position: fixed;
   top: 0.55rem;
@@ -34,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 3.4rem;
   border-bottom: 1px solid #D5DDE9;
   min-height: 60px;
   background: #FFFFFF;

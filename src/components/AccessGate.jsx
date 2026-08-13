@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LockKeyhole } from 'lucide-react';
 import { grantLeagueAccess } from '../utils/accessGateStorage';
+import LeagueBadge from './LeagueBadge';
 import './AccessGate.css';
 
 const DEFAULT_DEV_PASSWORD = 'draftday';
@@ -55,6 +56,7 @@ export default function AccessGate({ onUnlock }) {
   return (
     <main className="access-gate">
       <form className="access-card" onSubmit={handleSubmit}>
+        <LeagueBadge className="access-league-badge" size="feature" />
         <span className="access-icon">
           <LockKeyhole size={24} strokeWidth={2.2} />
         </span>

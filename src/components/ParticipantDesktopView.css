@@ -39,11 +39,8 @@
   background: #F8FAFC;
 }
 
-.pd-league-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  flex: 1;
+.pd-league-badge {
+  margin-right: auto;
 }
 
 .pd-my-stats {

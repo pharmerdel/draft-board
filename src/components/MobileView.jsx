@@ -30,6 +30,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import PlayerCard from './PlayerCard';
+import LeagueBadge from './LeagueBadge';
 import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
 import TimerDisplay from './TimerDisplay';
@@ -220,6 +221,7 @@ export default function MobileView({
 
   return (
     <div className="mobile-view">
+      <LeagueBadge className="mobile-league-badge" size="compact" />
       <button className="mobile-switch-team" type="button" onClick={onTeamClear} aria-label="Sign out and switch team">
         <LogOut size={15} />
       </button>

@@ -18,6 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { ArrowRight, ClipboardList, GripVertical, History, Hourglass, Info, LogOut, Shield, Star, UserRound } from 'lucide-react';
 import PlayerCard from './PlayerCard';
+import LeagueBadge from './LeagueBadge';
 import MyTeamPanel from './MyTeamPanel';
 import TeamDetailModal from './TeamDetailModal';
 import NominationQueue from './NominationQueue';
@@ -226,7 +227,7 @@ export default function ParticipantDesktopView({
 
       {/* ── Top bar ── */}
       <div className="pd-topbar">
-        <span className="pd-league-name">{draft?.leagueName}</span>
+        <LeagueBadge className="pd-league-badge" size="topbar" />
         {myTeam && (
           <div className="pd-my-stats">
             <span className="pd-my-team-name">{myTeam.name}</span>

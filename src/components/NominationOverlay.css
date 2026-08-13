@@ -10,6 +10,19 @@
 }
 
 /* ── SOLD stamp (phase 1) ── */
+.no-sold-badge-watermark {
+  --league-badge-size: clamp(240px, 32vw, 440px);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 9;
+  opacity: 0.78;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 16px 28px rgba(17, 24, 39, 0.25));
+  pointer-events: none;
+  animation: no-badge-in 0.22s ease-out;
+}
+
 .no-sold-stamp {
   position: absolute;
   inset: 0;
@@ -28,6 +41,11 @@
   text-shadow: 4px 4px 0 rgba(0,0,0,0.15);
   animation: no-stamp-in 0.15s cubic-bezier(0.2, 0, 0.2, 1.5);
   user-select: none;
+}
+
+@keyframes no-badge-in {
+  from { transform: translate(-50%, -50%) scale(0.82); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 0.78; }
 }
 
 @keyframes no-stamp-in {

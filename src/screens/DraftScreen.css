@@ -23,11 +23,8 @@
   box-sizing: border-box;
 }
 
-.draft-league-name {
-  font-weight: 700;
-  font-size: 1rem;
-  color: #FFFFFF;
-  flex: 1;
+.draft-league-badge {
+  margin-right: auto;
 }
 
 .draft-status-badge {

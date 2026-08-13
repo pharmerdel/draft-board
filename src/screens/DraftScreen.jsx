@@ -13,12 +13,13 @@ import { generateDraftCsv, downloadCsv } from '../utils/exportCsv';
 import { saveBackup, downloadBackup } from '../utils/backup';
 import { checkFantasyProsNewsHealth } from '../utils/fantasyProsNews';
 import DraftClock from '../components/DraftClock';
+import LeagueBadge from '../components/LeagueBadge';
 import NominationTimer from '../components/NominationTimer';
 import DraftSummaryScreen from './DraftSummaryScreen';
 import './DraftScreen.css';
 import { normalizePlayerNote } from '../utils/playerNotes';
 
-export default function DraftScreen({ complete, selectedTeamId, onTeamClear, themeToggle }) {
+export default function DraftScreen({ complete, preview = false, soldStampPreview = false, selectedTeamId, onTeamClear, themeToggle }) {
   const [draft, setDraft]         = useState(null);
   const [teams, setTeams]         = useState({});
   const [players, setPlayers]     = useState({});
@@ -172,6 +173,11 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
   const nominatingTeamId = draft.nominatingTeamId || computedNominatingTeamId;
   const currentNomination = draft.currentNomination;
   const nominatedPlayer = currentNomination ? players[currentNomination.playerId] : null;
+  const [previewPlayerId, previewPlayer] = Object.entries(players)[0] || [];
+  const previewTeam = Object.values(teams)[0];
+  const displayedSoldData = soldStampPreview && previewPlayer && previewTeam
+    ? { player: previewPlayer, team: previewTeam, price: 42, playerId: previewPlayerId }
+    : soldData;
 
   // ── Actions ──────────────────────────────────────────────────────────────
 
@@ -432,9 +438,9 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
 
       {/* ── Commissioner big board ── */}
       {activeView === 'commissioner' && (
-        <div className="draft-screen">
+        <div className="draft-screen" inert={preview}>
           <div className="draft-topbar">
-            <span className="draft-league-name">{draft.leagueName}</span>
+            <LeagueBadge className="draft-league-badge" size="topbar" />
             <span className={`draft-status-badge ${complete ? 'complete' : 'live'}`}>
               <span className="draft-status-dot" />
               {complete ? 'Complete' : 'Live'}
@@ -521,7 +527,7 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
           </div>
 
           {/* Nomination overlay — stays mounted during sold animation */}
-          {((nominatedPlayer && currentNomination) || soldData) && (
+          {((nominatedPlayer && currentNomination) || displayedSoldData) && (
             <NominationOverlay
               nominatedPlayer={nominatedPlayer}
               currentNomination={currentNomination}
@@ -529,7 +535,8 @@ export default function DraftScreen({ complete, selectedTeamId, onTeamClear, the
               draft={draft}
               onSell={sellPlayer}
               onCancelNomination={cancelNomination}
-              soldData={soldData}
+              soldData={displayedSoldData}
+              holdSoldStamp={soldStampPreview}
               onSoldDone={() => setSoldData(null)}
             />
           )}

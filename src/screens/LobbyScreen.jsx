@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { db } from '../firebase';
 import CommissionerAccessModal from '../components/CommissionerAccessModal';
+import LeagueBadge from '../components/LeagueBadge';
 import TeamAccessModal from '../components/TeamAccessModal';
 import TeamAccessManager from '../components/TeamAccessManager';
 import { hasOfficialNominationOrder, sortTeamsForDisplay } from '../utils/draftLifecycle';
@@ -18,7 +19,7 @@ import './LobbyScreen.css';
 
 const TEAM_COUNT = 12;
 
-export default function LobbyScreen({ phase = 'lobby', rejoin = false, selectedTeamId, onTeamSelect, onTeamClear }) {
+export default function LobbyScreen({ phase = 'lobby', rejoin = false, preview = false, selectedTeamId, onTeamSelect, onTeamClear }) {
   const [teams, setTeams] = useState({});
   const [draft, setDraft] = useState({});
   const [teamAccess, setTeamAccess] = useState({});
@@ -93,7 +94,7 @@ export default function LobbyScreen({ phase = 'lobby', rejoin = false, selectedT
     const accessState = authTeamId ? (teamAccess[authTeamId]?.state || 'unclaimed') : 'unclaimed';
 
     return (
-      <div className="lobby-screen">
+      <div className="lobby-screen" inert={preview}>
         {authTeamId && (
           <TeamAccessModal
             teamId={authTeamId}
@@ -111,9 +112,9 @@ export default function LobbyScreen({ phase = 'lobby', rejoin = false, selectedT
           />
         )}
         <div className="lobby-hero">
-          <div>
+          <div className="lobby-hero-copy">
             <p className="lobby-kicker">{isPreseasonEntry ? 'Preseason Workspace' : 'Draft Room'}</p>
-            <h1>{draft.leagueName || 'FF Auction Draft'}</h1>
+            <LeagueBadge className="lobby-league-badge" size="lobby" />
             <p className="lobby-subtitle">
               {rejoin
                 ? 'Choose your team to rejoin the live draft.'
@@ -199,7 +200,7 @@ export default function LobbyScreen({ phase = 'lobby', rejoin = false, selectedT
   const myTeam = teams[selectedTeamId];
 
   return (
-    <div className="lobby-screen waiting-room">
+    <div className="lobby-screen waiting-room" inert={preview}>
       {confirmingStart && (
         <div className="confirm-overlay">
           <div className="confirm-modal">
@@ -218,9 +219,9 @@ export default function LobbyScreen({ phase = 'lobby', rejoin = false, selectedT
       )}
 
       <div className="lobby-hero">
-        <div>
+        <div className="lobby-hero-copy">
           <p className="lobby-kicker">Waiting Room</p>
-          <h1>{draft.leagueName || 'FF Auction Draft'}</h1>
+          <LeagueBadge className="lobby-league-badge" size="lobby" />
           <p className="lobby-subtitle">
             Joined as <strong>{myTeam?.name || selectedTeamId}</strong>
           </p>
