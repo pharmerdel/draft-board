@@ -49,6 +49,25 @@ Use a league-configured FantasyPros CSV. The importer keeps only QB, RB, WR, and
 
 8. Download `/playerCatalog` again and rerun step 4 against that result. A successful repeat comparison should report every incoming player unchanged.
 
+9. If a preseason workspace already exists, export the full database again and prepare
+   the guarded live-player sync:
+
+   ```sh
+   npm run catalog:prepare-preseason-sync -- --database backups/post-player-catalog-refresh.json
+   ```
+
+   The command refuses to produce an update unless the draft status is `preseason` and
+   every current player is still available and unsold. Review the summary, then apply:
+
+   ```sh
+   npx --yes firebase-tools@13 database:update / reports/player-catalog/preseason-player-sync.json --project ff-draft-board --force --disable-triggers
+   ```
+
+   This replaces only the shared live `players` snapshot and the draft's catalog-version
+   markers. It does not write owner ranks, tiers, notes, or watchlists. Owners with no
+   personal rank entry inherit the refreshed shared rank; existing personal rank entries
+   remain authoritative for customized players.
+
 ## Refresh Behavior
 
 - Matched players retain their Sleeper player ID as the Firebase key.
@@ -68,3 +87,21 @@ Use a league-configured FantasyPros CSV. The importer keeps only QB, RB, WR, and
 - Ambiguous matches: 0
 - Pre-import production backup: `backups/pre-player-catalog-2026-08-12-1554Z.json`
 - Backup SHA-256: `bd71065ea020ee10a1f3d07a0151849afd697546d9a57015978b7d368b416af2`
+
+## Final Pre-Invite Refresh
+
+- Imported: 2026-08-18
+- Source: `FantasyPros_2026_Draft_ALL_Rankings-6.csv`
+- Source SHA-256: `72f075c93eb4de08c52fc5b80a2b115ea522b90d1f74e7a330de0df39bd8cbab`
+- Active players: 789
+- Sleeper matches: 788
+- Deterministic fallback IDs: 1 (`Tommy Myers`)
+- Ambiguous matches: 0
+- Additions: 114
+- Updated records: 645
+- Deactivated records: 101
+- Pre-import production backup: `backups/pre-player-catalog-refresh-2026-08-18-1426Z.json`
+- Backup SHA-256: `52ccc0d47fcd72ff72b0f8f9fcda4366bb323637e9b45dd582c73f327f775e4c`
+- Existing preseason `players` snapshot synced after the catalog refresh: 789 available, 0 sold
+- One-time pre-invite owner-preparation reset completed after verification; ranks, tiers,
+  notes, and watchlists were cleared while team access and PIN/auth records were preserved
