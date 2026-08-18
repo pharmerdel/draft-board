@@ -1,20 +1,13 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Check, MousePointer2, X } from 'lucide-react';
 import LeagueBadge from './LeagueBadge';
-import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
+import { PlayerStatsBody } from './PlayerStats';
+import { usePlayerStats } from '../hooks/usePlayerStats';
+import { SLOT_LIMITS, SLOT_ORDER, isRosterFull, maxBid, maxBidDisplay } from '../utils/rosterRules';
 import './NominationOverlay.css';
 
-const TOTAL_DRAFT_SLOTS = 13;
-const SLOT_ORDER  = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
-const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
 const STARTER_SLOTS = ['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'FLEX'];
 const BENCH_SLOTS = ['BN', 'BN', 'BN', 'BN', 'BN'];
-
-function maxBid(team) {
-  const filled = Object.values(team.roster || {}).length;
-  const empty  = Math.max(0, TOTAL_DRAFT_SLOTS - filled);
-  return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
-}
 
 export default function NominationOverlay({
   nominatedPlayer, currentNomination,
@@ -39,14 +32,19 @@ export default function NominationOverlay({
   const winningTeamMax  = winningTeam ? maxBid(winningTeam) : null;
   const exceedsMax    = winningTeam && priceNum > 0 && priceNum > winningTeamMax;
   const exceedsBudget = winningTeam && priceNum > 0 && priceNum > (winningTeam.budgetRemaining ?? 200);
+  const isPaused      = draft?.status === 'paused';
 
   // Kick off sold animation sequence when soldData arrives
   useEffect(() => {
-    if (!soldData) { setSoldPhase(0); setProgress(0); return; }
+    if (!soldData) return undefined;
 
-    setSoldPhase(1);
+    let progressTimer;
+    const kickoffTimer = setTimeout(() => {
+      setSoldPhase(1);
+      setProgress(0);
+    }, 0);
 
-    if (holdSoldStamp) return undefined;
+    if (holdSoldStamp) return () => clearTimeout(kickoffTimer);
 
     // Phase 1 → Phase 2 after 1.5s
     const t1 = setTimeout(() => {
@@ -55,21 +53,26 @@ export default function NominationOverlay({
       const duration = 6500;
       const tick = 50;
       let elapsed = 0;
-      const bar = setInterval(() => {
+      progressTimer = setInterval(() => {
         elapsed += tick;
         setProgress(Math.min(elapsed / duration, 1));
         if (elapsed >= duration) {
-          clearInterval(bar);
+          clearInterval(progressTimer);
           onSoldDone();
         }
       }, tick);
     }, 1500);
 
-    return () => clearTimeout(t1);
-  }, [holdSoldStamp, soldData]);
+    return () => {
+      clearTimeout(kickoffTimer);
+      clearTimeout(t1);
+      clearInterval(progressTimer);
+    };
+  }, [holdSoldStamp, onSoldDone, soldData]);
 
   async function handleSell() {
     if (!winTeamId || priceNum < 1 || selling) return;
+    if (isRosterFull(winningTeam)) return;
     if (exceedsBudget) {
       if (!window.confirm(`$${priceNum} exceeds ${winningTeam.name}'s remaining budget of $${winningTeam.budgetRemaining}. Record anyway?`)) return;
     } else if (exceedsMax) {
@@ -155,19 +158,20 @@ export default function NominationOverlay({
                     value={price}
                     onChange={e => setPrice(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSell()}
+                    disabled={isPaused}
                     autoFocus
                   />
                 </div>
                 <button
                   className="no-sold-btn"
                   onClick={handleSell}
-                  disabled={!winTeamId || priceNum < 1 || selling}
+                  disabled={isPaused || !winTeamId || priceNum < 1 || selling}
                 >
                   {selling ? 'Saving...' : <><Check size={18} strokeWidth={2.5} /> Sold</>}
                 </button>
               </div>
             </div>
-            <button className="no-cancel-btn" onClick={onCancelNomination}>
+            <button className="no-cancel-btn" onClick={onCancelNomination} disabled={isPaused}>
               <X size={15} strokeWidth={2.2} />
               Cancel Nomination
             </button>
@@ -183,8 +187,7 @@ export default function NominationOverlay({
             {nominationOrderIds.map((teamId, idx) => {
               const team = teams[teamId];
               if (!team) return null;
-              const max = maxBid(team);
-              const isFull = Object.values(team.roster || {}).length >= TOTAL_DRAFT_SLOTS;
+              const isFull = isRosterFull(team);
               const canAfford = priceNum === 0 || team.budgetRemaining >= priceNum;
               const isWinner = teamId === winTeamId;
               const isNominating = teamId === currentNomination?.nominatingTeamId;
@@ -220,7 +223,7 @@ export default function NominationOverlay({
                     ${isWinner ? 'winner' : ''}
                     ${isNominating && !isWinner ? 'nominating' : ''}
                   `}
-                  onClick={() => !soldData && !isFull && setWinTeamId(isWinner ? '' : teamId)}
+                  onClick={() => !isPaused && !soldData && !isFull && setWinTeamId(isWinner ? '' : teamId)}
                   title={isFull ? 'Roster full' : undefined}
                 >
                   <div className="no-team-header">
@@ -237,7 +240,7 @@ export default function NominationOverlay({
                       <span className="no-stat-label">Budget</span>
                     </div>
                     <div className="no-stat">
-                      <span className="no-stat-val max">${max}</span>
+                      <span className="no-stat-val max">{maxBidDisplay(team)}</span>
                       <span className="no-stat-label">Max</span>
                     </div>
                   </div>
@@ -304,7 +307,7 @@ function WinnerPanel({ team, newPlayerId, progress }) {
             <span className="no-winner-stat-label">Spent</span>
           </div>
           <div className="no-winner-stat">
-            <span className="no-winner-stat-val amber">${maxBid(team)}</span>
+            <span className="no-winner-stat-val amber">{maxBidDisplay(team)}</span>
             <span className="no-winner-stat-label">Max</span>
           </div>
         </div>

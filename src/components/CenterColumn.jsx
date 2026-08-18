@@ -47,6 +47,7 @@ export default function CenterColumn({
   const [adding, setAdding]           = useState(false);
 
   const nominatingTeam = teams[nominatingTeamId];
+  const isPaused = draft?.status === 'paused';
 
   // Build searchable player list
   const playerList = useMemo(() => {
@@ -106,7 +107,7 @@ export default function CenterColumn({
             <span className="center-work-kicker">Current Auction</span>
             <h2>On the Block</h2>
           </div>
-          <button className="cancel-nom-btn" onClick={onCancelNomination}>
+          <button className="cancel-nom-btn" onClick={onCancelNomination} disabled={isPaused}>
             <X size={14} strokeWidth={2.2} />
             Cancel
           </button>
@@ -144,6 +145,7 @@ export default function CenterColumn({
               className="sell-select"
               value={winTeamId}
               onChange={e => setWinTeamId(e.target.value)}
+              disabled={isPaused}
             >
               <option value="">Select winning team…</option>
               {Object.entries(teams)
@@ -162,13 +164,14 @@ export default function CenterColumn({
                 placeholder="0"
                 value={price}
                 onChange={e => setPrice(e.target.value)}
+                disabled={isPaused}
               />
             </div>
 
             <button
               className="sold-btn"
               onClick={handleSell}
-              disabled={!winTeamId || !price || selling}
+              disabled={isPaused || !winTeamId || !price || selling}
             >
               {selling ? 'Saving...' : <><Check size={17} strokeWidth={2.4} /> Sold</>}
             </button>
@@ -239,7 +242,7 @@ export default function CenterColumn({
           <div
             key={player.id}
             className={`search-result-row ${player.status === 'sold' ? 'sold' : ''}`}
-            onClick={() => player.status === 'available' && onNominate(player.id)}
+            onClick={() => !isPaused && player.status === 'available' && onNominate(player.id)}
           >
             <span className="result-rank">{player.overallRank}</span>
             <span className={`result-pos pos-${player.position}`}>
@@ -275,6 +278,7 @@ export default function CenterColumn({
               <button
                 className="nominate-btn"
                 onClick={e => { e.stopPropagation(); onNominate(player.id); }}
+                disabled={isPaused}
                 aria-label={`Nominate ${player.name}`}
               >
                 <Plus size={18} strokeWidth={2.4} />
@@ -291,7 +295,7 @@ export default function CenterColumn({
 
       {/* ── Add Player ── */}
       {!showAddForm ? (
-        <button className="add-player-btn" onClick={() => setShowAddForm(true)}>
+        <button className="add-player-btn" onClick={() => setShowAddForm(true)} disabled={isPaused}>
           <Plus size={15} strokeWidth={2.2} />
           Add Player
         </button>
@@ -304,12 +308,14 @@ export default function CenterColumn({
             value={addName}
             onChange={e => setAddName(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
+            disabled={isPaused}
             autoFocus
           />
           <select
             className="add-player-select"
             value={addPos}
             onChange={e => setAddPos(e.target.value)}
+            disabled={isPaused}
           >
             {ADD_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
@@ -321,12 +327,13 @@ export default function CenterColumn({
             onChange={e => setAddTeam(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             maxLength={4}
+            disabled={isPaused}
           />
           <div className="add-player-actions">
             <button
               className="add-player-submit"
               onClick={handleAdd}
-              disabled={!addName.trim() || adding}
+              disabled={isPaused || !addName.trim() || adding}
             >
               {adding ? 'Adding…' : 'Add'}
             </button>

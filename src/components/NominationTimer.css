@@ -34,6 +34,17 @@
   color: #FEF3C7;
 }
 
+.nom-timer button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.nom-timer button:disabled:hover {
+  background: transparent;
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+}
+
 .nom-timer-active {
   display: flex;
   align-items: center;

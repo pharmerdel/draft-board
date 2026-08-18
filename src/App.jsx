@@ -21,6 +21,7 @@ export default function App() {
   const draftLobbyPreview = previewView === 'draft-lobby';
   const waitingRoomPreview = previewView === 'waiting-room';
   const draftCommissionerPreview = previewView === 'draft-commish';
+  const draftSummaryPreview = previewView === 'draft-summary';
   const soldStampPreview = previewView === 'sold-stamp';
   const draftOwnerPreview = previewView === 'draft-owner';
   const [draftStatus, setDraftStatus]     = useState(null);
@@ -181,6 +182,10 @@ export default function App() {
 
   if (draftCommissionerPreview) {
     return <DraftScreen preview selectedTeamId="commissioner" onTeamClear={() => {}} themeToggle={themeToggle} />;
+  }
+
+  if (draftSummaryPreview) {
+    return <DraftScreen complete preview selectedTeamId="commissioner" onTeamClear={() => {}} themeToggle={themeToggle} />;
   }
 
   if (soldStampPreview) {

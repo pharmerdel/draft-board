@@ -1,23 +1,6 @@
 // Shared stat display used by PlayerCard (modal) and NominationOverlay (inline)
-import { useState, useEffect } from 'react';
-import { getPlayerData, fmt, fmtPts } from '../utils/sleeperStats';
+import { fmt, fmtPts } from '../utils/sleeperStats';
 import './PlayerCard.css'; // reuses pc- classes
-
-export function usePlayerStats(sleeperPlayerId) {
-  const [stats, setStats] = useState(undefined);
-  const [proj,  setProj]  = useState(undefined);
-
-  useEffect(() => {
-    if (!sleeperPlayerId) { setStats(null); setProj(null); return; }
-    let cancelled = false;
-    getPlayerData(sleeperPlayerId).then(({ stats, proj }) => {
-      if (!cancelled) { setStats(stats); setProj(proj); }
-    });
-    return () => { cancelled = true; };
-  }, [sleeperPlayerId]);
-
-  return { stats, proj, loading: stats === undefined };
-}
 
 export function PlayerStatsBody({ stats, proj, pos }) {
   return (

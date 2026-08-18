@@ -5,8 +5,8 @@ import './RightColumn.css';
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
 export default function RightColumn({
-  players, teams, log, onUndo, selectedTeamId,
-  syncConnected, newsHealth,
+  players, teams, log, onUndo,
+  syncConnected, newsHealth, actionsDisabled = false,
 }) {
   const [tab, setTab]           = useState('log');
   // Note: no My Team tab — commissioner doesn't have a team
@@ -66,7 +66,7 @@ export default function RightColumn({
             </div>
             {!confirmUndo
               ? (
-                <button className="undo-btn" onClick={() => setConfirmUndo(true)} disabled={logEntries.length === 0}>
+                <button className="undo-btn" onClick={() => setConfirmUndo(true)} disabled={actionsDisabled || logEntries.length === 0}>
                   <RotateCcw size={14} strokeWidth={2.2} />
                   Undo last
                 </button>
@@ -74,7 +74,7 @@ export default function RightColumn({
               : (
                 <span className="undo-confirm-row">
                   <span className="undo-confirm-text">Undo last pick?</span>
-                  <button className="undo-confirm-yes" onClick={() => { onUndo(); setConfirmUndo(false); }}>Yes</button>
+                  <button className="undo-confirm-yes" onClick={() => { onUndo(); setConfirmUndo(false); }} disabled={actionsDisabled}>Yes</button>
                   <button className="undo-confirm-no" onClick={() => setConfirmUndo(false)}>No</button>
                 </span>
               )

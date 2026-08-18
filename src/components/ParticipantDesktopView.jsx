@@ -25,10 +25,10 @@ import NominationQueue from './NominationQueue';
 import NominationSearch from './NominationSearch';
 import TimerDisplay from './TimerDisplay';
 import PreseasonPlayerWorkspace from './PreseasonPlayerWorkspace';
+import { SLOT_LIMITS, maxBidDisplay } from '../utils/rosterRules';
 import './ParticipantDesktopView.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
-const TOTAL_DRAFT_SLOTS = 13;
 
 function injClass(s) {
   if (!s) return null;
@@ -49,12 +49,6 @@ function injAbbr(s) {
   if (l === 'ir')           return 'IR';
   if (l.startsWith('pup'))  return 'PUP';
   return s.slice(0, 3).toUpperCase();
-}
-
-function maxBid(team) {
-  const filled = Object.values(team.roster || {}).length;
-  const empty  = Math.max(0, TOTAL_DRAFT_SLOTS - filled);
-  return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
 }
 
 // ── Sortable row used inside the draggable player list ────────────────────────
@@ -232,12 +226,12 @@ export default function ParticipantDesktopView({
           <div className="pd-my-stats">
             <span className="pd-my-team-name">{myTeam.name}</span>
             <span className="pd-stat-pill green">${myTeam.budgetRemaining ?? 200} left</span>
-            <span className="pd-stat-pill yellow">Max ${maxBid(myTeam)}</span>
+            <span className="pd-stat-pill yellow">{maxBidDisplay(myTeam)}</span>
           </div>
         )}
-        <span className="pd-status-badge">
+        <span className={`pd-status-badge ${draft?.status === 'paused' ? 'paused' : ''}`}>
           <span className="pd-status-dot" />
-          Live
+          {draft?.status === 'paused' ? 'Paused' : 'Live'}
         </span>
         <button className="pd-switch-team" type="button" onClick={onTeamClear} title="Sign out and choose another team">
           <LogOut size={14} /> Switch team
@@ -288,7 +282,7 @@ export default function ParticipantDesktopView({
                 </span>
               </div>
             </div>
-          ) : nominatingTeamId === selectedTeamId ? (
+          ) : draft?.status === 'active' && nominatingTeamId === selectedTeamId ? (
             // It's this user's turn — show nomination search
             <div className="pd-nom-search-wrap">
               <NominationSearch players={players} onNominate={onNominate} />
@@ -340,7 +334,6 @@ export default function ParticipantDesktopView({
                 {(draft?.nominationOrderIds || []).map((teamId, idx) => {
                   const team = teams[teamId];
                   if (!team) return null;
-                  const SLOT_LIMITS_INNER = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
                   return (
                     <div
                       key={teamId}
@@ -360,12 +353,12 @@ export default function ParticipantDesktopView({
                           <span className="pd-tgc-label">Budget</span>
                         </div>
                         <div className="pd-tgc-stat">
-                          <span className="pd-tgc-val amber">${maxBid(team)}</span>
+                          <span className="pd-tgc-val amber">{maxBidDisplay(team)}</span>
                           <span className="pd-tgc-label">Max</span>
                         </div>
                       </div>
                       <div className="pd-tgc-pills">
-                        {Object.entries(SLOT_LIMITS_INNER).map(([slot, limit]) => {
+                        {Object.entries(SLOT_LIMITS).map(([slot, limit]) => {
                           const filledCount = Object.values(team.roster || {})
                             .filter(p => p.slotType === slot).length;
                           return Array.from({ length: limit }, (_, i) => (
@@ -393,7 +386,7 @@ export default function ParticipantDesktopView({
                   onSavePersonalTiers={onSavePersonalTiers}
                   onSavePlayerNote={onSavePlayerNote}
                   onToggleWatch={onToggleWatch}
-                  canNominate={nominatingTeamId === selectedTeamId && !currentNomination}
+                  canNominate={draft?.status === 'active' && nominatingTeamId === selectedTeamId && !currentNomination}
                   onNominate={onNominate}
                   saveState="idle"
                   savedAt={null}

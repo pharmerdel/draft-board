@@ -1,20 +1,7 @@
 import { useState } from 'react';
 import RosterModal from './RosterModal';
+import { SLOT_LIMITS, TOTAL_DRAFT_SLOTS, maxBidDisplay, rosterSize } from '../utils/rosterRules';
 import './TeamsColumn.css';
-
-const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
-const TOTAL_DRAFT_SLOTS = 13; // IR excluded from draft
-
-function maxBid(team) {
-  const roster = Object.values(team.roster || {});
-  const filled = roster.length;
-  const empty  = Math.max(0, TOTAL_DRAFT_SLOTS - filled);
-  return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
-}
-
-function slotsFilled(team) {
-  return Object.values(team.roster || {}).length;
-}
 
 export default function TeamsColumn({ teams, draft, nominatingTeamId, selectedTeamId }) {
   const [modalTeamId, setModalTeamId] = useState(null);
@@ -29,8 +16,7 @@ export default function TeamsColumn({ teams, draft, nominatingTeamId, selectedTe
           if (!team) return null;
           const isNominating = teamId === nominatingTeamId;
           const isMe = teamId === selectedTeamId;
-          const filled = slotsFilled(team);
-          const max = maxBid(team);
+          const filled = rosterSize(team);
 
           return (
             <div
@@ -60,7 +46,7 @@ export default function TeamsColumn({ teams, draft, nominatingTeamId, selectedTe
                 </div>
                 <div className="stat stat-max">
                   <span className="stat-label">Max Bid</span>
-                  <span className="stat-value max-bid">${max}</span>
+                  <span className="stat-value max-bid">{maxBidDisplay(team)}</span>
                 </div>
               </div>
 
@@ -88,7 +74,6 @@ export default function TeamsColumn({ teams, draft, nominatingTeamId, selectedTe
       {modalTeamId && (
         <RosterModal
           team={teams[modalTeamId]}
-          teamId={modalTeamId}
           onClose={() => setModalTeamId(null)}
         />
       )}

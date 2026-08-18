@@ -1,18 +1,9 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { SLOT_LIMITS, SLOT_ORDER, TOTAL_DRAFT_SLOTS, maxBidDisplay } from '../utils/rosterRules';
 import './RosterModal.css';
 
-const SLOT_ORDER = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
-const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
-const TOTAL_DRAFT_SLOTS = 13;
-
-function maxBid(team) {
-  const filled = Object.values(team.roster || {}).length;
-  const empty  = Math.max(0, TOTAL_DRAFT_SLOTS - filled);
-  return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
-}
-
-export default function RosterModal({ team, teamId, onClose }) {
+export default function RosterModal({ team, onClose }) {
   // Close on Escape key
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
@@ -55,7 +46,7 @@ export default function RosterModal({ team, teamId, onClose }) {
             </div>
             <div className="roster-stat">
               <span className="roster-stat-label">Max Bid</span>
-              <span className="roster-stat-value yellow">${maxBid(team)}</span>
+              <span className="roster-stat-value yellow">{maxBidDisplay(team)}</span>
             </div>
             <div className="roster-stat">
               <span className="roster-stat-label">Roster</span>

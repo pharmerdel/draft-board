@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { ref, onValue, update, set, push, remove, serverTimestamp } from 'firebase/database';
-import { Download, Flag, RotateCcw, Save } from 'lucide-react';
+import { Download, Flag, Pause, Play, RotateCcw, Save } from 'lucide-react';
 import { db } from '../firebase';
 import TeamsColumn from '../components/TeamsColumn';
 import CenterColumn from '../components/CenterColumn';
@@ -18,6 +18,13 @@ import NominationTimer from '../components/NominationTimer';
 import DraftSummaryScreen from './DraftSummaryScreen';
 import './DraftScreen.css';
 import { normalizePlayerNote } from '../utils/playerNotes';
+import {
+  TOTAL_DRAFT_SLOTS,
+  autoAssignSlot,
+  findNominatingTeamId,
+  isRosterFull,
+} from '../utils/rosterRules';
+import { resumedTimerStartedAt, timerRemainingMs } from '../utils/draftTimer';
 
 export default function DraftScreen({ complete, preview = false, soldStampPreview = false, selectedTeamId, onTeamClear, themeToggle }) {
   const [draft, setDraft]         = useState(null);
@@ -31,6 +38,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   const [soldData, setSoldData]             = useState(null); // { player, team, price, playerId }
   const [syncConnected, setSyncConnected]   = useState(null);
   const [newsHealth, setNewsHealth]         = useState('checking');
+  const clearSoldData = useCallback(() => setSoldData(null), []);
 
   // Live sync everything
   useEffect(() => {
@@ -160,16 +168,11 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
 
   // Find the next team that still has open roster slots, starting from nominationIndex.
   // This skips teams that have already filled all 13 spots.
-  const computedNominatingTeamId = (() => {
-    const ids = draft.nominationOrderIds || [];
-    const n = ids.length;
-    for (let i = 0; i < n * 2; i++) {
-      const teamId = ids[(draft.nominationIndex + i) % n];
-      const team = teams[teamId];
-      if (team && Object.values(team.roster || {}).length < TOTAL_DRAFT_SLOTS) return teamId;
-    }
-    return null; // all teams full
-  })();
+  const computedNominatingTeamId = findNominatingTeamId(
+    teams,
+    draft.nominationOrderIds || [],
+    draft.nominationIndex || 0,
+  );
   const nominatingTeamId = draft.nominatingTeamId || computedNominatingTeamId;
   const currentNomination = draft.currentNomination;
   const nominatedPlayer = currentNomination ? players[currentNomination.playerId] : null;
@@ -182,6 +185,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   // ── Actions ──────────────────────────────────────────────────────────────
 
   async function nominatePlayer(playerId) {
+    if (draft.status !== 'active') throw new Error('The draft is paused. Resume before nominating.');
     await update(ref(db, 'draft'), {
       currentNomination: {
         playerId,
@@ -194,6 +198,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function cancelNomination() {
+    if (draft.status !== 'active') throw new Error('The draft is paused. Resume before cancelling a nomination.');
     const playerId = currentNomination?.playerId;
     if (!playerId) return;
     await update(ref(db, 'draft'), { currentNomination: null });
@@ -201,6 +206,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function enableTimer(duration) {
+    if (draft.status !== 'active') return;
     await update(ref(db, 'draft'), {
       timerEnabled: true,
       timerDuration: duration,
@@ -209,6 +215,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function disableTimer() {
+    if (draft.status !== 'active') return;
     await update(ref(db, 'draft'), {
       timerEnabled: false,
       timerStartedAt: null,
@@ -216,6 +223,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function changeTimerDuration(duration) {
+    if (draft.status !== 'active') return;
     await update(ref(db, 'draft'), {
       timerDuration: duration,
       timerStartedAt: null, // reset any running timer
@@ -223,6 +231,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function skipNominator() {
+    if (draft.status !== 'active') return;
     const nextIndex = (draft.nominationIndex + 1);
     const nextNominatingTeamId = findNominatingTeamId(teams, draft.nominationOrderIds || [], nextIndex);
     await update(ref(db, 'draft'), {
@@ -243,6 +252,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function addPlayer({ name, position, nflTeam }) {
+    if (draft.status !== 'active') throw new Error('The draft is paused. Resume before adding a player.');
     const existingRanks = Object.values(players)
       .filter(p => p.position === position)
       .map(p => p.positionalRank || 0);
@@ -266,45 +276,52 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   async function sellPlayer(playerId, winningTeamId, price) {
+    if (draft.status !== 'active') throw new Error('The draft is paused. Resume before recording a sale.');
     const player = players[playerId];
     const team   = teams[winningTeamId];
 
     if (!player) throw new Error(`Player not found in state: ${playerId}`);
     if (!team)   throw new Error(`Team not found in state: ${winningTeamId}`);
 
-    const priceInt = parseInt(price, 10);
+    const priceInt = Number.parseInt(price, 10);
+    if (!Number.isInteger(priceInt) || priceInt < 1) throw new Error('Winning bid must be at least $1.');
+    if (draft.currentNomination?.playerId !== playerId || player.status !== 'nominated') {
+      throw new Error('The nominated player changed. Refresh the board and try again.');
+    }
+    if (isRosterFull(team)) throw new Error(`${team.name}'s roster is already full.`);
 
     // Determine roster slot
     const slot = autoAssignSlot(player.position, team.roster || {});
+    if (!slot) throw new Error(`${team.name} has no legal roster slot available.`);
 
-    // Update player
-    await update(ref(db, `players/${playerId}`), {
-      status: 'sold',
-      soldTo: winningTeamId,
-      soldPrice: priceInt,
+    const saleTimestamp = Date.now();
+    const currentBudget = team.budgetRemaining ?? 200;
+    const updatedBudget = currentBudget - priceInt;
+    const nextIndex = draft.nominationIndex + 1;
+    const nextNominatingTeamId = findNominatingTeamId(
+      teams,
+      draft.nominationOrderIds || [],
+      nextIndex,
+      winningTeamId,
+    );
+    const allTeamsFull = Object.entries(teams).every(([teamId, candidate]) => {
+      const pendingPlayerCount = teamId === winningTeamId ? 1 : 0;
+      return Object.keys(candidate.roster || {}).length + pendingPlayerCount >= TOTAL_DRAFT_SLOTS;
     });
-
+    const logRef = push(ref(db, 'log'));
     const projVal = player.projectedValue ?? null;
-
-    // Add to team roster
-    await update(ref(db, `teams/${winningTeamId}/roster/${playerId}`), {
+    const rosterEntry = {
       playerName: player.name,
       position: player.position,
       nflTeam: player.nflTeam,
       slotType: slot,
       pricePaid: priceInt,
       projectedValue: projVal,
-    });
+    };
 
-    // Deduct budget
-    await update(ref(db, `teams/${winningTeamId}`), {
-      budgetRemaining: (team.budgetRemaining || 200) - priceInt,
-    });
-
-    // Append to log
-    await push(ref(db, 'log'), {
+    const saleLogEntry = {
       type: 'sold',
-      timestamp: Date.now(),
+      timestamp: saleTimestamp,
       playerId,
       playerName: player.name,
       position: player.position,
@@ -314,56 +331,53 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
       pricePaid: priceInt,
       projectedValue: projVal,
       delta: projVal != null ? priceInt - projVal : null,
-    });
+      slotType: slot,
+    };
 
-    // Advance nomination order, clear block, start timer if enabled
-    const nextIndex = (draft.nominationIndex + 1);
-    const nextNominatingTeamId = findNominatingTeamId(teams, draft.nominationOrderIds || [], nextIndex, winningTeamId);
-    await update(ref(db, 'draft'), {
-      currentNomination: null,
-      nominationIndex: nextIndex,
-      nominatingTeamId: nextNominatingTeamId,
-      timerStartedAt: draft.timerEnabled ? Date.now() : null,
+    await update(ref(db), {
+      [`players/${playerId}/status`]: 'sold',
+      [`players/${playerId}/soldTo`]: winningTeamId,
+      [`players/${playerId}/soldPrice`]: priceInt,
+      [`teams/${winningTeamId}/roster/${playerId}`]: rosterEntry,
+      [`teams/${winningTeamId}/budgetRemaining`]: updatedBudget,
+      [`log/${logRef.key}`]: saleLogEntry,
+      'draft/currentNomination': null,
+      'draft/nominationIndex': nextIndex,
+      'draft/nominatingTeamId': nextNominatingTeamId,
+      'draft/timerStartedAt': allTeamsFull ? null : (draft.timerEnabled ? saleTimestamp : null),
+      ...(allTeamsFull ? { 'draft/status': 'complete' } : {}),
     });
-
-    // Auto-end draft if every team has filled all roster slots
-    const allTeamsFull = Object.entries(teams).every(([tid, t]) => {
-      const filled = Object.values(t.roster || {}).length + (tid === winningTeamId ? 1 : 0);
-      return filled >= TOTAL_DRAFT_SLOTS;
-    });
-    if (allTeamsFull) {
-      await set(ref(db, 'draft/status'), 'complete');
-    }
 
     // Auto-save backup to localStorage after every pick
     // Uses current React state + the updates we just made to build an accurate snapshot
     const updatedTeam = {
       ...team,
-      budgetRemaining: (team.budgetRemaining || 200) - priceInt,
+      budgetRemaining: updatedBudget,
       roster: {
         ...(team.roster || {}),
-        [playerId]: {
-          playerName: player.name,
-          position: player.position,
-          nflTeam: player.nflTeam,
-          slotType: slot,
-          pricePaid: priceInt,
-          projectedValue: projVal,
-        }
+        [playerId]: rosterEntry,
       }
     };
     // Trigger SOLD animation with a snapshot of the updated data
     setSoldData({ player, team: updatedTeam, price: priceInt, playerId });
 
     saveBackup({
-      draft: { ...draft, currentNomination: null, nominationIndex: nextIndex },
+      draft: {
+        ...draft,
+        currentNomination: null,
+        nominationIndex: nextIndex,
+        nominatingTeamId: nextNominatingTeamId,
+        timerStartedAt: allTeamsFull ? null : (draft.timerEnabled ? saleTimestamp : null),
+        status: allTeamsFull ? 'complete' : draft.status,
+      },
       teams: { ...teams, [winningTeamId]: updatedTeam },
       players: { ...players, [playerId]: { ...player, status: 'sold', soldTo: winningTeamId, soldPrice: priceInt } },
-      log,
+      log: { ...log, [logRef.key]: saleLogEntry },
     });
   }
 
   async function undoLastSale() {
+    if (draft.status !== 'active') throw new Error('The draft is paused. Resume before undoing a sale.');
     // Find most recent sold log entry
     const entries = Object.entries(log)
       .filter(([, e]) => e.type === 'sold')
@@ -372,38 +386,93 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
     if (!entries.length) return;
     const [logId, entry] = entries[0];
 
-    // Restore player
-    await update(ref(db, `players/${entry.playerId}`), {
-      status: 'available',
-      soldTo: null,
-      soldPrice: null,
-    });
-
-    // Remove from roster
-    await remove(ref(db, `teams/${entry.teamId}/roster/${entry.playerId}`));
-
-    // Restore budget
     const team = teams[entry.teamId];
-    await update(ref(db, `teams/${entry.teamId}`), {
-      budgetRemaining: (team.budgetRemaining || 0) + entry.pricePaid,
-    });
+    if (!team) throw new Error('The team for the last sale no longer exists.');
 
-    // Roll back nomination index
     const previousIndex = Math.max(0, draft.nominationIndex - 1);
-    await update(ref(db, 'draft'), {
-      nominationIndex: previousIndex,
-      nominatingTeamId: findNominatingTeamId(teams, draft.nominationOrderIds || [], previousIndex),
-      currentNomination: null,
+    await update(ref(db), {
+      [`players/${entry.playerId}/status`]: 'available',
+      [`players/${entry.playerId}/soldTo`]: null,
+      [`players/${entry.playerId}/soldPrice`]: null,
+      [`teams/${entry.teamId}/roster/${entry.playerId}`]: null,
+      [`teams/${entry.teamId}/budgetRemaining`]: (team.budgetRemaining ?? 0) + entry.pricePaid,
+      [`log/${logId}/type`]: 'undo',
+      'draft/nominationIndex': previousIndex,
+      'draft/nominatingTeamId': findNominatingTeamId(teams, draft.nominationOrderIds || [], previousIndex),
+      'draft/currentNomination': null,
+      'draft/timerStartedAt': null,
     });
 
-    // Mark log entry as undone
-    await update(ref(db, `log/${logId}`), { type: 'undo' });
+    const updatedRoster = { ...(team.roster || {}) };
+    delete updatedRoster[entry.playerId];
+    saveBackup({
+      draft: {
+        ...draft,
+        nominationIndex: previousIndex,
+        nominatingTeamId: findNominatingTeamId(teams, draft.nominationOrderIds || [], previousIndex),
+        currentNomination: null,
+        timerStartedAt: null,
+      },
+      teams: {
+        ...teams,
+        [entry.teamId]: {
+          ...team,
+          roster: updatedRoster,
+          budgetRemaining: (team.budgetRemaining ?? 0) + entry.pricePaid,
+        },
+      },
+      players: {
+        ...players,
+        [entry.playerId]: {
+          ...players[entry.playerId],
+          status: 'available',
+          soldTo: null,
+          soldPrice: null,
+        },
+      },
+      log: { ...log, [logId]: { ...entry, type: 'undo' } },
+    });
+  }
+
+  function downloadCurrentBackup() {
+    saveBackup({ draft, teams, players, log });
+    downloadBackup();
+  }
+
+  async function pauseDraft() {
+    if (draft.status !== 'active') return;
+    if (!window.confirm('Pause the draft? The current nomination and timer will be preserved.')) return;
+
+    const pausedAt = Date.now();
+    const eventRef = push(ref(db, 'log'));
+    await update(ref(db), {
+      'draft/status': 'paused',
+      'draft/pausedAt': pausedAt,
+      'draft/pausedTimerRemainingMs': timerRemainingMs(draft, pausedAt),
+      'draft/timerStartedAt': null,
+      [`log/${eventRef.key}`]: { type: 'pause', timestamp: pausedAt },
+    });
+  }
+
+  async function resumeDraft() {
+    if (draft.status !== 'paused') return;
+
+    const resumedAt = Date.now();
+    const eventRef = push(ref(db, 'log'));
+    await update(ref(db), {
+      'draft/status': 'active',
+      'draft/pausedAt': null,
+      'draft/pausedTimerRemainingMs': null,
+      'draft/timerStartedAt': resumedTimerStartedAt(draft, resumedAt),
+      [`log/${eventRef.key}`]: { type: 'resume', timestamp: resumedAt },
+    });
   }
 
   // ── Render ───────────────────────────────────────────────────────────────
 
   // Determine which view to show based on role + screen size
   const isCommissioner = selectedTeamId === 'commissioner';
+  const isPaused = draft.status === 'paused';
   const isMobile = window.innerWidth < 768;
 
   const activeView =
@@ -426,6 +495,12 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
 
   return (
     <>
+      {isPaused && (
+        <div className="draft-paused-banner" role="status">
+          Draft paused — rosters and preferences remain available, but draft actions are locked.
+        </div>
+      )}
+
       {/* ── Participant mobile ── */}
       {activeView === 'participant-mobile' && (
         <MobileView {...participantProps} themeToggle={themeToggle} />
@@ -441,9 +516,9 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
         <div className="draft-screen" inert={preview}>
           <div className="draft-topbar">
             <LeagueBadge className="draft-league-badge" size="topbar" />
-            <span className={`draft-status-badge ${complete ? 'complete' : 'live'}`}>
+            <span className={`draft-status-badge ${isPaused ? 'paused' : complete ? 'complete' : 'live'}`}>
               <span className="draft-status-dot" />
-              {complete ? 'Complete' : 'Live'}
+              {isPaused ? 'Paused' : complete ? 'Complete' : 'Live'}
             </span>
             {themeToggle}
             <DraftClock startedAt={draft.startedAt} />
@@ -454,6 +529,14 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
               onChangeDuration={changeTimerDuration}
               onSkip={skipNominator}
             />
+            <button
+              className={`export-csv-btn draft-pause-btn ${isPaused ? 'resume' : ''}`}
+              onClick={isPaused ? resumeDraft : pauseDraft}
+            >
+              {isPaused
+                ? <><Play size={15} strokeWidth={2.4} /> Resume</>
+                : <><Pause size={15} strokeWidth={2.4} /> Pause</>}
+            </button>
             <button
               className="export-csv-btn"
               onClick={() => {
@@ -467,7 +550,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
             </button>
             <button
               className="export-csv-btn backup-btn"
-              onClick={downloadBackup}
+              onClick={downloadCurrentBackup}
               title="Download a backup JSON file. Restore it from the Setup screen if needed."
             >
               <Save size={15} strokeWidth={2.2} />
@@ -476,7 +559,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
             <button
               className="export-csv-btn"
               onClick={undoLastSale}
-              disabled={!Object.values(log).some(e => e.type === 'sold')}
+              disabled={isPaused || !Object.values(log).some(e => e.type === 'sold')}
               title="Undo last pick"
             >
               <RotateCcw size={15} strokeWidth={2.2} />
@@ -520,9 +603,9 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
               teams={teams}
               log={log}
               onUndo={undoLastSale}
-              selectedTeamId={selectedTeamId}
               syncConnected={syncConnected}
               newsHealth={newsHealth}
+              actionsDisabled={isPaused}
             />
           </div>
 
@@ -537,7 +620,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
               onCancelNomination={cancelNomination}
               soldData={displayedSoldData}
               holdSoldStamp={soldStampPreview}
-              onSoldDone={() => setSoldData(null)}
+              onSoldDone={clearSoldData}
             />
           )}
         </div>
@@ -545,35 +628,4 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
 
     </>
   );
-}
-
-// ── Slot assignment helper ────────────────────────────────────────────────────
-// Fills QB → RB → WR → TE → FLEX → BN in order
-
-const TOTAL_DRAFT_SLOTS = 13;
-const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
-const FLEX_ELIGIBLE = ['RB', 'WR', 'TE'];
-
-function findNominatingTeamId(teams, nominationOrderIds, startIndex, pendingRosterTeamId = null) {
-  const teamCount = nominationOrderIds.length;
-  for (let offset = 0; offset < teamCount; offset += 1) {
-    const teamId = nominationOrderIds[(startIndex + offset) % teamCount];
-    const rosterCount = Object.keys(teams[teamId]?.roster || {}).length + (teamId === pendingRosterTeamId ? 1 : 0);
-    if (rosterCount < TOTAL_DRAFT_SLOTS) return teamId;
-  }
-  return null;
-}
-
-function autoAssignSlot(position, roster) {
-  const filled = Object.values(roster);
-  const count = (slot) => filled.filter(p => p.slotType === slot).length;
-
-  // Try primary slot first
-  if (count(position) < SLOT_LIMITS[position]) return position;
-
-  // Try FLEX
-  if (FLEX_ELIGIBLE.includes(position) && count('FLEX') < SLOT_LIMITS.FLEX) return 'FLEX';
-
-  // Fall to bench
-  return 'BN';
 }
