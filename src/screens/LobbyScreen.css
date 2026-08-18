@@ -49,8 +49,13 @@
   font-size: 0.98rem;
 }
 
-.lobby-subtitle strong {
+.lobby-subtitle .editable-team-name {
   color: #1B3A6B;
+  font-weight: 800;
+}
+
+body[data-theme='dark'] .lobby-subtitle .editable-team-name {
+  color: #BFDBFE;
 }
 
 .lobby-state-pill,

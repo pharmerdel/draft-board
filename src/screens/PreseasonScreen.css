@@ -38,6 +38,22 @@
   color: #64748B;
 }
 
+.preseason-team-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.preseason-team-identity .editable-team-name-text {
+  color: #334155;
+  font-weight: 800;
+}
+
+body[data-theme='dark'] .preseason-team-identity .editable-team-name-text {
+  color: #E2E8F0;
+}
+
 .preseason-header-actions {
   display: flex;
   align-items: center;

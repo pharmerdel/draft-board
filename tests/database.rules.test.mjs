@@ -136,6 +136,18 @@ test('an owner can update only their own presence fields', async () => {
   await assertFails(update(ref(database, 'teams/team_1'), { connected: true, budgetRemaining: 999 }));
 });
 
+test('an owner can rename only their own team without changing protected team data', async () => {
+  const database = ownerOne();
+
+  await assertSucceeds(set(ref(database, 'teams/team_1/name'), 'Fourth and Long'));
+  await assertSucceeds(set(ref(database, 'teams/team_1/name'), 'A'.repeat(40)));
+  await assertFails(set(ref(database, 'teams/team_2/name'), 'Not My Team'));
+  await assertFails(set(ref(database, 'teams/team_1/name'), ''));
+  await assertFails(set(ref(database, 'teams/team_1/name'), '   '));
+  await assertFails(set(ref(database, 'teams/team_1/name'), 'A'.repeat(41)));
+  await assertFails(update(ref(database, 'teams/team_1'), { name: 'Sneaky', budgetRemaining: 999 }));
+});
+
 test('only the current nominating owner can create a valid nomination', async () => {
   const teamOneDatabase = ownerOne();
   const teamTwoDatabase = ownerTwo();

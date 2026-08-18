@@ -19,6 +19,10 @@
       ".read": true,
       "$teamId": {
         ".write": "auth != null && auth.token.role == 'commissioner' && auth.token.accessVersion == root.child('commissionerAuthPrivate').child('accessVersion').val()",
+        "name": {
+          ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40 && newData.val().matches(/.*[^ ].*/)"
+        },
         "connected": {
           ".write": "auth != null && auth.token.role == 'owner' && auth.token.teamId == $teamId && auth.token.accessVersion == root.child('teamAuthPrivate').child($teamId).child('accessVersion').val()",
           ".validate": "newData.isBoolean()"

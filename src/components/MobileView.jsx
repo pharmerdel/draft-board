@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import PlayerCard from './PlayerCard';
 import LeagueBadge from './LeagueBadge';
+import EditableTeamName from './EditableTeamName';
 import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
 import TimerDisplay from './TimerDisplay';
@@ -295,6 +296,10 @@ export default function MobileView({
         {/* MY TEAM */}
         {tab === 'myteam' && (
           <div className="mobile-myteam-tab">
+            <div className="mobile-myteam-heading">
+              <span>My team</span>
+              <EditableTeamName teamId={selectedTeamId} name={myTeam?.name} />
+            </div>
             <MyTeamPanel team={myTeam} />
           </div>
         )}
