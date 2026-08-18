@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useNow } from '../hooks/useNow';
 import './NominationTimer.css';
 
 // Commissioner-facing timer component with controls
@@ -10,22 +10,18 @@ export default function NominationTimer({
   onChangeDuration,
   onSkip,
 }) {
-  const [now, setNow] = useState(Date.now());
-
   const timerEnabled    = draft?.timerEnabled || false;
   const timerDuration   = draft?.timerDuration || 90;
   const timerStartedAt  = draft?.timerStartedAt || null;
+  const isPaused        = draft?.status === 'paused';
   const isRunning       = timerEnabled && timerStartedAt !== null;
+  const now             = useNow(isRunning, 250);
 
-  useEffect(() => {
-    if (!isRunning) return;
-    const id = setInterval(() => setNow(Date.now()), 250);
-    return () => clearInterval(id);
-  }, [isRunning]);
-
-  const secondsLeft = isRunning
-    ? Math.max(0, Math.ceil((timerStartedAt + timerDuration * 1000 - now) / 1000))
-    : null;
+  const secondsLeft = isPaused && draft?.pausedTimerRemainingMs != null
+    ? Math.max(0, Math.ceil(draft.pausedTimerRemainingMs / 1000))
+    : isRunning
+      ? Math.max(0, Math.ceil((timerStartedAt + timerDuration * 1000 - (now || timerStartedAt)) / 1000))
+      : null;
 
   const isExpired  = secondsLeft === 0;
   const isWarning  = secondsLeft !== null && secondsLeft <= 10 && !isExpired;
@@ -36,19 +32,17 @@ export default function NominationTimer({
         // Timer off — show activate buttons
         <div className="nom-timer-activate">
           <span className="nom-timer-label">Nom Timer</span>
-          <button className="nom-timer-btn" onClick={() => onEnable(90)}>90s</button>
-          <button className="nom-timer-btn" onClick={() => onEnable(60)}>60s</button>
+          <button className="nom-timer-btn" onClick={() => onEnable(90)} disabled={isPaused}>90s</button>
+          <button className="nom-timer-btn" onClick={() => onEnable(60)} disabled={isPaused}>60s</button>
         </div>
       ) : (
         // Timer on — show countdown + controls
         <div className="nom-timer-active">
           {/* Countdown display */}
           <div className={`nom-timer-display ${isExpired ? 'expired' : isWarning ? 'warning' : isRunning ? 'running' : 'idle'}`}>
-            {isRunning
+            {secondsLeft !== null
               ? `${secondsLeft}s`
-              : isExpired
-                ? '0s'
-                : `${timerDuration}s`
+              : `${timerDuration}s`
             }
           </div>
 
@@ -57,16 +51,18 @@ export default function NominationTimer({
             <button
               className={`nom-timer-dur-btn ${timerDuration === 90 ? 'active' : ''}`}
               onClick={() => onChangeDuration(90)}
+              disabled={isPaused}
             >90s</button>
             <button
               className={`nom-timer-dur-btn ${timerDuration === 60 ? 'active' : ''}`}
               onClick={() => onChangeDuration(60)}
+              disabled={isPaused}
             >60s</button>
-            <button className="nom-timer-off-btn" onClick={onDisable}>Off</button>
+            <button className="nom-timer-off-btn" onClick={onDisable} disabled={isPaused}>Off</button>
           </div>
 
           {/* Skip button — only appears when timer has expired */}
-          {isExpired && (
+          {isExpired && !isPaused && (
             <button className="nom-timer-skip-btn" onClick={onSkip}>
               Skip
               <ArrowRight size={14} strokeWidth={2.4} />

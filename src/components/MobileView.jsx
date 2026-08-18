@@ -35,10 +35,10 @@ import MyTeamPanel from './MyTeamPanel';
 import RosterModal from './RosterModal';
 import TimerDisplay from './TimerDisplay';
 import PreseasonPlayerWorkspace from './PreseasonPlayerWorkspace';
+import { TOTAL_DRAFT_SLOTS, maxBidDisplay } from '../utils/rosterRules';
 import './MobileView.css';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
-const TOTAL_DRAFT_SLOTS = 13;
 
 function injClass(s) {
   if (!s) return null;
@@ -59,12 +59,6 @@ function injAbbr(s) {
   if (l === 'ir')           return 'IR';
   if (l.startsWith('pup'))  return 'PUP';
   return s.slice(0, 3).toUpperCase();
-}
-
-function maxBid(team) {
-  const filled = Object.values(team.roster || {}).length;
-  const empty  = Math.max(0, TOTAL_DRAFT_SLOTS - filled);
-  return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
 }
 
 // ── Sortable row used inside the draggable player list ────────────────────────
@@ -326,7 +320,7 @@ export default function MobileView({
                   <div className="mobile-team-stats">
                     <span className="mobile-team-budget">${team.budgetRemaining ?? 200}</span>
                     <span className="mobile-team-roster">{filled}/{TOTAL_DRAFT_SLOTS}</span>
-                    <span className="mobile-team-max">Max ${maxBid(team)}</span>
+                    <span className="mobile-team-max">{maxBidDisplay(team)}</span>
                   </div>
                   <span className="mobile-team-arrow">›</span>
                 </div>
@@ -348,7 +342,7 @@ export default function MobileView({
               onSavePersonalTiers={onSavePersonalTiers}
               onSavePlayerNote={onSavePlayerNote}
               onToggleWatch={onToggleWatch}
-              canNominate={nominatingTeamId === selectedTeamId && !currentNomination}
+              canNominate={draft?.status === 'active' && nominatingTeamId === selectedTeamId && !currentNomination}
               onNominate={onNominate}
               saveState="idle"
               savedAt={null}
@@ -500,7 +494,7 @@ export default function MobileView({
               const allIds = Object.keys(watchlist || {});
               const draftedCount = allIds.filter(id => players?.[id]?.status === 'sold').length;
               const visibleIds = showDraftedWatch ? allIds : allIds.filter(id => players?.[id]?.status !== 'sold');
-              const isMyTurn = nominatingTeamId === selectedTeamId && !currentNomination;
+              const isMyTurn = draft?.status === 'active' && nominatingTeamId === selectedTeamId && !currentNomination;
               return (
                 <>
                   <div className="mobile-watchlist-header">
@@ -591,7 +585,6 @@ export default function MobileView({
       {modalTeamId && (
         <RosterModal
           team={teams[modalTeamId]}
-          teamId={modalTeamId}
           onClose={() => setModalTeamId(null)}
         />
       )}

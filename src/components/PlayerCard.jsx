@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Check, StickyNote, Target, TriangleAlert, X } from 'lucide-react';
-import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
+import { PlayerStatsBody } from './PlayerStats';
+import { usePlayerStats } from '../hooks/usePlayerStats';
 import { fetchFantasyProsPlayerNewsFromApi } from '../utils/fantasyProsNews';
 import { MAX_PLAYER_NOTE_LENGTH, normalizePlayerNote } from '../utils/playerNotes';
 import './PlayerCard.css';

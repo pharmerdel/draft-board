@@ -1,9 +1,12 @@
 .summary-screen {
+  width: 100%;
   max-width: 1400px;
+  min-width: 0;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
   background: #F8F9FC;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .summary-header {
@@ -20,12 +23,18 @@
 }
 
 .summary-meta {
+  max-width: 100%;
   font-size: 0.9rem;
   color: #6B7280;
+  overflow-wrap: anywhere;
 }
 
 .summary-export-btns {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
@@ -36,6 +45,7 @@
   font-size: 0.9rem;
   font-weight: 700;
   padding: 0.6rem 1.5rem;
+  min-width: 0;
   cursor: pointer;
   transition: opacity 0.15s;
 }
@@ -73,7 +83,7 @@
 
 .reviews-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
   gap: 1.25rem;
 }
 
@@ -95,6 +105,7 @@
 }
 
 .review-card-names {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -127,11 +138,13 @@
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 1.25rem;
+  min-width: 0;
 }
 
 .summary-team-card {
+  min-width: 0;
   background: #FFFFFF;
   border: 1px solid #E2E6EE;
   border-radius: 10px;
@@ -150,6 +163,7 @@
 }
 
 .summary-team-names {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
@@ -159,6 +173,7 @@
   font-weight: 800;
   font-size: 0.95rem;
   color: #1B3A6B;
+  overflow-wrap: anywhere;
 }
 
 .summary-team-owner {
@@ -187,6 +202,8 @@
 
 .summary-roster-table {
   width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.82rem;
 }
@@ -220,6 +237,9 @@
 .player-cell {
   font-weight: 600;
   color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pos-cell {
@@ -248,8 +268,120 @@
 .pos-WR { color: #5B21B6; }
 .pos-TE { color: #92400E; }
 
+body[data-theme='dark'] .summary-meta,
+body[data-theme='dark'] .summary-team-owner,
+body[data-theme='dark'] .review-owner-name {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .summary-team-header {
+  background: var(--dark-panel-2);
+  border-color: var(--dark-border);
+  border-top-color: var(--dark-blue);
+}
+
+body[data-theme='dark'] .summary-team-name,
+body[data-theme='dark'] .summary-spent,
+body[data-theme='dark'] .review-team-name,
+body[data-theme='dark'] .reviews-title {
+  color: var(--dark-text);
+}
+
+body[data-theme='dark'] .summary-remaining,
+body[data-theme='dark'] .price-cell {
+  color: var(--dark-green);
+}
+
+body[data-theme='dark'] .summary-roster-table th {
+  color: var(--dark-text-muted);
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .summary-roster-table td {
+  color: var(--dark-text);
+  border-color: var(--dark-border-soft);
+}
+
+body[data-theme='dark'] .summary-roster-table .slot-cell {
+  color: var(--dark-text-muted);
+}
+
+body[data-theme='dark'] .summary-roster-table .pos-QB { color: #86EFAC; }
+body[data-theme='dark'] .summary-roster-table .pos-RB { color: #93C5FD; }
+body[data-theme='dark'] .summary-roster-table .pos-WR { color: #C4B5FD; }
+body[data-theme='dark'] .summary-roster-table .pos-TE { color: #FCD34D; }
+
+body[data-theme='dark'] .summary-roster-table .empty-row td {
+  color: var(--dark-text-faint);
+}
+
+body[data-theme='dark'] .reviews-section {
+  border-color: var(--dark-border);
+}
+
+body[data-theme='dark'] .review-text {
+  color: var(--dark-text);
+}
+
 @media (max-width: 640px) {
+  .summary-screen {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    padding: 1rem 0.75rem 3rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .summary-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .summary-export-btns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .summary-export-btn {
+    width: 100%;
+    padding: 0.65rem 0.45rem;
+    font-size: 0.8rem;
+    white-space: normal;
+  }
+
   .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .summary-team-header {
+    padding: 0.75rem;
+  }
+
+  .summary-roster-table th,
+  .summary-roster-table td {
+    padding: 0.34rem 0.4rem;
+  }
+
+  .summary-roster-table th:first-child,
+  .summary-roster-table td:first-child {
+    width: 3rem;
+  }
+
+  .summary-roster-table th:nth-child(3),
+  .summary-roster-table td:nth-child(3) {
+    width: 2.7rem;
+  }
+
+  .summary-roster-table th:last-child,
+  .summary-roster-table td:last-child {
+    width: 2.7rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .summary-export-btns {
     grid-template-columns: 1fr;
   }
 }

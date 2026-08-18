@@ -108,6 +108,25 @@ test('an owner can manage only their own valid rankings, tiers, and watchlist', 
   await assertFails(set(ref(database, 'watchlists/team_1/player_1'), { watched: true, shared: true }));
 });
 
+test('an owner can atomically restore all of their private preparation but cannot restore another team', async () => {
+  const database = ownerOne();
+  const restoredAt = Date.now();
+
+  await assertSucceeds(update(ref(database), {
+    'personalRanks/team_1': { player_1: 2, player_2: 1 },
+    'personalTiers/team_1': { RB: { player_1: 1 }, FLEX: { player_1: 1, player_2: 2 } },
+    'playerNotes/team_1': { player_2: { text: 'Restored note', updatedAt: restoredAt } },
+    'watchlists/team_1': { player_1: { watched: true } },
+  }));
+
+  await assertFails(update(ref(database), {
+    'personalRanks/team_2': { player_1: 1 },
+    'personalTiers/team_2': { RB: { player_1: 1 } },
+    'playerNotes/team_2': { player_1: { text: 'Wrong team', updatedAt: restoredAt } },
+    'watchlists/team_2': { player_1: { watched: true } },
+  }));
+});
+
 test('an owner can update only their own presence fields', async () => {
   const database = ownerOne();
 
@@ -133,6 +152,19 @@ test('only the current nominating owner can create a valid nomination', async ()
   }));
   await assertSucceeds(update(ref(teamOneDatabase, 'players/player_1'), { status: 'nominated' }));
   await assertFails(update(ref(teamOneDatabase, 'players/player_1'), { soldTo: 'team_1' }));
+});
+
+test('owners cannot nominate or mutate the nomination timer while the draft is paused', async () => {
+  const ownerDatabase = ownerOne();
+  const commissionerDatabase = commissioner();
+  await assertSucceeds(set(ref(commissionerDatabase, 'draft/status'), 'paused'));
+
+  const nomination = { playerId: 'player_1', nominatingTeamId: 'team_1', startedAt: Date.now() };
+  await assertFails(update(ref(ownerDatabase, 'draft'), {
+    currentNomination: nomination,
+    timerStartedAt: null,
+  }));
+  await assertFails(update(ref(ownerDatabase, 'players/player_1'), { status: 'nominated' }));
 });
 
 test('a PIN reset accessVersion change immediately blocks a stale owner session without deleting preferences', async () => {

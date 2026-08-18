@@ -7,15 +7,19 @@ const BACKUP_KEY = 'ff_draft_backup';
 
 // ── Save ─────────────────────────────────────────────────────────────────────
 
-export function saveBackup({ draft, teams, players, log }) {
-  const snapshot = {
-    savedAt: Date.now(),
+export function createBackupSnapshot({ draft, teams, players, log }, savedAt = Date.now()) {
+  return {
+    savedAt,
     pickCount: Object.values(log || {}).filter(e => e.type === 'sold').length,
     draft,
     teams,
     players,
     log: log || {},
   };
+}
+
+export function saveBackup(state) {
+  const snapshot = createBackupSnapshot(state);
   try {
     localStorage.setItem(BACKUP_KEY, JSON.stringify(snapshot));
   } catch (err) {
@@ -66,18 +70,25 @@ export function parseBackupFile(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const snapshot = JSON.parse(e.target.result);
-        // Basic validation
-        if (!snapshot.draft || !snapshot.teams || !snapshot.players) {
-          reject(new Error('Invalid backup file — missing required fields.'));
-          return;
-        }
-        resolve(snapshot);
-      } catch {
-        reject(new Error('Could not read file. Make sure it is a valid backup JSON.'));
+        resolve(parseBackupText(e.target.result));
+      } catch (error) {
+        reject(error);
       }
     };
     reader.onerror = () => reject(new Error('File read error.'));
     reader.readAsText(file);
   });
+}
+
+export function parseBackupText(text) {
+  let snapshot;
+  try {
+    snapshot = JSON.parse(text);
+  } catch {
+    throw new Error('Could not read file. Make sure it is a valid backup JSON.');
+  }
+  if (!snapshot?.draft || !snapshot?.teams || !snapshot?.players) {
+    throw new Error('Invalid backup file — missing required fields.');
+  }
+  return snapshot;
 }

@@ -164,6 +164,7 @@ body[data-theme='dark'] .review-card {
 
 body[data-theme='dark'] .preseason-owner-intro,
 body[data-theme='dark'] .preseason-summary-grid article,
+body[data-theme='dark'] .preseason-backup-panel,
 body[data-theme='dark'] .preseason-next-panel,
 body[data-theme='dark'] .preseason-screen > .team-access-manager {
   background: var(--dark-panel);
@@ -173,6 +174,26 @@ body[data-theme='dark'] .preseason-screen > .team-access-manager {
 body[data-theme='dark'] .preseason-admin-hero {
   background: var(--dark-panel-2);
   border-color: #36557F;
+}
+
+body[data-theme='dark'] .preseason-backup-panel {
+  border-color: #334E74;
+  background: #17243A;
+}
+
+body[data-theme='dark'] .preseason-backup-panel strong {
+  color: #F1F5F9;
+}
+
+body[data-theme='dark'] .preseason-backup-panel small,
+body[data-theme='dark'] .preseason-backup-panel > p {
+  color: #CBD5E1;
+}
+
+body[data-theme='dark'] .preseason-backup-actions button {
+  border-color: #475569;
+  background: #1E293B;
+  color: #BFDBFE;
 }
 
 body[data-theme='dark'] .preseason-header-actions > button {

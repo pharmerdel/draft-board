@@ -1,14 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useNow } from '../hooks/useNow';
 import './DraftClock.css';
 
 // Shows time-of-day the draft started and running elapsed time
 export default function DraftClock({ startedAt }) {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  const now = useNow(Boolean(startedAt));
 
   if (!startedAt) return null;
 
@@ -18,7 +13,7 @@ export default function DraftClock({ startedAt }) {
     hour12: true,
   });
 
-  const elapsed = Math.floor((now - startedAt) / 1000);
+  const elapsed = Math.max(0, Math.floor(((now || startedAt) - startedAt) / 1000));
   const h = Math.floor(elapsed / 3600);
   const m = Math.floor((elapsed % 3600) / 60);
   const s = elapsed % 60;

@@ -2,7 +2,6 @@ import * as XLSX from 'xlsx';
 
 // Roster slot display order — matches ESPN's manual entry layout
 const SLOT_ORDER = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
-const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
 
 function sortRosterBySlot(rosterEntries) {
   const grouped = {};
@@ -117,7 +116,7 @@ function buildByTeamSheet(teams, nominationOrderIds) {
 }
 
 // ── Main export function ──────────────────────────────────────────────────────
-export function exportDraftExcel({ teams, log, draft }) {
+export function buildDraftWorkbook({ teams, log, draft }) {
   const wb = XLSX.utils.book_new();
 
   const draftOrderSheet = buildDraftOrderSheet(log, teams);
@@ -125,6 +124,12 @@ export function exportDraftExcel({ teams, log, draft }) {
 
   XLSX.utils.book_append_sheet(wb, draftOrderSheet, 'Draft Order');
   XLSX.utils.book_append_sheet(wb, byTeamSheet,     'By Team');
+
+  return wb;
+}
+
+export function exportDraftExcel({ teams, log, draft }) {
+  const wb = buildDraftWorkbook({ teams, log, draft });
 
   const date = new Date().toLocaleDateString('en-US', {
     month: '2-digit', day: '2-digit', year: '2-digit'

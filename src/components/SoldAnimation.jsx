@@ -1,16 +1,8 @@
 import { useState, useEffect } from 'react';
-import { usePlayerStats, PlayerStatsBody } from './PlayerStats';
+import { PlayerStatsBody } from './PlayerStats';
+import { usePlayerStats } from '../hooks/usePlayerStats';
+import { SLOT_LIMITS, SLOT_ORDER, TOTAL_DRAFT_SLOTS, maxBidDisplay } from '../utils/rosterRules';
 import './SoldAnimation.css';
-
-const SLOT_ORDER  = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'BN'];
-const SLOT_LIMITS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 2, BN: 5 };
-const TOTAL_DRAFT_SLOTS = 13;
-
-function maxBid(team) {
-  const filled = Object.values(team.roster || {}).length;
-  const empty  = Math.max(0, TOTAL_DRAFT_SLOTS - filled);
-  return Math.max(1, (team.budgetRemaining || 0) - (empty - 1));
-}
 
 // PHASE 1 — 1.5s diagonal SOLD stamp
 function SoldStamp({ player, price }) {
@@ -55,7 +47,7 @@ function SoldInfo({ player, team, price, newPlayerId, onDone }) {
       }
     }, interval);
     return () => clearInterval(timer);
-  }, []);
+  }, [onDone]);
 
   const playersBySlot = {};
   Object.entries(team.roster || {}).forEach(([id, p]) => {
@@ -107,7 +99,7 @@ function SoldInfo({ player, team, price, newPlayerId, onDone }) {
               <span className="sa-budget-label">Remaining</span>
             </div>
             <div className="sa-budget-pill">
-              <span className="sa-budget-val max">${maxBid(team)}</span>
+              <span className="sa-budget-val max">{maxBidDisplay(team)}</span>
               <span className="sa-budget-label">Max Bid</span>
             </div>
             <div className="sa-budget-pill">
