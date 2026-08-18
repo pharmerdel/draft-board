@@ -29,6 +29,23 @@
   overflow-wrap: anywhere;
 }
 
+.summary-owner-team {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #64748B;
+  font-size: 0.9rem;
+}
+
+.summary-owner-team .editable-team-name {
+  color: #1B3A6B;
+  font-weight: 800;
+}
+
+body[data-theme='dark'] .summary-owner-team .editable-team-name {
+  color: #BFDBFE;
+}
+
 .summary-export-btns {
   display: flex;
   flex-wrap: wrap;

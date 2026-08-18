@@ -10,6 +10,30 @@
   overscroll-behavior: none;
 }
 
+.mobile-myteam-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.8rem 0;
+  color: #64748B;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-myteam-heading .editable-team-name {
+  color: #1B3A6B;
+  font-size: 0.92rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+body[data-theme='dark'] .mobile-myteam-heading .editable-team-name {
+  color: #BFDBFE;
+}
+
 .mobile-league-badge {
   position: fixed;
   top: 0.45rem;

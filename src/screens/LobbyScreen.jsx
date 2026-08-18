@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { db } from '../firebase';
 import CommissionerAccessModal from '../components/CommissionerAccessModal';
+import EditableTeamName from '../components/EditableTeamName';
 import LeagueBadge from '../components/LeagueBadge';
 import TeamAccessModal from '../components/TeamAccessModal';
 import TeamAccessManager from '../components/TeamAccessManager';
@@ -223,7 +224,7 @@ export default function LobbyScreen({ phase = 'lobby', rejoin = false, preview =
           <p className="lobby-kicker">Waiting Room</p>
           <LeagueBadge className="lobby-league-badge" size="lobby" />
           <p className="lobby-subtitle">
-            Joined as <strong>{myTeam?.name || selectedTeamId}</strong>
+            Joined as <EditableTeamName teamId={selectedTeamId} name={myTeam?.name || selectedTeamId} disabled={preview} />
           </p>
         </div>
         <div className="lobby-session-actions">

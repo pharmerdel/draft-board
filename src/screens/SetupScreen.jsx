@@ -5,6 +5,7 @@ import { DEFAULT_LEAGUE_NAME, DEFAULT_TEAMS } from '../config/leagueDefaults';
 import { parseBackupFile } from '../utils/backup';
 import { buildDraftPlayers, summarizeDraftPlayers } from '../utils/draftPlayers';
 import { buildPreseasonDraft } from '../utils/draftLifecycle';
+import { MAX_TEAM_NAME_LENGTH, normalizeTeamName } from '../utils/teamName';
 import LeagueBadge from '../components/LeagueBadge';
 import './SetupScreen.css';
 
@@ -78,6 +79,9 @@ export default function SetupScreen() {
 
     teams.forEach((team, index) => {
       if (!team.teamName.trim()) validationErrors.push(`Team ${index + 1}: Team name is required.`);
+      if (normalizeTeamName(team.teamName).length > MAX_TEAM_NAME_LENGTH) {
+        validationErrors.push(`Team ${index + 1}: Team name must be ${MAX_TEAM_NAME_LENGTH} characters or fewer.`);
+      }
       if (!team.ownerName.trim()) validationErrors.push(`Team ${index + 1}: Owner name is required.`);
     });
     return validationErrors;
@@ -110,7 +114,7 @@ export default function SetupScreen() {
       const teamsData = {};
       teams.forEach((team, index) => {
         teamsData[`team_${index + 1}`] = {
-          name: team.teamName.trim(),
+          name: normalizeTeamName(team.teamName),
           ownerName: team.ownerName.trim(),
           budgetRemaining: 200,
           connected: false,
@@ -189,7 +193,7 @@ export default function SetupScreen() {
         {teams.map((team, index) => (
           <div key={index} className="team-row">
             <span className="team-num">{index + 1}</span>
-            <input className="setup-input" type="text" placeholder="Team name" value={team.teamName} onChange={event => updateTeam(index, 'teamName', event.target.value)} />
+            <input className="setup-input" type="text" placeholder="Team name" maxLength={MAX_TEAM_NAME_LENGTH} value={team.teamName} onChange={event => updateTeam(index, 'teamName', event.target.value)} />
             <input className="setup-input" type="text" placeholder="Owner name" value={team.ownerName} onChange={event => updateTeam(index, 'ownerName', event.target.value)} />
           </div>
         ))}

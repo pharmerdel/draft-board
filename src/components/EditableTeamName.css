@@ -1,0 +1,184 @@
+.editable-team-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.editable-team-name-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.editable-team-name-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.66;
+}
+
+.editable-team-name-trigger:hover,
+.editable-team-name-trigger:focus-visible {
+  opacity: 1;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.team-name-editor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.team-name-editor-modal {
+  width: min(100%, 430px);
+  border: 1px solid #D8E0EB;
+  border-radius: 14px;
+  background: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+  overflow: hidden;
+  text-align: left;
+}
+
+.team-name-editor-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.team-name-editor-header p {
+  margin: 0 0 0.2rem;
+  color: #64748B;
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.team-name-editor-header h2 {
+  margin: 0;
+  color: #0F172A;
+  font-size: 1.3rem;
+}
+
+.team-name-editor-header button {
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #64748B;
+  cursor: pointer;
+}
+
+.team-name-editor-modal form {
+  padding: 1.2rem;
+}
+
+.team-name-editor-modal label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.team-name-editor-modal input {
+  width: 100%;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 9px;
+  background: #FFFFFF;
+  color: #0F172A;
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.team-name-editor-modal input:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+.team-name-editor-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  color: #64748B;
+  font-size: 0.75rem;
+}
+
+.team-name-editor-error {
+  min-height: 1.15rem;
+  margin: 0.45rem 0 0;
+  color: #B91C1C;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.team-name-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.team-name-editor-actions button {
+  padding: 0.62rem 0.9rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.team-name-editor-actions .secondary { background: #FFFFFF; color: #334155; }
+.team-name-editor-actions .primary { border-color: #1D4ED8; background: #1D4ED8; color: #FFFFFF; }
+.team-name-editor-actions button:disabled { opacity: 0.55; cursor: wait; }
+
+body[data-theme='dark'] .team-name-editor-modal {
+  border-color: #334155;
+  background: #111827;
+  color: #F8FAFC;
+}
+
+body[data-theme='dark'] .team-name-editor-header { border-color: #334155; }
+body[data-theme='dark'] .team-name-editor-header h2,
+body[data-theme='dark'] .team-name-editor-modal label { color: #F8FAFC; }
+body[data-theme='dark'] .team-name-editor-header p,
+body[data-theme='dark'] .team-name-editor-header button,
+body[data-theme='dark'] .team-name-editor-meta { color: #94A3B8; }
+body[data-theme='dark'] .team-name-editor-modal input {
+  border-color: #475569;
+  background: #0F172A;
+  color: #F8FAFC;
+}
+body[data-theme='dark'] .team-name-editor-actions .secondary {
+  border-color: #475569;
+  background: #1E293B;
+  color: #F8FAFC;
+}
+
+@media (max-width: 520px) {
+  .team-name-editor-overlay { align-items: end; padding: 0; }
+  .team-name-editor-modal { border-radius: 16px 16px 0 0; }
+  .team-name-editor-actions button { flex: 1; }
+}

@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { generateDraftCsv, downloadCsv } from '../utils/exportCsv';
 import { exportDraftExcel } from '../utils/exportExcel';
 import LeagueBadge from '../components/LeagueBadge';
+import EditableTeamName from '../components/EditableTeamName';
 import './DraftSummaryScreen.css';
 
 const NEWS_WORKER = 'https://draft-board-news.zachdelaney2012.workers.dev';
@@ -32,7 +33,7 @@ function sortRosterBySlot(rosterEntries) {
   return SLOT_ORDER.flatMap(s => grouped[s] || []);
 }
 
-export default function DraftSummaryScreen({ draft, teams, players, log, isCommissioner }) {
+export default function DraftSummaryScreen({ draft, teams, players, log, isCommissioner, selectedTeamId }) {
   const [reviews, setReviews]       = useState(null);
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewError, setReviewError]     = useState(null);
@@ -101,6 +102,11 @@ export default function DraftSummaryScreen({ draft, teams, players, log, isCommi
         <p className="summary-meta">
           {draftDate && `${draftDate} · `}{totalPicks} picks
         </p>
+        {!isCommissioner && teams[selectedTeamId] && (
+          <div className="summary-owner-team">
+            Your team: <EditableTeamName teamId={selectedTeamId} name={teams[selectedTeamId].name} />
+          </div>
+        )}
 
         {isCommissioner && (
           <div className="summary-export-btns">

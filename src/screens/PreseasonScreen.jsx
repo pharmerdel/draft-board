@@ -3,6 +3,7 @@ import { onValue, ref, serverTimestamp, set, update } from 'firebase/database';
 import { ArrowRight, ClipboardList, Download, LogOut, ShieldCheck, Star, Upload, UsersRound } from 'lucide-react';
 
 import PreseasonPlayerWorkspace from '../components/PreseasonPlayerWorkspace';
+import EditableTeamName from '../components/EditableTeamName';
 import LeagueBadge from '../components/LeagueBadge';
 import TeamAccessManager from '../components/TeamAccessManager';
 import { db } from '../firebase';
@@ -259,7 +260,14 @@ export default function PreseasonScreen({ selectedTeamId, onTeamClear, themeTogg
         <div>
           <p className="preseason-kicker">Preseason Workspace</p>
           <LeagueBadge className="preseason-league-badge" size="header" />
-          <p>{isCommissioner ? 'Commissioner administration' : `${team?.name || 'Team'} · ${team?.ownerName || 'Owner'}`}</p>
+          {isCommissioner ? (
+            <p>Commissioner administration</p>
+          ) : (
+            <p className="preseason-team-identity">
+              <EditableTeamName teamId={selectedTeamId} name={team?.name} disabled={preview} />
+              <span>· {team?.ownerName || 'Owner'}</span>
+            </p>
+          )}
         </div>
         <div className="preseason-header-actions">
           {themeToggle}

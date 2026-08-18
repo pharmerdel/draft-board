@@ -159,6 +159,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
           players={players}
           log={log}
           isCommissioner={selectedTeamId === 'commissioner'}
+          selectedTeamId={selectedTeamId}
         />
       </>
     );
