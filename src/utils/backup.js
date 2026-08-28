@@ -42,8 +42,7 @@ export function loadBackup() {
 
 // ── Download as JSON file ─────────────────────────────────────────────────────
 
-export function downloadBackup() {
-  const snapshot = loadBackup();
+export function downloadBackup(snapshot = loadBackup()) {
   if (!snapshot) {
     alert('No backup found in this browser. Has a pick been made yet?');
     return;

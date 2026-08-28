@@ -3,6 +3,7 @@ import { get, onValue, ref, set, update } from 'firebase/database';
 import { db } from '../firebase';
 import { DEFAULT_LEAGUE_NAME, DEFAULT_TEAMS } from '../config/leagueDefaults';
 import { parseBackupFile } from '../utils/backup';
+import { downloadRecoveryWorkbook } from '../utils/recoveryWorkbook';
 import { buildDraftPlayers, summarizeDraftPlayers } from '../utils/draftPlayers';
 import { buildPreseasonDraft } from '../utils/draftLifecycle';
 import { MAX_TEAM_NAME_LENGTH, normalizeTeamName } from '../utils/teamName';
@@ -23,6 +24,7 @@ export default function SetupScreen() {
   const [errors, setErrors] = useState([]);
   const [restoring, setRestoring] = useState(false);
   const [restoreSuccess, setRestoreSuccess] = useState(false);
+  const [convertingBackup, setConvertingBackup] = useState(false);
 
   const catalogSummary = summarizeDraftPlayers(catalogPlayers);
 
@@ -204,6 +206,36 @@ export default function SetupScreen() {
           {saving ? (savingStatus || 'Opening...') : 'Open Preseason Workspace'}
         </button>
         <p className="launch-hint">This saves league data and opens private owner preparation. Draft-day order remains unset.</p>
+      </div>
+
+      <div className="restore-section">
+        <div className="restore-header">
+          <span className="restore-title">📊 Inspect a Backup Offline</span>
+          <span className="restore-subtitle">Convert a commissioner backup JSON into an offline Excel recovery workbook that can continue the auction locally. This does not connect the workbook to Firebase and never reads or exports private owner rankings, tiers, notes, or watchlists.</span>
+        </div>
+        <input
+          id="recovery-export-upload"
+          type="file"
+          accept=".json,application/json"
+          style={{ display: 'none' }}
+          onChange={async event => {
+            const file = event.target.files[0];
+            if (!file) return;
+            setConvertingBackup(true);
+            setErrors([]);
+            try {
+              downloadRecoveryWorkbook(await parseBackupFile(file));
+            } catch (error) {
+              setErrors([`Spreadsheet export failed: ${error.message}`]);
+            } finally {
+              setConvertingBackup(false);
+              event.target.value = '';
+            }
+          }}
+        />
+        <label htmlFor="recovery-export-upload" className="restore-btn">
+          {convertingBackup ? 'Creating spreadsheet...' : '📈 Convert backup JSON to XLSX'}
+        </label>
       </div>
 
       <div className="restore-section">

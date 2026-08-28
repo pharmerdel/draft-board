@@ -7,6 +7,7 @@
     "node": ">=20.19.0"
   },
   "scripts": {
+    "backup:spreadsheet": "node scripts/generate-draft-recovery-workbook.mjs",
     "catalog:dry-run": "node scripts/dry-run-player-catalog.mjs",
     "catalog:prepare-update": "node scripts/prepare-player-catalog-update.mjs",
     "catalog:prepare-preseason-sync": "node scripts/prepare-preseason-player-sync.mjs",
@@ -27,13 +28,15 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "fflate": "^0.8.3",
     "firebase": "^12.13.0",
     "fuse.js": "^7.3.0",
     "lucide-react": "^1.24.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

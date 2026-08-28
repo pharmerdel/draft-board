@@ -11,6 +11,7 @@ import ParticipantDesktopView from '../components/ParticipantDesktopView';
 import ResetButton from '../components/ResetButton';
 import { generateDraftCsv, downloadCsv } from '../utils/exportCsv';
 import { saveBackup, downloadBackup } from '../utils/backup';
+import { downloadRecoveryWorkbook } from '../utils/recoveryWorkbook';
 import { checkFantasyProsNewsHealth } from '../utils/fantasyProsNews';
 import DraftClock from '../components/DraftClock';
 import LeagueBadge from '../components/LeagueBadge';
@@ -436,8 +437,9 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
   }
 
   function downloadCurrentBackup() {
-    saveBackup({ draft, teams, players, log });
-    downloadBackup();
+    const snapshot = saveBackup({ draft, teams, players, log });
+    downloadBackup(snapshot);
+    downloadRecoveryWorkbook(snapshot);
   }
 
   async function pauseDraft() {
@@ -552,7 +554,7 @@ export default function DraftScreen({ complete, preview = false, soldStampPrevie
             <button
               className="export-csv-btn backup-btn"
               onClick={downloadCurrentBackup}
-              title="Download a backup JSON file. Restore it from the Setup screen if needed."
+              title="Download both the restorable backup JSON and its matching recovery spreadsheet."
             >
               <Save size={15} strokeWidth={2.2} />
               Backup
